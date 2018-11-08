@@ -1,0 +1,4 @@
+rootProject.name = 'deepcopy'
+
+include ":reflect-impl"
+
