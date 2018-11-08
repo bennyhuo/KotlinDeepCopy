@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.deepcopy.reflect
+package com.bennyhuo.kotlin.deepcopy.compiler
 
 import org.junit.Test
 
