@@ -8,10 +8,6 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-repositories {
-    maven { url "https://kotlin.bintray.com/kotlinx/" }
-}
-
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.4"
