@@ -8,17 +8,7 @@ import kotlinx.metadata.jvm.KotlinClassMetadata
 import javax.lang.model.element.TypeElement
 import com.squareup.kotlinpoet.ClassName as KClassName
 
-fun KTypeElement(className: String): KTypeElement? = AptContext.elements.getTypeElement(className)?.let(::KTypeElement)
-
-fun Metadata.parse() = KotlinClassMetadata.read(
-    KotlinClassHeader(
-        this.kind,
-        this.metadataVersion,
-        this.bytecodeVersion, this.data1, this.data2, this.extraString, this.packageName, this.extraInt
-    )
-)
-
-class KClassMetadata(kotlinClassMetadata: KotlinClassMetadata.Class) {
+class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
 
     data class Component(val name: String, val type: String) {
         val typeElement: KTypeElement? by lazy {

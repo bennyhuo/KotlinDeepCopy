@@ -3,14 +3,14 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 import org.junit.Test
 
 
-data class Speaker(val id: Int, val name: String, val age: Int)
+data class Speaker(val name: String, val age: Int)
 
-data class Talk(val id: Int, val name: String, val speaker: Speaker)
+data class Talk(val name: String, val speaker: Speaker)
 
-class DeepCopyTest{
+class DeepCopyTest {
     @Test
-    fun test(){
-        val talk = Talk(0, "DataClass in Action", Speaker(1, "Benny Huo", 30))
+    fun test() {
+        val talk = Talk("DataClass in Action", Speaker("Benny Huo", 30))
         val newTalk = talk.deepCopy()
         assert(talk == newTalk)
         assert(talk !== newTalk)

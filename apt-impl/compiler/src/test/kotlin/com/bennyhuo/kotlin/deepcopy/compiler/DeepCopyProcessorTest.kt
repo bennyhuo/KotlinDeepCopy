@@ -26,7 +26,7 @@ class DeepCopyProcessorTest{
         )
         when(metaDataParsed){
             is KotlinClassMetadata.Class -> {
-                println(KClassMetadata(metaDataParsed))
+                println(KClassMirror(metaDataParsed))
             }
         }
     }

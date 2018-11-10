@@ -20,3 +20,47 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+jar {
+    from {
+        fileTree(dir: 'libs', include: ['*.jar']).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+//region bintray
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = project.userName
+    groupId = "com.bennyhuo.kotlin"
+    repoName = project.repoName
+    artifactId = 'deepcopy-reflect'
+    publishVersion = project.publishVersion
+    desc = project.desc//描述，不重要
+    website = project.website
+    bintrayUser = project.userName
+    bintrayKey = project.apiKey
+    dryRun = project.dryRun
+}
+//endregion

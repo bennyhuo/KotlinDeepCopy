@@ -5,9 +5,35 @@ ext {
 group 'com.bennyhuo.kotlin'
 version '1.0-SNAPSHOT'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.novoda:bintray-release:0.8.1"
+    }
+}
+
 allprojects {
     repositories {
         jcenter()
         maven { url "https://kotlin.bintray.com/kotlinx/" }
     }
+}
+
+
+def props = new Properties()
+file("jcenter.properties").withInputStream { props.load(it) }
+
+ext {
+    userName = props.getProperty("bintray.user")
+    apiKey = props.getProperty("bintray.key")
+    repoName = "bennyhuo"
+    groupId = 'com.bennyhuo.kotlin'
+    //bintray-release PropertyFinder retiever property from project firstly
+    publishVersion = '1.0'
+    desc = "DeepCopy"
+    website = 'https://github.com/enbandari/KotlinDeepCopy'
+    dryRun = "false"
 }

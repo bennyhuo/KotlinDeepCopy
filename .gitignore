@@ -3,6 +3,7 @@
 build
 out
 local.properties
+jcenter.properties
 
 # Compiled class file
 *.class
