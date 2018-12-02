@@ -50,15 +50,19 @@ data class Talk(val name: String, val speaker: Speaker)
 Extension function `deepCopy` will be generated according to the components:
 
 ```kotlin
-fun Talk.deepCopy(): Talk = Talk(name, speaker.deepCopy())
+fun Talk.deepCopy(name: String = this.name, speaker: Speaker = this.speaker): Talk = Talk(name, speaker.deepCopy())
 
-fun Speaker.deepCopy(): Speaker = Speaker(name, age)
+fun Speaker.deepCopy(
+    name: String = this.name,
+    age: Int = this.age,
+    company: Company = this.company
+): Speaker = Speaker(name, age, company.deepCopy()) 
 ```
 
 Notice that `deepCopy` is called recursively if the member type is also a `data class` annotated with a `DeepCopy` annotation. Hence, if you remove the annotation for `Speaker`, generated function would be like:
 
 ```kotlin
-fun Talk.deepCopy(): Talk = Talk(name, speaker)
+fun Talk.deepCopy(name: String = this.name, speaker: Speaker = this.speaker): Talk = Talk(name, speaker)
 
 //And no deepCopy for Speaker.
 ```
@@ -79,10 +83,17 @@ apply plugin: "kotlin-kapt"
 ...
 
 dependencies {
-    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.0'
-    compile 'com.bennyhuo.kotlin:deepcopy-annotations:1.0'
+    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.1.0'
+    compile 'com.bennyhuo.kotlin:deepcopy-annotations:1.1.0'
 }
 ```
+
+
+# Change Log
+
+## v1.1.0
+
+* [Feature] Add default values to generated `deepCopy` functions.
 
 # License
 
