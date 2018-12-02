@@ -19,4 +19,11 @@ class KTypeElement(typeElement: TypeElement) : TypeElement by typeElement {
 
     val components = kClassMirror?.components ?: emptyList<KClassMirror.Component>()
 
+    val typeVariablesWithoutVariance = kClassMirror?.typeParameters?.map {
+        it.typeVariableNameWithoutVariance
+    } ?: emptyList()
+
+    val typeVariables = kClassMirror?.typeParameters?.map {
+        it.typeVariableName
+    } ?: emptyList()
 }

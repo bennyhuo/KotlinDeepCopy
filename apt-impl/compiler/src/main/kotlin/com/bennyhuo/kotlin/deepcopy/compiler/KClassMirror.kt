@@ -1,28 +1,24 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
-import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.logger.Logger
+import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.TypeName
 import kotlinx.metadata.*
-import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
-import javax.lang.model.element.TypeElement
 import com.squareup.kotlinpoet.ClassName as KClassName
 
 class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
 
-    data class Component(val name: String, val type: String) {
-        val typeElement: KTypeElement? by lazy {
-            KTypeElement(type.replace('/', '.'))
-        }
+    data class Component(val name: String, val type: TypeName) {
 
-        val kotlinClassName: KClassName by lazy {
-            val splits = name.split("/")
-            assert(splits.size > 1)
-            val packageName = splits.subList(0, splits.size - 1).joinToString(".")
-            val simpleNames = splits.last().split("\\.").toTypedArray()
-            val simpleName = simpleNames[0]
-            val otherSimpleNames = simpleNames.sliceArray(1 until simpleNames.size)
-            KClassName(packageName, simpleName, *otherSimpleNames)
+        val typeElement: KTypeElement? by lazy {
+            if(type is ParameterizedTypeName){
+            KTypeElement(type.rawType.canonicalName)
+            } else if(type is com.squareup.kotlinpoet.ClassName){
+                KTypeElement(type.canonicalName)
+            } else {
+                throw IllegalArgumentException("Illegal type: $type")
+            }
         }
     }
 
@@ -31,11 +27,22 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
 
     val components = mutableListOf<Component>()
 
+    val typeParameters = mutableListOf<KmTypeParameterVisitorImpl>()
+
     init {
         kotlinClassMetadata.accept(object : KmClassVisitor() {
             override fun visit(flags: Flags, name: ClassName) {
                 super.visit(flags, name)
                 isData = Flag.Class.IS_DATA(flags)
+            }
+
+            override fun visitTypeParameter(
+                flags: Flags,
+                name: String,
+                id: Int,
+                variance: KmVariance
+            ): KmTypeParameterVisitor? {
+                return KmTypeParameterVisitorImpl(flags, name, id, variance).also { typeParameters += it }
             }
 
             override fun visitConstructor(flags: Flags): KmConstructorVisitor? {
@@ -47,10 +54,10 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
                         ): KmValueParameterVisitor? {
                             return object : KmValueParameterVisitor() {
                                 override fun visitType(flags: Flags): KmTypeVisitor? {
-                                    return object : KmTypeVisitor() {
-                                        override fun visitClass(name: ClassName) {
-                                            super.visitClass(name)
-                                            components += Component(parameterName, name)
+                                    return object: KmTypeVisitorImpl(flags, typeParameters){
+                                        override fun visitEnd() {
+                                            super.visitEnd()
+                                            components += Component(parameterName, type)
                                         }
                                     }
                                 }

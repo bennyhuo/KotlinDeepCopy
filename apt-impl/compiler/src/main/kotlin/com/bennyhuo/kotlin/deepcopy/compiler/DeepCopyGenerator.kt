@@ -1,11 +1,10 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
+import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.packageName
 import com.bennyhuo.aptutils.types.simpleName
 import com.bennyhuo.aptutils.utils.writeToFile
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.*
 
 class DeepCopyGenerator(val kTypeElement: KTypeElement){
 
@@ -20,6 +19,8 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
             .addModifiers(KModifier.PUBLIC)
             .returns(kTypeElement.kotlinClassName)
 
+        functionBuilder.addTypeVariables(kTypeElement.typeVariablesWithoutVariance)
+
         val statementStringBuilder = StringBuilder("%T(")
         val parameters = ArrayList<Any>()
         kTypeElement.components.forEach { component ->
@@ -27,8 +28,9 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
             if(component.typeElement?.canDeepCopy == true){
                 parameters.add("${component.name}.deepCopy()")
             } else {
-                parameters.add(component.kotlinClassName)
+                parameters.add(component.name)
             }
+            functionBuilder.addParameter(ParameterSpec.builder(component.name, component.type).defaultValue("this.${component.name}").build())
         }
         statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
 
