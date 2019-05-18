@@ -1,6 +1,6 @@
 # KotlinDeepCopy
 
->This is a demo for JetBrains Open Day 2018 in Beijing. 
+>This is for JetBrains Open Day 2018 in Beijing. 
 
 Provide an easy way to generate `DeepCopy` function for `data class`. DeepCopy only takes effect on the component members i.e. the members declared in the primary constructor.
 
@@ -33,7 +33,7 @@ class DeepCopyTest {
 This library has been deloyed to jcenter. 
 
 ```gradle
-compile 'com.bennyhuo.kotlin:deepcopy-reflect:1.0'
+compile 'com.bennyhuo.kotlin:deepcopy-reflect:1.1.0'
 ```
 
 ## Apt
@@ -83,15 +83,19 @@ apply plugin: "kotlin-kapt"
 ...
 
 dependencies {
-    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.1.0'
-    compile 'com.bennyhuo.kotlin:deepcopy-annotations:1.1.0'
+    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.2.0'
+    compile 'com.bennyhuo.kotlin:deepcopy-annotations:1.2.0'
 }
 ```
 
 
 # Change Log
 
-## v1.1.0
+## v1.2.0 Apt
+
+* [Feature] Add support for nullable types. It will allow copy loop sematically and an exception will be thrown to respond when compiling. See [Recursive.kt](apt-impl/sample/src/main/kotlin/com/bennyhuo/kotlin/deepcopy/sample/recursive/Recursive.kt).
+
+## v1.1.0 Apt 
 
 * [Feature] Add default values to generated `deepCopy` functions.
 

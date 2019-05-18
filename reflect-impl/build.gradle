@@ -56,7 +56,7 @@ publish {
     groupId = "com.bennyhuo.kotlin"
     repoName = project.repoName
     artifactId = 'deepcopy-reflect'
-    publishVersion = project.publishVersion
+    publishVersion = '1.1.0'
     desc = project.desc//描述，不重要
     website = project.website
     bintrayUser = project.userName
