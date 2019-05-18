@@ -12,6 +12,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.4"
     compile "com.bennyhuo.aptutils:aptutils:1.7"
+    compile 'com.squareup:kotlinpoet:1.2.0'
 
     compile project(":apt-impl:annotations")
 

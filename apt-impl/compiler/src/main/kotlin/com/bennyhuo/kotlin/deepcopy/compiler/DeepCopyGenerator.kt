@@ -26,10 +26,11 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         kTypeElement.components.forEach { component ->
             statementStringBuilder.append("%L, ")
             if(component.typeElement?.canDeepCopy == true){
-                if(component.type.nullable){
-                    parameters.add("${component.name}?.deepCopy()")
+                val deepCopyMethod = MemberName(component.typeElement!!.packageName(), "deepCopy")
+                if(component.type.isNullable){
+                    parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
                 } else {
-                    parameters.add("${component.name}.deepCopy()")
+                    parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
                 }
             } else {
                 parameters.add(component.name)
