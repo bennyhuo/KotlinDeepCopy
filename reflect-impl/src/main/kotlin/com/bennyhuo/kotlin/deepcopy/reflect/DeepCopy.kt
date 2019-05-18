@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.reflect
 
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties

@@ -4,4 +4,6 @@ include ":reflect-impl"
 include ":apt-impl:annotations"
 include ":apt-impl:compiler"
 include ":apt-impl:sample"
+include 'apt-impl:runtime'
+findProject(':apt-impl:runtime')?.name = 'runtime'
 
