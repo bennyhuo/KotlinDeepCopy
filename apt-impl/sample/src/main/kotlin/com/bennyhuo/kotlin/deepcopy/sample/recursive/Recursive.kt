@@ -11,7 +11,7 @@ import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 //data class Project(val name: String, var owner: Owner?)
 
 /**
- * May this is what you want.
+ * Maybe this is what you want.
  **/
 @DeepCopy
 data class Project(val name: String){
