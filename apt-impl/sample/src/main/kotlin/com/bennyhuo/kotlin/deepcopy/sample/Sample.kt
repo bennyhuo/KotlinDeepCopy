@@ -17,18 +17,6 @@ data class Speaker(val name: String, val age: Int, val company: Company)
 @DeepCopy
 data class Talk(val name: String, val speaker: Speaker)
 
-@DeepCopy
-data class Project(val name: String, val owner: Owner, val code: Code,
-	val contributors: MutableCollection<Contributor>)
-
-data class Contributor(val name: String)
-
-@DeepCopy
-data class Owner(var name: String)
-
-@DeepCopy
-data class Code(var content: String)
-
 fun main(args: Array<String>) {
     val talk = Talk("Data class in Action", Speaker("Benny Huo", 30, Company("Tencent", Location(39.9, 116.3), District("中关村"))))
     val copiedTalk = talk.deepCopy()
