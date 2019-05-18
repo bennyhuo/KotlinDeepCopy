@@ -21,7 +21,9 @@ open class KmTypeVisitorImpl(val flags: Flags,  val typeParametersInContainer: L
         val simpleNames = splits.last().split("\\.").toTypedArray()
         val simpleName = simpleNames[0]
         val otherSimpleNames = simpleNames.sliceArray(1 until simpleNames.size)
-        com.squareup.kotlinpoet.ClassName(packageName, simpleName, *otherSimpleNames)
+        com.squareup.kotlinpoet.ClassName(packageName, simpleName, *otherSimpleNames).let {
+            if(Flag.Type.IS_NULLABLE(flags)){ it.asNullable() } else { it }
+        }
     }
 
     val type: TypeName by lazy {
