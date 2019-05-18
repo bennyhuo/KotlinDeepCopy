@@ -12,12 +12,10 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
     data class Component(val name: String, val type: TypeName) {
 
         val typeElement: KTypeElement? by lazy {
-            if(type is ParameterizedTypeName){
-            KTypeElement(type.rawType.canonicalName)
-            } else if(type is com.squareup.kotlinpoet.ClassName){
-                KTypeElement(type.canonicalName)
-            } else {
-                throw IllegalArgumentException("Illegal type: $type")
+            when (type) {
+                is ParameterizedTypeName -> KTypeElement.from(type.rawType.canonicalName)
+                is com.squareup.kotlinpoet.ClassName -> KTypeElement.from(type.canonicalName)
+                else -> throw IllegalArgumentException("Illegal type: $type")
             }
         }
     }

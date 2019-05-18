@@ -2,6 +2,7 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.bennyhuo.kotlin.deepcopy.compiler.KTypeElement.Companion.from
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
@@ -18,8 +19,9 @@ class DeepCopyProcessor : AbstractProcessor() {
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         roundEnv.getElementsAnnotatedWith(DeepCopy::class.java)
             .filter { it.kind.isClass }
-            .mapNotNull { (it as? TypeElement)?.let(::KTypeElement) }
+            .mapNotNull { (it as? TypeElement)?.let(KTypeElement.Companion::from) }
             .forEach {
+                DeepCopyLoopDetector(it).detect()
                 DeepCopyGenerator(it).generate()
             }
         return true
