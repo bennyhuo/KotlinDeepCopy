@@ -1,7 +1,6 @@
-package com.bennyhuo.kotlin.deepcopy.sample
+package com.bennyhuo.kotlin.deepcopy.sample.generics
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-
 
 @DeepCopy
 data class GenericParameter(val map: HashMap<String, List<String>>)
