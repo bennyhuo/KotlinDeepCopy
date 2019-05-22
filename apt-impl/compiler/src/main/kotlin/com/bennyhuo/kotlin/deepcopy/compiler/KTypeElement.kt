@@ -3,19 +3,23 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asKotlinTypeName
+import com.bennyhuo.aptutils.types.isSubTypeOf
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
 import javax.lang.model.element.TypeElement
 
 class KTypeElement private constructor(typeElement: TypeElement) : TypeElement by typeElement {
 
-    companion object{
+    companion object {
         private val refs = WeakHashMap<String, KTypeElement>()
 
         fun from(className: String): KTypeElement? {
-            return refs[className] ?: AptContext.elements.getTypeElement(className)?.let(::KTypeElement)?.also { refs[className] = it }
+            val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
+            val name = mappedCollectionName ?: className
+            return refs[name] ?: AptContext.elements.getTypeElement(name)?.let(::KTypeElement)?.also { refs[name] = it }
         }
 
         fun from(typeElement: TypeElement): KTypeElement {
@@ -32,7 +36,31 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
 
     val kotlinClassName = asType().asKotlinTypeName()
 
-    val canDeepCopy = isDataClass && getAnnotation(DeepCopy::class.java) != null
+    val isCollectionType by lazy {
+        typeElement.asType().isSubTypeOf(Collection::class.java).also {
+            Logger.warn("isCollectionType: ${typeElement.qualifiedName}, $it")
+        }
+    }
+
+    val isMapType by lazy {
+        typeElement.asType().isSubTypeOf(Map::class.java).also {
+            Logger.warn("isMapType: ${typeElement.qualifiedName}, $it")
+        }
+    }
+
+    val elementClassName by lazy {
+        when {
+            isCollectionType -> (kotlinClassName as ParameterizedTypeName).typeArguments[0]
+            isMapType -> (kotlinClassName as ParameterizedTypeName).typeArguments[1]
+            else -> null
+        } as? ClassName
+    }
+
+    val elementType by lazy {
+        elementClassName?.canonicalName?.let { KTypeElement.from(it) }
+    }
+
+    val canDeepCopy = isDataClass && getAnnotation(DeepCopy::class.java) != null || isCollectionType || isMapType
 
     val components = kClassMirror?.components ?: emptyList<KClassMirror.Component>()
 
@@ -46,15 +74,15 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
 
     private var marked: Boolean = false
 
-    fun mark(){
-        if(marked){
+    fun mark() {
+        if (marked) {
             throw CopyLoopException(this)
         } else {
             marked = true
         }
     }
 
-    fun unmark(){
+    fun unmark() {
         marked = false
     }
 }

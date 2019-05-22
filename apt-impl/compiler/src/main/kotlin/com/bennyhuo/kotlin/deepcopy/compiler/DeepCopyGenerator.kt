@@ -1,6 +1,5 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
-import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.packageName
 import com.bennyhuo.aptutils.types.simpleName
 import com.bennyhuo.aptutils.utils.writeToFile
@@ -26,11 +25,33 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         kTypeElement.components.forEach { component ->
             statementStringBuilder.append("%L, ")
             if(component.typeElement?.canDeepCopy == true){
-                val deepCopyMethod = MemberName(component.typeElement!!.packageName(), "deepCopy")
-                if(component.type.isNullable){
-                    parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
-                } else {
-                    parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
+                val typeElement = component.typeElement!!
+                when {
+                    typeElement.isMapType ->{
+                        val deepCopyMethod = MemberName("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope", "deepCopy")
+                        if(typeElement.elementType?.canDeepCopy == true){
+                            val elementDeepCopyMethod = MemberName(typeElement.elementClassName!!.packageName, "deepCopy")
+                            parameters.add(CodeBlock.of("${component.name}?.%M{ it?.%M }", deepCopyMethod, elementDeepCopyMethod))
+                        } else {
+                            parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
+                        }
+                    }
+                    typeElement.isCollectionType ->{
+                        val deepCopyMethod = MemberName("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope", "deepCopy")
+                        if(component.type.isNullable){
+                            parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
+                        } else {
+                            parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
+                        }
+                    }
+                    else -> {
+                        val deepCopyMethod = MemberName(component.typeElement!!.packageName(), "deepCopy")
+                        if(component.type.isNullable){
+                            parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
+                        } else {
+                            parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
+                        }
+                    }
                 }
             } else {
                 parameters.add(component.name)
