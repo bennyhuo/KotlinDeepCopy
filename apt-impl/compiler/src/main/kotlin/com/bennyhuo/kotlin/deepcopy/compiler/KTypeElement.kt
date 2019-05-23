@@ -1,32 +1,37 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
-import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asKotlinTypeName
-import com.bennyhuo.aptutils.types.asTypeMirror
-import com.bennyhuo.aptutils.types.erasure
 import com.bennyhuo.aptutils.types.isSubTypeOf
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.TypeName
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
 import javax.lang.model.element.TypeElement
 
-class KTypeElement private constructor(typeElement: TypeElement) : TypeElement by typeElement {
+class KTypeElement private constructor(val typeElement: TypeElement, val kotlinClassName: TypeName) : TypeElement by typeElement {
 
     companion object {
         private val refs = WeakHashMap<String, KTypeElement>()
 
-        fun from(className: String): KTypeElement? {
+        fun from(typeName: TypeName): KTypeElement? {
+            val className = when(typeName){
+                is ParameterizedTypeName -> typeName.rawType.canonicalName
+                is ClassName -> typeName.canonicalName
+                else -> throw IllegalArgumentException("Illegal type: $typeName")
+            }
             val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
             val name = mappedCollectionName ?: className
-            return refs[name] ?: AptContext.elements.getTypeElement(name)?.let(::KTypeElement)?.also { refs[name] = it }
+            return refs[typeName.toString()] ?: AptContext.elements.getTypeElement(name)?.let{
+                KTypeElement(it, typeName)
+            }?.also { refs[typeName.toString()] = it }
         }
 
         fun from(typeElement: TypeElement): KTypeElement {
             val className = typeElement.qualifiedName.toString()
-            return refs[className] ?: KTypeElement(typeElement).also { refs[className] = it }
+            return refs[className] ?: KTypeElement(typeElement, typeElement.asType().asKotlinTypeName()).also { refs[className] = it }
         }
     }
 
@@ -36,10 +41,8 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
 
     val isDataClass = kClassMirror?.isData ?: false
 
-    val kotlinClassName = asType().asKotlinTypeName()
-
     val isCollectionType by lazy {
-        typeElement.asType().erasure().isSubTypeOf("java.util.Collection")
+        typeElement.asType().isSubTypeOf("java.util.Collection")
     }
 
     val isMapType by lazy {
@@ -55,7 +58,7 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
     }
 
     val elementType by lazy {
-        elementClassName?.canonicalName?.let { KTypeElement.from(it) }
+        elementClassName?.let{ KTypeElement.from(it) }
     }
 
     val isDataType by lazy {
@@ -86,5 +89,9 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
 
     fun unmark() {
         marked = false
+    }
+
+    override fun toString(): String {
+        return kotlinClassName.toString()
     }
 }

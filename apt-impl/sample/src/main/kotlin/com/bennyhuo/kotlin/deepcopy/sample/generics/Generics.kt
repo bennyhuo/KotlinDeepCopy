@@ -28,3 +28,7 @@ data class Variances(val map: HashMap<String, out Number>)
 
 @DeepCopy
 data class Variances1(val map: HashMap<String, out List<Number>>)
+
+fun main() {
+    GenericParameterOutT<Int>(listOf(1,23))
+}
