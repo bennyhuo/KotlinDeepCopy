@@ -16,6 +16,7 @@ fun Metadata.parse() = KotlinClassMetadata.read(
 )
 
 val kotlinCollectionTypeToJvmType = mapOf(
+    //builtins
     "kotlin.collections.Collection" to "java.util.Collection",
     "kotlin.collections.MutableCollection" to "java.util.Collection",
     "kotlin.collections.List" to "java.util.List",
@@ -23,7 +24,14 @@ val kotlinCollectionTypeToJvmType = mapOf(
     "kotlin.collections.Set" to "java.util.Set",
     "kotlin.collections.MutableSet" to "java.util.Set",
     "kotlin.collections.Map" to "java.util.Map",
-    "kotlin.collections.MutableMap" to "java.util.Map"
+    "kotlin.collections.MutableMap" to "java.util.Map",
+
+    //typealiases
+    "kotlin.collections.ArrayList" to "java.util.ArrayList",
+    "kotlin.collections.LinkedHashSet" to "java.util.LinkedHashSet",
+    "kotlin.collections.HashSet" to "java.util.HashSet",
+    "kotlin.collections.LinkedHashMap" to "java.util.LinkedHashMap",
+    "kotlin.collections.HashMap" to "java.util.HashMap"
 )
 
 fun mapKotlinCollectionTypeToJvmType(type: ParameterizedTypeName): ParameterizedTypeName {

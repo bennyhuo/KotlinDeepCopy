@@ -3,6 +3,8 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asKotlinTypeName
+import com.bennyhuo.aptutils.types.asTypeMirror
+import com.bennyhuo.aptutils.types.erasure
 import com.bennyhuo.aptutils.types.isSubTypeOf
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.squareup.kotlinpoet.ClassName
@@ -37,15 +39,11 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
     val kotlinClassName = asType().asKotlinTypeName()
 
     val isCollectionType by lazy {
-        typeElement.asType().isSubTypeOf(Collection::class.java).also {
-            Logger.warn("isCollectionType: ${typeElement.qualifiedName}, $it")
-        }
+        typeElement.asType().erasure().isSubTypeOf("java.util.Collection")
     }
 
     val isMapType by lazy {
-        typeElement.asType().isSubTypeOf(Map::class.java).also {
-            Logger.warn("isMapType: ${typeElement.qualifiedName}, $it")
-        }
+        typeElement.asType().isSubTypeOf("java.util.Map")
     }
 
     val elementClassName by lazy {
@@ -60,7 +58,11 @@ class KTypeElement private constructor(typeElement: TypeElement) : TypeElement b
         elementClassName?.canonicalName?.let { KTypeElement.from(it) }
     }
 
-    val canDeepCopy = isDataClass && getAnnotation(DeepCopy::class.java) != null || isCollectionType || isMapType
+    val isDataType by lazy {
+        isDataClass && getAnnotation(DeepCopy::class.java) != null
+    }
+
+    val canDeepCopy = isDataType || isCollectionType || isMapType
 
     val components = kClassMirror?.components ?: emptyList<KClassMirror.Component>()
 

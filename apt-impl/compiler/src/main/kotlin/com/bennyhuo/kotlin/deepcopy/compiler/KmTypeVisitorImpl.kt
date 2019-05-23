@@ -28,10 +28,14 @@ open class KmTypeVisitorImpl(val flags: Flags,  val typeParametersInContainer: L
 
     val type: TypeName by lazy {
         if(abbreviatedTypeVisitor != null) {
-            abbreviatedTypeVisitor!!.type
+            abbreviatedTypeVisitor!!.type.also {
+                Logger.warn("$rawType, $it")
+            }
         }
         else if(typeParameters.isEmpty()) rawType
-        else rawType.parameterizedBy(*(typeParameters.map { it.wildcardTypeName }.toTypedArray()))
+        else rawType.parameterizedBy(*(typeParameters.map { it.wildcardTypeName }.toTypedArray())).let {
+            if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
+        }
     }
 
     val wildcardTypeName by lazy {

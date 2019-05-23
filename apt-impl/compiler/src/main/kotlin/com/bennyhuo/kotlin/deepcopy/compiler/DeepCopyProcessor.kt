@@ -1,6 +1,9 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
+import com.bennyhuo.aptutils.logger.Logger
+import com.bennyhuo.aptutils.types.erasure
+import com.bennyhuo.aptutils.types.isSubTypeOf
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.compiler.KTypeElement.Companion.from
 import javax.annotation.processing.*
@@ -21,7 +24,7 @@ class DeepCopyProcessor : AbstractProcessor() {
             .filter { it.kind.isClass }
             .mapNotNull { (it as? TypeElement)?.let(KTypeElement.Companion::from) }
             .forEach {
-                DeepCopyLoopDetector(it).detect()
+                //DeepCopyLoopDetector(it).detect()
                 DeepCopyGenerator(it).generate()
             }
         return true

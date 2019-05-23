@@ -8,7 +8,7 @@ class BuiltinTypesTest{
         val map = mapOf(1 to mutableListOf(1, 2, 3), 2 to mutableListOf(3, 3, 2))
         DeepCopyScope.apply {
             val copied = map.deepCopy {
-                it.value.deepCopy()
+                deepCopy(it.value)
             }
             assert(map[1] !== copied[1])
             map.getValue(1) += 4

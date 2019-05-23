@@ -19,7 +19,7 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
                 is com.squareup.kotlinpoet.ClassName -> KTypeElement.from(type.canonicalName)
                 else -> throw IllegalArgumentException("Illegal type: $type")
             }.also {
-                Logger.warn("$this: $it")
+                //Logger.warn("$this: $it")
             }
         }
     }
