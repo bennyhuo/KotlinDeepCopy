@@ -86,12 +86,12 @@ dependencies {
 }
 ```
 
-# Known Issues
-
-1. Data classes with dependency should be place into the same package.
-2. Parameters in Data classes will be handled in the `deepCopy` method only if they are also data classes annotated with `@DeepCopy`. That means `Collections` like `ArrayList` will not be deep copied.
-
 # Change Log
+
+## v1.3.0 Apt
+
+* [Bug] Fixed: Data classes with their dependencies should be place into the same package.
+* [Feature] Collections/Maps are supported. 
 
 ## v1.2.0 Apt
 

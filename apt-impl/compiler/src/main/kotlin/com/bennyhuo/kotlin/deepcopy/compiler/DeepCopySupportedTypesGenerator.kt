@@ -20,7 +20,7 @@ class DeepCopySupportedTypesGenerator {
         )
             .mutable(false)
             .addAnnotation(JvmStatic::class)
-            .initializer("hashSetOf(${kTypeElements.map { "%T::class" }.joinToString()})", *kTypeElements.map {
+            .initializer("hashSetOf(${kTypeElements.map { "%T::class" }.joinToString(",\n")})", *kTypeElements.map {
                 if (it.kotlinClassName is ParameterizedTypeName) it.kotlinClassName.rawType else it.kotlinClassName
             }.toTypedArray())
 
