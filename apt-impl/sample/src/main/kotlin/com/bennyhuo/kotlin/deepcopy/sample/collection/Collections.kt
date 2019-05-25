@@ -9,8 +9,22 @@ data class Team(val name: String, val workers: List<Worker>)
 @DeepCopy
 data class Worker(val name: String)
 
+@DeepCopy
+data class Team2(val name: String, val workers: List<Worker2>, val pair: Pair<String, Worker2>, val map: Map<String, Worker2>){
+    @DeepCopy
+    data class Worker2(val name: String)
+}
+
+
 fun main() {
-    pressure()
+    testInnerClass()
+}
+
+fun testInnerClass(){
+    val team = Team2("KotlinCN", listOf(Team2.Worker2("bennyhuo")), "hello" to Team2.Worker2("bennyhuo"), mapOf())
+    val teamCopied = team.deepCopy()
+    println(team.workers[0] === teamCopied.workers[0])
+    println(team.pair === teamCopied.pair)
 }
 
 fun test(){

@@ -1,6 +1,7 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
+import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.aptutils.types.isSubTypeOf
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
@@ -12,12 +13,13 @@ import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
 import javax.lang.model.element.TypeElement
 
-class KTypeElement private constructor(val typeElement: TypeElement, val kotlinClassName: TypeName) : TypeElement by typeElement {
+class KTypeElement private constructor(val typeElement: TypeElement, val kotlinClassName: TypeName, val enableDeepCopy: Boolean) : TypeElement by typeElement {
 
     companion object {
         private val refs = WeakHashMap<String, KTypeElement>()
 
-        fun from(typeName: TypeName): KTypeElement? {
+        fun from(typeName: TypeName, enableDeepCopy: Boolean = false): KTypeElement? {
+            Logger.warn("KTypeElement: $typeName")
             val className = when(typeName){
                 is ParameterizedTypeName -> typeName.rawType.canonicalName
                 is ClassName -> typeName.canonicalName
@@ -27,13 +29,13 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
             val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
             val name = mappedCollectionName ?: className
             return refs[typeName.toString()] ?: AptContext.elements.getTypeElement(name)?.let{
-                KTypeElement(it, typeName)
+                KTypeElement(it, typeName, enableDeepCopy)
             }?.also { refs[typeName.toString()] = it }
         }
 
-        fun from(typeElement: TypeElement): KTypeElement {
+        fun from(typeElement: TypeElement, enableDeepCopy: Boolean = false): KTypeElement {
             val className = typeElement.qualifiedName.toString()
-            return refs[className] ?: KTypeElement(typeElement, typeElement.asType().asKotlinTypeName()).also { refs[className] = it }
+            return refs[className] ?: KTypeElement(typeElement, typeElement.asType().asKotlinTypeName(), enableDeepCopy).also { refs[className] = it }
         }
     }
 
@@ -64,7 +66,12 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
     }
 
     val isDataType by lazy {
-        isDataClass && getAnnotation(DeepCopy::class.java) != null
+        isDataClass && (enableDeepCopy ||
+                refs[when (kotlinClassName) {
+                    is ParameterizedTypeName -> kotlinClassName.rawType.canonicalName
+                    is ClassName -> kotlinClassName.canonicalName
+                    else -> throw java.lang.IllegalArgumentException()
+                }]?.enableDeepCopy == true)
     }
 
     val canDeepCopy = isDataType || isCollectionType || isMapType

@@ -12,7 +12,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
     }
 
     fun generate(){
-        val fileSpecBuilder = FileSpec.builder(kTypeElement.packageName(), kTypeElement.simpleName() + POSIX)
+        val fileSpecBuilder = FileSpec.builder(escapeStdlibPackageName(kTypeElement.packageName()), kTypeElement.simpleName() + POSIX)
         val functionBuilder = FunSpec.builder("deepCopy")
             .receiver(kTypeElement.kotlinClassName)
             .addModifiers(KModifier.PUBLIC)
@@ -21,38 +21,52 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         functionBuilder.addTypeVariables(kTypeElement.typeVariablesWithoutVariance)
             .addAnnotation(JvmOverloads::class)
 
+        val suppressWarnings = hashSetOf<String>()
+
         val statementStringBuilder = StringBuilder("%T(")
         val parameters = ArrayList<Any>()
         kTypeElement.components.forEach { component ->
             statementStringBuilder.append("%L, ")
-            if(component.typeElement?.canDeepCopy == true){
-                val typeElement = component.typeElement!!
-                when {
-                    typeElement.isDataType ->{
-                        val deepCopyMethod = MemberName(component.typeElement!!.packageName(), "deepCopy")
-                        if(component.type.isNullable){
-                            parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
-                        } else {
-                            parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
+            when {
+                component.type is TypeVariableName -> {
+                    val elementDeepCopyHandler = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope.ElementDeepCopyHandler")
+                    //cannot tell whether the type variable is nullable from declaration.
+                    parameters.add(CodeBlock.of("%T().run{ (${component.name} as Any?)?.deepCopyElement() as %T  }", elementDeepCopyHandler, component.type))
+
+                    suppressWarnings += "UNCHECKED_CAST"
+                }
+                component.typeElement?.canDeepCopy == true -> {
+                    val typeElement = component.typeElement!!
+                    when {
+                        typeElement.isDataType ->{
+                            val deepCopyMethod = MemberName(escapeStdlibPackageName(component.typeElement!!.packageName()), "deepCopy")
+                            if(component.type.isNullable){
+                                parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
+                            } else {
+                                parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
+                            }
+                        }
+                        typeElement.isMapType || typeElement.isCollectionType->{
+                            val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
+                            if(component.type.isNullable){
+                                parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
+                            } else {
+                                parameters.add(CodeBlock.of("%T.run{ ${component.name}.deepCopy() }", deepCopyScope))
+                            }
                         }
                     }
-                    typeElement.isMapType ->{
-                        val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
-                        parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-                    }
-                    typeElement.isCollectionType ->{
-                        val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
-                        parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-                    }
                 }
-            } else {
-                parameters.add(component.name)
+                else -> parameters.add(component.name)
             }
             functionBuilder.addParameter(ParameterSpec.builder(component.name, component.type).defaultValue("this.${component.name}").build())
         }
         statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
 
         functionBuilder.addStatement("return $statementStringBuilder", kTypeElement.kotlinClassName, *(parameters.toTypedArray()))
+
+        suppressWarnings.forEach {
+            functionBuilder.addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", it).build())
+        }
 
         fileSpecBuilder.addFunction(functionBuilder.build()).build().writeToFile()
     }

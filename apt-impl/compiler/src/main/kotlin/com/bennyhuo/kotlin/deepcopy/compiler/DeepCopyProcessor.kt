@@ -33,7 +33,9 @@ class DeepCopyProcessor : AbstractProcessor() {
                 it.asElement()
             }.plus(roundEnv.getElementsAnnotatedWith(DeepCopy::class.java))
             .filter { it.kind.isClass }
-            .mapNotNull { (it as? TypeElement)?.let(KTypeElement.Companion::from) }
+            .mapNotNull { (it as? TypeElement)?.let{
+                KTypeElement.from(it, true)
+            }}
             .also {
                 DeepCopySupportedTypesGenerator().generate(it)
             }

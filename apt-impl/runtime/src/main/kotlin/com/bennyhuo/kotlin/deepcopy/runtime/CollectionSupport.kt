@@ -7,7 +7,11 @@ import kotlin.reflect.KClass
 object DeepCopyScope {
 
     fun <C : Collection<T?>, T> C.deepCopy(): C {
-        val newInstance = javaClass.getDeclaredConstructor().newInstance()
+        val newInstance = try {
+            javaClass.getDeclaredConstructor().newInstance()
+        } catch (e: Exception) {
+            ArrayList<T>(this.size)
+        }
         val elementDeepCopyHandler = ElementDeepCopyHandler()
         return (this as Collection<Any?>).mapTo(newInstance as MutableCollection<Any?>){
             elementDeepCopyHandler.run {
@@ -20,7 +24,11 @@ object DeepCopyScope {
      * explicit type args for K, V will cause type inference error for star types, e.g. Map<*,*>.
      */
     fun <C : Map<*, V?>, V> C.deepCopy(): C {
-        val newInstance = javaClass.getDeclaredConstructor().newInstance()
+        val newInstance: C = try {
+            javaClass.getDeclaredConstructor().newInstance()
+        } catch (e: Exception) {
+            hashMapOf<Any, V>() as C
+        }
         val elementDeepCopyHandler = ElementDeepCopyHandler()
         return (this as Map<Any?, Any?>).mapValuesTo(newInstance as MutableMap<Any?, Any?>){
             elementDeepCopyHandler.run {
@@ -29,9 +37,13 @@ object DeepCopyScope {
         } as C
     }
 
-    private class ElementDeepCopyHandler {
+    class ElementDeepCopyHandler {
         private val deepCopyMethodCache = HashMap<Class<*>, Method>().withDefault {
-            val generatedDeepCopyClass = Class.forName( "${it.canonicalName}__DeepCopyKt")
+            var packageName = it.`package`.name
+            if (packageName == "kotlin") {
+                packageName = "com.bennyhuo.kotlin.deepcopy.builtin"
+            }
+            val generatedDeepCopyClass = Class.forName( "$packageName.${it.simpleName}__DeepCopyKt")
             generatedDeepCopyClass.getDeclaredMethod("deepCopy", it)
         }
 

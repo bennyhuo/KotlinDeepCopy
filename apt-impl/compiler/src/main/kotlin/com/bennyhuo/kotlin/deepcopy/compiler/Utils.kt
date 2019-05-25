@@ -48,3 +48,6 @@ fun mapKotlinCollectionTypeToJvmType(type: ParameterizedTypeName): Parameterized
     }
     return (mappedType?.kotlin as? ClassName)?.parameterizedBy(*type.typeArguments.toTypedArray()) ?: type
 }
+
+inline fun escapeStdlibPackageName(packageName: String) =
+    if (packageName == "kotlin") "com.bennyhuo.kotlin.deepcopy.builtin" else packageName
