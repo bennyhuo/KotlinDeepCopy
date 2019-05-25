@@ -90,8 +90,10 @@ dependencies {
 
 ## v1.3.0 Apt
 
-* [Bug] Fixed: Data classes with their dependencies should be place into the same package.
 * [Feature] Collections/Maps are supported. 
+* [Feature] Prebuilt types are supported by annotation `DeepCopyConfig`. See [Prebuilt](apt-impl/sample/src/main/kotlin/com/bennyhuo/kotlin/deepcopy/sample/prebuilt/PrebuiltClass.kt)
+* [Bug] Fixed: Data classes with their dependencies should be place into the same package.
+* [Bug] Fixed: Improperly import a type variable when component type is not reified.
 
 ## v1.2.0 Apt
 
