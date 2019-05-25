@@ -38,7 +38,7 @@ class DeepCopyProcessor : AbstractProcessor() {
                 DeepCopySupportedTypesGenerator().generate(it)
             }
             .forEach {
-                //DeepCopyLoopDetector(it).detect()
+                DeepCopyLoopDetector(it).detect()
                 DeepCopyGenerator(it).generate()
             }
         return true
