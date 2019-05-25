@@ -39,22 +39,10 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
                     typeElement.isMapType ->{
                         val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
                         parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-//                        if(typeElement.elementType?.canDeepCopy == true){
-//                            val elementDeepCopyMethod = MemberName(typeElement.elementClassName!!.packageName, "deepCopy")
-//                            parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy{ it?.value?.%M() } }", deepCopyScope, elementDeepCopyMethod))
-//                        } else {
-//                            parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-//                        }
                     }
                     typeElement.isCollectionType ->{
                         val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
                         parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-//                        if(typeElement.elementType?.canDeepCopy == true){
-//                            val elementDeepCopyMethod = MemberName(typeElement.elementClassName!!.packageName, "deepCopy")
-//                            parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy{ it?.%M() } }", deepCopyScope, elementDeepCopyMethod))
-//                        } else {
-//                            parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-//                        }
                     }
                 }
             } else {
