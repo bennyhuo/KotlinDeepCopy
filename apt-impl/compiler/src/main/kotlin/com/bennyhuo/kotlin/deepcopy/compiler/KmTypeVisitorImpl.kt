@@ -13,28 +13,33 @@ open class KmTypeVisitorImpl(val flags: Flags,  val typeParametersInContainer: L
 
     private var isReified = true
 
-    val rawType: com.squareup.kotlinpoet.ClassName by lazy {
-        val splits = name.split("/")
-        assert(splits.size > 1)
-        val packageName = splits.subList(0, splits.size - 1).joinToString(".")
-        val simpleNames = splits.last().split("\\.").toTypedArray()
-        val simpleName = simpleNames[0]
-        val otherSimpleNames = simpleNames.sliceArray(1 until simpleNames.size)
+    val rawType: TypeName by lazy {
+        when(isReified){
+            true -> {
+                val splits = name.split("/")
+                assert(splits.size > 1)
+                val packageName = splits.subList(0, splits.size - 1).joinToString(".")
+                val simpleNames = splits.last().split("\\.").toTypedArray()
+                val simpleName = simpleNames[0]
+                val otherSimpleNames = simpleNames.sliceArray(1 until simpleNames.size)
 
-        com.squareup.kotlinpoet.ClassName(packageName, simpleName, *otherSimpleNames).let {
-            if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
+                com.squareup.kotlinpoet.ClassName(packageName, simpleName, *otherSimpleNames).let {
+                    if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
+                }
+            }
+            false -> TypeVariableName(name)
         }
     }
 
     val type: TypeName by lazy {
-        if(abbreviatedTypeVisitor != null) {
-            abbreviatedTypeVisitor!!.type.also {
-                Logger.warn("$rawType, $it")
+        val rawType = this.rawType
+        when {
+            abbreviatedTypeVisitor != null -> abbreviatedTypeVisitor!!.type
+            rawType !is com.squareup.kotlinpoet.ClassName -> rawType
+            typeParameters.isEmpty() -> rawType
+            else -> rawType.parameterizedBy(*(typeParameters.map { it.wildcardTypeName }.toTypedArray())).let {
+                if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
             }
-        }
-        else if(typeParameters.isEmpty()) rawType
-        else rawType.parameterizedBy(*(typeParameters.map { it.wildcardTypeName }.toTypedArray())).let {
-            if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
         }
     }
 

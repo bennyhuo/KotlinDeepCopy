@@ -7,6 +7,7 @@ import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeVariableName
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
 import javax.lang.model.element.TypeElement
@@ -20,6 +21,7 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
             val className = when(typeName){
                 is ParameterizedTypeName -> typeName.rawType.canonicalName
                 is ClassName -> typeName.canonicalName
+                is TypeVariableName -> return null
                 else -> throw IllegalArgumentException("Illegal type: $typeName")
             }
             val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
