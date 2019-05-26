@@ -34,7 +34,12 @@ open class KmTypeVisitorImpl(val flags: Flags,  val typeParametersInContainer: L
     val type: TypeName by lazy {
         val rawType = this.rawType
         when {
-            abbreviatedTypeVisitor != null -> abbreviatedTypeVisitor!!.type
+            /*
+             * For typealias, it will be expanded so that we can easily determine its original type
+             * If this line is uncommented, we should handle its original type correctly when to
+             * check Collection/Map type.
+             */
+            //abbreviatedTypeVisitor != null -> abbreviatedTypeVisitor!!.type
             rawType !is com.squareup.kotlinpoet.ClassName -> rawType
             typeParameters.isEmpty() -> rawType
             else -> rawType.parameterizedBy(*(typeParameters.map { it.wildcardTypeName }.toTypedArray())).let {

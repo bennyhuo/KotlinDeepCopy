@@ -19,7 +19,6 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
         private val refs = WeakHashMap<String, KTypeElement>()
 
         fun from(typeName: TypeName, enableDeepCopy: Boolean = false): KTypeElement? {
-            Logger.warn("KTypeElement: $typeName")
             val className = when(typeName){
                 is ParameterizedTypeName -> typeName.rawType.canonicalName
                 is ClassName -> typeName.canonicalName
