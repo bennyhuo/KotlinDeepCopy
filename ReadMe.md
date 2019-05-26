@@ -81,17 +81,19 @@ apply plugin: "kotlin-kapt"
 ...
 
 dependencies {
-    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.2.0'
-    compile 'com.bennyhuo.kotlin:deepcopy-annotations:1.2.0'
+    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.3.0-rc1'
+    compile 'com.bennyhuo.kotlin:deepcopy-runtime:1.3.0-rc1'
 }
 ```
 
-# Known Issues
-
-1. Data classes and their dependencies should be place into the same package. See issue #3.
-2. Components in Data classes will be handled in the `deepCopy` method only if they are also data classes annotated with `@DeepCopy`. That means `Collections` like `ArrayList` will not be deep copied. See issue #1.
-
 # Change Log
+
+## v1.3.0 Apt
+
+* [Feature] Collections/Maps are supported. 
+* [Feature] Prebuilt types are supported by annotation `DeepCopyConfig`. See [Prebuilt](apt-impl/sample/src/main/kotlin/com/bennyhuo/kotlin/deepcopy/sample/prebuilt/PrebuiltClass.kt)
+* [Bug] Fixed: Data classes with their dependencies should be place into the same package.
+* [Bug] Fixed: Improperly import a type variable when component type is not reified.
 
 ## v1.2.0 Apt
 

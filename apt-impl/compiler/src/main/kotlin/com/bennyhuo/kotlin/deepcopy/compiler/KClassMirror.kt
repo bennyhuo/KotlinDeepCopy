@@ -1,7 +1,5 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
-import com.bennyhuo.aptutils.logger.Logger
-import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
@@ -12,11 +10,7 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
     data class Component(val name: String, val type: TypeName) {
 
         val typeElement: KTypeElement? by lazy {
-            when (type) {
-                is ParameterizedTypeName -> KTypeElement.from(type.rawType.canonicalName)
-                is com.squareup.kotlinpoet.ClassName -> KTypeElement.from(type.canonicalName)
-                else -> throw IllegalArgumentException("Illegal type: $type")
-            }
+            KTypeElement.from(type)
         }
     }
 

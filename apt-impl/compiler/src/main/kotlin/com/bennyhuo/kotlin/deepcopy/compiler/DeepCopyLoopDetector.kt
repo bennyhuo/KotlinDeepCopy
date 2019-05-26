@@ -9,10 +9,9 @@ class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
 
     fun detect() {
         push(kTypeElement)
-        dumpStack()
         kTypeElement.components
             // Only nullable types should be checked.
-            .filter { it.type.nullable }
+            .filter { it.type.isNullable }
             .mapNotNull { it.typeElement }
             .filter { it.canDeepCopy }
             .forEach {
@@ -24,7 +23,6 @@ class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
     }
 
     private fun detectNext(kTypeElement: KTypeElement) {
-        dumpStack()
         kTypeElement.components.mapNotNull { it.typeElement }
             .filter { it.canDeepCopy }
             .forEach {

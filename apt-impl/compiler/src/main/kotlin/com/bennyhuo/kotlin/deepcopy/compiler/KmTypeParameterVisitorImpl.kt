@@ -15,11 +15,9 @@ class KmTypeParameterVisitorImpl(
     var upperBounds: KmTypeVisitorImpl? = null
 
     val typeVariableNameWithoutVariance by lazy {
-        TypeVariableName(name).let { typeVariableName ->
-            upperBounds?.let {
-                typeVariableName.withBounds(it.type)
-            }?: typeVariableName
-        }
+        upperBounds?.let {
+            TypeVariableName(name, it.type)
+        }?: TypeVariableName(name)
     }
 
     val typeVariableName by lazy {
@@ -29,19 +27,9 @@ class KmTypeParameterVisitorImpl(
             KmVariance.OUT -> KModifier.OUT
         }
 
-        TypeVariableName(name, variance).let { typeVariableName ->
-            upperBounds?.let {
-                typeVariableName.withBounds(it.type)
-            }?: typeVariableName
-        }
-    }
-
-    override fun visitEnd() {
-        super.visitEnd()
-    }
-
-    override fun visitExtensions(type: KmExtensionType): KmTypeParameterExtensionVisitor? {
-        return super.visitExtensions(type)
+        upperBounds?.let {
+            TypeVariableName(name, it.type, variance = variance)
+        }?: TypeVariableName(name, variance)
     }
 
     override fun visitUpperBound(flags: Flags): KmTypeVisitor? {
