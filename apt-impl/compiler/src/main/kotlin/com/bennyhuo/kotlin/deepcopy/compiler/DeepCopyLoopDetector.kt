@@ -38,8 +38,8 @@ class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
     }
 
     private fun pop() {
-        typeStack.pop()
-        kTypeElement.unmark()
+        val pop = typeStack.pop()
+        pop?.unmark()
     }
 
     private fun dumpStack() {
