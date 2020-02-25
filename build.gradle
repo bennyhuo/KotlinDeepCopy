@@ -32,7 +32,7 @@ ext {
     repoName = "bennyhuo"
     groupId = 'com.bennyhuo.kotlin'
     //bintray-release PropertyFinder retiever property from project firstly
-    publishVersion = '1.3.0-rc1'
+    publishVersion = '1.3.0'
     desc = "DeepCopy"
     website = 'https://github.com/enbandari/KotlinDeepCopy'
     dryRun = "false"
