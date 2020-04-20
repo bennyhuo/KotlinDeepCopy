@@ -82,7 +82,7 @@ apply plugin: "kotlin-kapt"
 
 dependencies {
     kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.3.0'
-    compile 'com.bennyhuo.kotlin:deepcopy-runtime:1.3.0'
+    implementation 'com.bennyhuo.kotlin:deepcopy-runtime:1.3.0'
 }
 ```
 
