@@ -7,7 +7,7 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
-        jcenter()
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
     }
 
     dependencies {
@@ -17,7 +17,7 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
         maven { url "https://kotlin.bintray.com/kotlinx/" }
     }
 }
