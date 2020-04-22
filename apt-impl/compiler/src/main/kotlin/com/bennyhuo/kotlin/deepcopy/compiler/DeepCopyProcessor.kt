@@ -36,10 +36,11 @@ class DeepCopyProcessor : AbstractProcessor() {
             .mapNotNull { (it as? TypeElement)?.let{
                 KTypeElement.from(it, true)
             }}
-            .also {
+            .takeIf { it.isNotEmpty() }
+            ?.also {
                 DeepCopySupportedTypesGenerator().generate(it)
             }
-            .forEach {
+            ?.forEach {
                 DeepCopyLoopDetector(it).detect()
                 DeepCopyGenerator(it).generate()
             }

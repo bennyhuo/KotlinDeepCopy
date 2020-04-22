@@ -81,12 +81,19 @@ apply plugin: "kotlin-kapt"
 ...
 
 dependencies {
-    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.3.0'
-    compile 'com.bennyhuo.kotlin:deepcopy-runtime:1.3.0'
+    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.3.72'
+    implementation 'com.bennyhuo.kotlin:deepcopy-runtime:1.3.72'
 }
 ```
 
 # Change Log
+
+## v1.3.72 Apt
+
+Compiles on Kotlin v1.3.72.
+
+* [Bug] Fixed: rewriting DeepCopy.kt.
+* [Bug] Fixed: maven dependency scope with runtime module.
 
 ## v1.3.0 Apt
 
