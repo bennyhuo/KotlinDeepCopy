@@ -31,7 +31,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
                 component.type is TypeVariableName -> {
                     val elementDeepCopyHandler = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope.ElementDeepCopyHandler")
                     //cannot tell whether the type variable is nullable from declaration.
-                    parameters.add(CodeBlock.of("%T().run{ (${component.name} as Any?)?.deepCopyElement() as %T  }", elementDeepCopyHandler, component.type))
+                    parameters.add(CodeBlock.of("%T.run{ (${component.name} as Any?)?.deepCopyElement() as %T  }", elementDeepCopyHandler, component.type))
 
                     suppressWarnings += "UNCHECKED_CAST"
                 }
@@ -46,7 +46,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
                                 parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
                             }
                         }
-                        typeElement.isMapType || typeElement.isCollectionType->{
+                        typeElement.isMapType || typeElement.isCollectionType || typeElement.isArrayType->{
                             val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
                             if(component.type.isNullable){
                                 parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))

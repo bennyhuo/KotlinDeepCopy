@@ -34,6 +34,17 @@ val kotlinCollectionTypeToJvmType = mapOf(
     "kotlin.collections.HashMap" to "java.util.HashMap"
 )
 
+val kotlinArrayTypes = arrayOf(    //arrays
+    "kotlin.Array",
+    "kotlin.CharArray",
+    "kotlin.ByteArray",
+    "kotlin.ShortArray",
+    "kotlin.IntArray",
+    "kotlin.FloatArray",
+    "kotlin.DoubleArray",
+    "kotlin.BooleanArray"
+)
+
 fun mapKotlinCollectionTypeToJvmType(type: ParameterizedTypeName): ParameterizedTypeName {
     val mappedType = when (type.rawType.canonicalName) {
         "kotlin.collections.Collection",

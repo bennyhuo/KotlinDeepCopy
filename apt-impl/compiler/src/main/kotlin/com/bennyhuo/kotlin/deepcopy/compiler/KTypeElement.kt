@@ -1,10 +1,8 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
-import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.aptutils.types.isSubTypeOf
-import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
@@ -19,16 +17,24 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
         private val refs = WeakHashMap<String, KTypeElement>()
 
         fun from(typeName: TypeName, enableDeepCopy: Boolean = false): KTypeElement? {
+            val cachedElement = refs[typeName.toString()]
+            if (cachedElement != null) return cachedElement
+
             val className = when(typeName){
                 is ParameterizedTypeName -> typeName.rawType.canonicalName
                 is ClassName -> typeName.canonicalName
                 is TypeVariableName -> return null
                 else -> throw IllegalArgumentException("Illegal type: $typeName")
             }
-            val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
-            val name = mappedCollectionName ?: className
-            return refs[typeName.toString()] ?: AptContext.elements.getTypeElement(name)?.let{
-                KTypeElement(it, typeName, enableDeepCopy)
+
+            return if (className in kotlinArrayTypes) {
+                KTypeElement(JavaArrayElement, typeName, enableDeepCopy)
+            } else {
+                val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
+                val name = mappedCollectionName ?: className
+                AptContext.elements.getTypeElement(name)?.let{
+                    KTypeElement(it, typeName, enableDeepCopy)
+                }
             }?.also { refs[typeName.toString()] = it }
         }
 
@@ -44,12 +50,16 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
 
     val isDataClass = kClassMirror?.isData ?: false
 
+    val isArrayType by lazy {
+        typeElement == JavaArrayElement
+    }
+
     val isCollectionType by lazy {
-        typeElement.asType().isSubTypeOf("java.util.Collection")
+        !isArrayType && typeElement.asType().isSubTypeOf("java.util.Collection")
     }
 
     val isMapType by lazy {
-        typeElement.asType().isSubTypeOf("java.util.Map")
+        !isArrayType && typeElement.asType().isSubTypeOf("java.util.Map")
     }
 
     val elementClassName by lazy {
@@ -73,7 +83,7 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
                 }]?.enableDeepCopy == true)
     }
 
-    val canDeepCopy = isDataType || isCollectionType || isMapType
+    val canDeepCopy = isDataType || isCollectionType || isMapType || isArrayType
 
     val components = kClassMirror?.components ?: emptyList<KClassMirror.Component>()
 
