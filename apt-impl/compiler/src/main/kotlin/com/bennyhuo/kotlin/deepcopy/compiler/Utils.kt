@@ -11,7 +11,7 @@ fun Metadata.parse() = KotlinClassMetadata.read(
     KotlinClassHeader(
         this.kind,
         this.metadataVersion,
-        this.bytecodeVersion, this.data1, this.data2, this.extraString, this.packageName, this.extraInt
+        this.data1, this.data2, this.extraString, this.packageName, this.extraInt
     )
 )
 

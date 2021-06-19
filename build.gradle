@@ -1,39 +1,28 @@
-ext {
-    kotlin_version = "1.3.72"
-}
-
-group 'com.bennyhuo.kotlin'
-version '1.0-SNAPSHOT'
-
 buildscript {
+    ext {
+        kotlin_version = "1.5.0"
+    }
     repositories {
         maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
     }
 
     dependencies {
-        classpath "com.novoda:bintray-release:0.9.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
+        // For Kotlin projects, you need to add Dokka.
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:0.10.1'
     }
 }
 
-allprojects {
-    repositories {
-        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
-        maven { url "https://kotlin.bintray.com/kotlinx/" }
+subprojects {
+    if (name != "sample") {
+        group = GROUP
+        version = VERSION_NAME
+
+        apply plugin: "com.vanniktech.maven.publish"
+
+        repositories {
+            maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+        }
     }
-}
-
-
-def props = new Properties()
-file("jcenter.properties").withInputStream { props.load(it) }
-
-ext {
-    userName = props.getProperty("bintray.user")
-    apiKey = props.getProperty("bintray.key")
-    repoName = "bennyhuo"
-    groupId = 'com.bennyhuo.kotlin'
-    //bintray-release PropertyFinder retiever property from project firstly
-    publishVersion = '1.3.72'
-    desc = "DeepCopy"
-    website = 'https://github.com/enbandari/KotlinDeepCopy'
-    dryRun = "false"
 }

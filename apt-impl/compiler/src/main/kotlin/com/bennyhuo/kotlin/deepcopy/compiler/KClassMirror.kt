@@ -38,7 +38,7 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
             }
 
             override fun visitConstructor(flags: Flags): KmConstructorVisitor? {
-                if (Flag.Constructor.IS_PRIMARY(flags)) {
+                if (!Flag.Constructor.IS_SECONDARY(flags)) {
                     return object : KmConstructorVisitor() {
                         override fun visitValueParameter(
                             flags: Flags,
