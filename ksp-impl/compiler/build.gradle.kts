@@ -4,7 +4,11 @@ plugins {
 }
 
 configure<com.bnorm.power.PowerAssertGradleExtension> {
-    functions = listOf("kotlin.assert", "kotlin.test.assertTrue")
+    functions = listOf(
+        "kotlin.assert",
+        "kotlin.test.assertTrue",
+        "kotlin.test.assertEquals"
+    )
 }
 
 dependencies {
