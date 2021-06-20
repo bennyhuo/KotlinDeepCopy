@@ -28,10 +28,10 @@ class DeepCopyTest {
 
 ### How to Setup
 
-This library has been deloyed to jcenter. 
+This library has been deloyed to maven center. 
 
 ```gradle
-compile 'com.bennyhuo.kotlin:deepcopy-reflect:1.1.0'
+implementation("com.bennyhuo.kotlin.reflect:deepcopy-reflect:1.5.0")
 ```
 
 ## Apt
@@ -67,26 +67,23 @@ fun Talk.deepCopy(name: String = this.name, speaker: Speaker = this.speaker): Ta
 
 ### How to Setup
 
-This library has been deloyed to jcenter, but the compiler depends on the experimental artifact `kotlinx-metadata-jvm` so you should also add a maven repo `https://kotlin.bintray.com/kotlinx/` to compile.
+This library has been deloyed to maven center:
 
 ```gradle
-
-repositories {
-    jcenter()
-    maven { url "https://kotlin.bintray.com/kotlinx/" }
-}
-
-...
 apply plugin: "kotlin-kapt"
 ...
 
 dependencies {
-    kapt 'com.bennyhuo.kotlin:deepcopy-compiler:1.3.72'
-    implementation 'com.bennyhuo.kotlin:deepcopy-runtime:1.3.72'
+    kapt("com.bennyhuo.kotlin.apt:deepcopy-compiler:1.5.0")
+    implementation("com.bennyhuo.kotlin.apt:deepcopy-runtime:1.5.0")
 }
 ```
 
 # Change Log
+
+## v1.5.0 Reflect & Apt
+
+Compiles on Kotlin v1.5.0. Update `kotlinx-metadata-jvm` to v0.3.0.
 
 ## v1.3.72 Apt
 
