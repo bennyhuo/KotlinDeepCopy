@@ -1,3 +1,10 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'deepcopy'
 
 include ":reflect-impl"
@@ -5,4 +12,6 @@ include ":apt-impl:annotations"
 include ":apt-impl:compiler"
 include ":apt-impl:sample"
 include ":apt-impl:runtime"
+include ":ksp-impl:compiler"
+include ":ksp-impl:sample"
 
