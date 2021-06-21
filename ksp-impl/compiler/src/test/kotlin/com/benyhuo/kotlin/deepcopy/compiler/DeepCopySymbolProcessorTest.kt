@@ -23,7 +23,7 @@ class DeepCopySymbolProcessorTest {
             }
         """.trimIndent()
         )
-        val kotlinSource = SourceFile.fromPath(File("src/test/resources/Basic.kt"))
+        val kotlinSource = SourceFile.fromPath(File("src/test/resources/Basic.kt.test"))
 
         val compilation = KotlinCompilation().apply {
             sources = listOf(annotation, kotlinSource)
