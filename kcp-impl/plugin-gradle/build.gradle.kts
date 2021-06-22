@@ -20,11 +20,11 @@ buildConfig {
 
 gradlePlugin {
   plugins {
-    create("kotlinIrPluginTemplate") {
+    create("DeepCopyGradlePlugin") {
       id = project.properties["KOTLIN_PLUGIN_ID"] as String
-      displayName = "Kotlin Ir Plugin Template"
-      description = "Kotlin Ir Plugin Template"
-      implementationClass = "com.bnorm.template.TemplateGradlePlugin"
+      displayName = "Kotlin DeepCopy plugin for data class"
+      description = "Kotlin DeepCopy plugin for data class"
+      implementationClass = "com.bennyhuo.kotlin.kcp.deepcopy.gradle.DeepCopyGradlePlugin"
     }
   }
 }

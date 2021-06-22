@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package com.bennyhuo.kotlin.kcp.deepcopy.gradle
+package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
+import com.bennyhuo.kotlin.kcp.BuildConfig
+import com.google.auto.service.AutoService
+import org.jetbrains.kotlin.compiler.plugin.CliOption
+import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 
-open class TemplateGradleExtension(objects: ObjectFactory) {
-  val stringProperty: Property<String> = objects.property(String::class.java)
-  val fileProperty: RegularFileProperty = objects.fileProperty()
+@AutoService(CommandLineProcessor::class)
+class DeepCopyCommandLineProcessor : CommandLineProcessor {
+
+    override val pluginId: String = BuildConfig.KOTLIN_PLUGIN_ID
+
+    override val pluginOptions: Collection<CliOption> = emptyList()
+
 }
