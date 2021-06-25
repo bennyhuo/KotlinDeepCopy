@@ -21,4 +21,6 @@ fun main(args: Array<String>) {
     val talk = Talk("Data class in Action", Speaker("Benny Huo", 30, Company("Tencent", Location(39.9, 116.3), District("中关村"))))
     val copiedTalk = talk.deepCopy()
     println(copiedTalk)
+    println(talk.speaker.hashCode())
+    println(copiedTalk.speaker.hashCode())
 }
