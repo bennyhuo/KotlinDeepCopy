@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath(project(":kcp-impl:plugin-gradle"))
+    }
+}
+
+
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute module("com.bennyhuo.kotlin.kcp:plugin-compiler") using project(":kcp-impl:plugin-compiler") because "we work with the unreleased development version"
+    }
+}
+
+apply plugin:"com.bennyhuo.kotlin.kcp.deepcopy"
+
+sourceCompatibility = 1.8
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation(project(":apt-impl:annotations"))
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}

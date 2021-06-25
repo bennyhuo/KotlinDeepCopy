@@ -44,8 +44,23 @@ class IrPluginTest {
 
                     @DeepCopy
                     data class DataClass(val name: String)
+                    
+                    @DeepCopy
+                    data class Container(val dataClass: DataClass, val id: Int) {
+//                        fun deepCopy(dataClass: DataClass = this.dataClass, id: Int = this.id)
+//                            = Container(dataClass, id)
+                    }
+
 
                     class PlainClass(val name: String)
+                    
+                    fun main() {
+                        val container = Container(DataClass("x"), 0)
+                        val copy = container.deepCopy()
+                        println("+++++++")
+                        println(copy)
+                    }
+
                     """.trimIndent()
                 )
             )

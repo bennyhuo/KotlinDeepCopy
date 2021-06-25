@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 @AutoService(ComponentRegistrar::class)
 class DeepCopyComponentRegistrar : ComponentRegistrar {
@@ -33,6 +34,10 @@ class DeepCopyComponentRegistrar : ComponentRegistrar {
     ) {
         val messageCollector =
             configuration.get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+        SyntheticResolveExtension.registerExtension(
+            project,
+            DeepCopyResolveExtension()
+        )
         IrGenerationExtension.registerExtension(
             project,
             DeepCopyIrGenerationExtension(messageCollector)

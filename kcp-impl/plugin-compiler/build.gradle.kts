@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   kotlin("jvm")
   kotlin("kapt")
@@ -14,6 +16,10 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
   testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.1")
 }
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
+
 
 buildConfig {
   packageName(group.toString())
