@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.DataClassDescriptorResolver
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 /**
@@ -43,7 +42,7 @@ class DeepCopyResolveExtension: SyntheticResolveExtension {
         val functionDescriptor = SimpleFunctionDescriptorImpl.create(
             classDescriptor,
             Annotations.EMPTY,
-            DataClassDescriptorResolver.COPY_METHOD_NAME,
+            Name.identifier("deepCopy"),
             CallableMemberDescriptor.Kind.SYNTHESIZED,
             classDescriptor.source
         )
