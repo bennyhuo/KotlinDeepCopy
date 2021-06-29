@@ -10,17 +10,11 @@ fun <T : Any> T.deepCopy(): T {
     }
 
     return this::class.primaryConstructor!!.let { primaryConstructor ->
-        primaryConstructor.parameters
-            .map { parameter ->
-                val value =
-                    (this::class as KClass<T>).declaredMemberProperties.first { it.name == parameter.name }.get(this)
-                if ((parameter.type.classifier as? KClass<*>)?.isData == true) {
-                    parameter to value?.deepCopy()
-                } else {
-                    parameter to value
-                }
-            }
-            .toMap()
-            .let(primaryConstructor::callBy)
+        primaryConstructor.parameters.associateWith { parameter ->
+            (this::class as KClass<T>).declaredMemberProperties
+                .first { it.name == parameter.name }
+                .get(this)
+                ?.deepCopy()
+        }.let(primaryConstructor::callBy)
     }
 }
