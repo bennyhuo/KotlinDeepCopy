@@ -25,8 +25,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
 
         val statementStringBuilder = StringBuilder("%T(")
         val parameters = ArrayList<Any>()
-        println(kTypeElement)
-        println(kTypeElement.components)
+
         kTypeElement.components.forEach { component ->
             statementStringBuilder.append("%L, ")
             when {
@@ -62,10 +61,8 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
             }
             functionBuilder.addParameter(ParameterSpec.builder(component.name, component.type).defaultValue("this.${component.name}").build())
         }
-        println(statementStringBuilder)
         statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
 
-        println(statementStringBuilder)
         functionBuilder.addStatement("return $statementStringBuilder", kTypeElement.kotlinClassName, *(parameters.toTypedArray()))
 
         suppressWarnings.forEach {
