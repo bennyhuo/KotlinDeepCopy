@@ -22,7 +22,13 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
             logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
             val deepCopyTypes =
                 resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy")
+                    .onEach {
+                        logger.warn("DeepCopySymbolProcessor: $it")
+                    }
                     .filterIsInstance<KSClassDeclaration>()
+                    .onEach {
+                        logger.warn("KSClassDeclaration: $it")
+                    }
                     .filter { Modifier.DATA in it.modifiers }
                     .toSet()
 
@@ -85,20 +91,6 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
         } catch (e: Exception) {
             logger.exception(e)
         }
-
-
-
         return emptyList()
     }
-
-    override fun finish() {
-        super.finish()
-        println("finish--")
-    }
-
-    override fun onError() {
-        super.onError()
-        println("onError")
-    }
-
 }

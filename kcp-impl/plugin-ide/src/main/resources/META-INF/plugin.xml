@@ -1,0 +1,32 @@
+<idea-plugin>
+  <id>com.bennyhuo.kotlin.deepcopy</id>
+  <name>DeepCopy for Kotlin Data Class</name>
+  <version>1.0</version>
+  <vendor email="bennyhuo@kotliner.cn" url="http://www.bennyhuo.com">Bennyhuo</vendor>
+
+  <description><![CDATA[
+    DeepCopy for Kotlin Data Class make the synthetic 'deepCopy' function available in IntelliJ IDEA.]]>
+  </description>
+
+  <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>org.jetbrains.kotlin</depends>
+
+  <extensions defaultExtensionNs="org.jetbrains.kotlin">
+    <irGenerationExtension implementation="com.bennyhuo.kotlin.kcp.deepcopy.compiler.DeepCopyIrGenerationExtension"/>
+    <syntheticResolveExtension implementation="com.bennyhuo.kotlin.kcp.deepcopy.compiler.DeepCopyResolveExtension"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>

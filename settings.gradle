@@ -19,5 +19,6 @@ include ":ksp-impl:sample"
 
 include ":kcp-impl:plugin-compiler"
 include ":kcp-impl:plugin-gradle"
+include ":kcp-impl:plugin-ide"
 include ":kcp-impl:sample"
 
