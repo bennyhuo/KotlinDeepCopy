@@ -38,8 +38,6 @@ fun main(args: Array<String>) {
         Location(39.9, 116.3),
         District("华鼎世家对面")
     )
-//    println(talk)
-//    println(copiedTalk)
     println(talk === copiedTalk)
     println(talk.speaker === copiedTalk.speaker)
 }

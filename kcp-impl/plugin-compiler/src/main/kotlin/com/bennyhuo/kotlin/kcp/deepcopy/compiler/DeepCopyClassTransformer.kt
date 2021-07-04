@@ -135,14 +135,11 @@ private class MemberFunctionBuilder(
                     irValueParameter.type.getClass()?.takeIf { it.isData }
                         ?.functions?.firstOrNull {
                             it.name.identifier == "deepCopy"
-                        }?.let {
-                            irCall(it).apply {
-                                dispatchReceiver =
-                                    irGet(irValueParameter.type, irValueParameter.symbol)
-
-                            }
-                        } ?: irGet(irValueParameter.type, irValueParameter.symbol)
-
+                        }?.let(::irCall)
+                        ?.apply {
+                            dispatchReceiver = irGet(irValueParameter.type, irValueParameter.symbol)
+                        }
+                        ?: irGet(irValueParameter.type, irValueParameter.symbol)
                 }
             }
         )
