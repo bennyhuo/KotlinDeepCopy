@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    api project(":apt-impl:annotations")
+    api project(":annotations")
     testApi group: 'junit', name: 'junit', version: '4.12'
 }
 

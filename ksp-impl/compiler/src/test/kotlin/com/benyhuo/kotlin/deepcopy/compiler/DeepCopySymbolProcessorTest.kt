@@ -13,30 +13,45 @@ import kotlin.test.assertEquals
  * Created by benny at 2021/6/21 7:00.
  */
 class DeepCopySymbolProcessorTest {
+
+    companion object {
+        const val SOURCE_START_LINE = "// SOURCE"
+        const val GENERATED_START_LINE = "// GENERATED"
+    }
+
     @Test
     fun testBasic() {
-        val annotation = SourceFile.java(
-            "DeepCopy.java", """
-            package com.bennyhuo.kotlin.deepcopy.annotations;
+//        val annotation = SourceFile.java(
+//            "DeepCopy.java", """
+//            package com.bennyhuo.kotlin.deepcopy.annotations;
+//
+//            public @interface DeepCopy {
+//            }
+//        """.trimIndent()
+//        )
+        val lines = File("testData/Basic.kt").readLines().dropWhile { it.trim() != SOURCE_START_LINE }
+        val sourceLines = lines.takeWhile { it.trim() != GENERATED_START_LINE }.drop(1)
+        val generatedLines = lines.dropWhile { it.trim() != GENERATED_START_LINE }.drop(1)
 
-            public @interface DeepCopy {
-            }
-        """.trimIndent()
-        )
-        val kotlinSource = SourceFile.fromPath(File("src/test/resources/Basic.kt.test"))
+        val kotlinSource = SourceFile.kotlin("test.kt", sourceLines.joinToString("\n"))
+        val expectGenerateSource = generatedLines.joinToString("\n")
 
         val compilation = KotlinCompilation().apply {
-            sources = listOf(annotation, kotlinSource)
+            inheritClassPath = true
+            sources = listOf(kotlinSource)
             symbolProcessorProviders = listOf(DeepCopySymbolProcessorProvider())
         }
 
         assertEquals(compilation.compile().exitCode, KotlinCompilation.ExitCode.OK)
 
-        compilation.kspSourcesDir.walkTopDown()
+        val generatedSource = compilation.kspSourcesDir.walkTopDown()
             .filter { !it.isDirectory }
-            .forEach {
-                println("-------${it.name}------")
-                println(it.readText())
-            }
+            .fold(StringBuilder()) { acc, it ->
+                acc.append("//-------${it.name}------\n")
+                acc.append(it.readText())
+                acc
+            }.toString()
+
+        assertEquals(expectGenerateSource, generatedSource)
     }
 }

@@ -25,7 +25,7 @@ sourceCompatibility = 1.8
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation(project(":apt-impl:annotations"))
+    implementation(project(":annotations"))
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 

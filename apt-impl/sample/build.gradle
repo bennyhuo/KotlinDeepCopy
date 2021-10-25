@@ -11,7 +11,7 @@ sourceCompatibility = 1.8
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation project(":apt-impl:runtime")
+    implementation project(":runtime")
     kapt project(":apt-impl:compiler")
     kaptTest project(":apt-impl:compiler")
     testCompile group: 'junit', name: 'junit', version: '4.12'

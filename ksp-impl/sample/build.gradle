@@ -8,7 +8,7 @@ sourceCompatibility = 1.8
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation(project(":apt-impl:annotations"))
+    implementation(project(":annotations"))
 
     ksp(project(":ksp-impl:compiler"))
     kspTest project(":ksp-impl:compiler")

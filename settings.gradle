@@ -9,16 +9,17 @@ rootProject.name = 'deepcopy'
 
 include ":reflect-impl"
 
-include ":apt-impl:annotations"
+include ":annotations"
+include ":runtime"
+
 include ":apt-impl:compiler"
 include ":apt-impl:sample"
-include ":apt-impl:runtime"
 
 include ":ksp-impl:compiler"
 include ":ksp-impl:sample"
 
 include ":kcp-impl:plugin-compiler"
 include ":kcp-impl:plugin-gradle"
-include ":kcp-impl:plugin-ide"
+//include ":kcp-impl:plugin-ide"
 include ":kcp-impl:sample"
 

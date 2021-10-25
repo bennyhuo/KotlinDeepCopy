@@ -1,10 +1,8 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
-import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.aptutils.types.isSubTypeOf
-import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
