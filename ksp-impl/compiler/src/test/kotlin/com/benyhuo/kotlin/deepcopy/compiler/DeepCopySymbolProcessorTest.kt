@@ -21,15 +21,31 @@ class DeepCopySymbolProcessorTest {
 
     @Test
     fun testBasic() {
-//        val annotation = SourceFile.java(
-//            "DeepCopy.java", """
-//            package com.bennyhuo.kotlin.deepcopy.annotations;
-//
-//            public @interface DeepCopy {
-//            }
-//        """.trimIndent()
-//        )
-        val lines = File("testData/Basic.kt").readLines().dropWhile { it.trim() != SOURCE_START_LINE }
+        doTest("testData/Basic.kt")
+    }
+
+    @Test
+    fun testGenerics() {
+        doTest("testData/Generics.kt")
+    }
+
+    @Test
+    fun testTypeAliases() {
+        doTest("testData/TypeAliases.kt")
+    }
+
+    @Test
+    fun testNullables() {
+        doTest("testData/Nullables.kt")
+    }
+
+    @Test
+    fun testInnerClasses() {
+        doTest("testData/InnerClasses.kt")
+    }
+
+    private fun doTest(path: String) {
+        val lines = File(path).readLines().dropWhile { it.trim() != SOURCE_START_LINE }
         val sourceLines = lines.takeWhile { it.trim() != GENERATED_START_LINE }.drop(1)
         val generatedLines = lines.dropWhile { it.trim() != GENERATED_START_LINE }.drop(1)
 
