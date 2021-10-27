@@ -57,7 +57,7 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
                     } else className
                 }
                 val fileSpecBuilder = FileSpec.builder(
-                    dataClass.packageName.asString(),
+                    escapeStdlibPackageName(dataClass.packageName.asString()),
                     "${dataClass.simpleName.asString()}$\$DeepCopy"
                 )
                 val functionBuilder = FunSpec.builder("deepCopy")
