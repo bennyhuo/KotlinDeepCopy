@@ -43,6 +43,11 @@ class DeepCopySymbolProcessorTest {
     fun testInnerClasses() {
         doTest("testData/InnerClasses.kt")
     }
+    
+    @Test
+    fun testConfig() {
+        doTest("testData/Config.kt")
+    }
 
     private fun doTest(path: String) {
         val lines = File(path).readLines().dropWhile { it.trim() != SOURCE_START_LINE }
