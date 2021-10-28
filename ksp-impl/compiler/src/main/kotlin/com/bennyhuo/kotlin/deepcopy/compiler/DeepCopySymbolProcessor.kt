@@ -23,10 +23,9 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
         try {
             logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
             
-            val deepCopyTypeFromConfigs =
-                resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig")
+            val deepCopyConfigs = resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig")
                     .filterIsInstance<KSClassDeclaration>()
-                    .flatMap {
+            val deepCopyTypeFromConfigs = deepCopyConfigs.flatMap {
                         it.annotations
                     }.flatMap {
                         it.arguments
@@ -48,7 +47,7 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
 
             logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
             DeepCopyGenerator().generate(deepCopyTypes)
-            DeepCopyIndexGenerator().generate(deepCopyTypeFromConfigs)
+            DeepCopyIndexGenerator().generate(deepCopyTypeFromConfigs, deepCopyConfigs.mapNotNull { it.containingFile }.toList())
         } catch (e: Exception) {
             logger.exception(e)
         }

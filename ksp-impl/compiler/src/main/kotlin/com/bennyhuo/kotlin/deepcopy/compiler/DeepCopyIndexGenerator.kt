@@ -2,6 +2,7 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyIndex
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -13,7 +14,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
  */
 class DeepCopyIndexGenerator {
 
-    fun generate(deepCopyTypes: Set<KSClassDeclaration>) {
+    fun generate(deepCopyTypes: Set<KSClassDeclaration>, dependencies: List<KSFile>) {
         if (deepCopyTypes.isEmpty()) return
         
         val indexName = "DeepCopy_${generateName(deepCopyTypes)}"
@@ -29,10 +30,9 @@ class DeepCopyIndexGenerator {
                             *deepCopyTypes.map { it.qualifiedName!!.asString() }.toTypedArray()
                         ).build()
                 ).also { typeBuilder ->
-                    deepCopyTypes.mapNotNull { it.containingFile }
-                        .forEach { 
+                    dependencies.forEach { 
                             typeBuilder.addOriginatingKSFile(it)
-                        }
+                    }
                 }
                 .build()
         ).build().writeTo(KspContext.environment.codeGenerator, true)
