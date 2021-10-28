@@ -7,9 +7,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
-import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.ksp.*
 
 /**
  * Created by benny at 2021/6/20 19:02.
@@ -20,9 +17,12 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
     private val logger = environment.logger
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        KspContext.environment = environment
+        KspContext.resolver = resolver
+        
         try {
             logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
-
+            
             val deepCopyTypeFromConfigs =
                 resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig")
                     .filterIsInstance<KSClassDeclaration>()
@@ -38,6 +38,7 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
                     }.filterIsInstance<KSType>()
                     .map { it.declaration }
                     .filterIsInstance<KSClassDeclaration>()
+                    .toSet()
 
             val deepCopyTypes =
                 resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy")
@@ -45,80 +46,9 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
                     .filter { Modifier.DATA in it.modifiers }
                     .toSet() + deepCopyTypeFromConfigs
 
-            deepCopyTypes.forEach { dataClass: KSClassDeclaration ->
-                
-                val typeParameterResolver = dataClass.typeParameters.toTypeParameterResolver()
-                val dataClassName = dataClass.toClassName().let { className ->
-                    if (dataClass.typeParameters.isNotEmpty()) {
-                        className.parameterizedBy(
-                            dataClass.typeParameters.map {
-                                it.toTypeVariableName(typeParameterResolver)
-                            })
-                    } else className
-                }
-                val fileSpecBuilder = FileSpec.builder(
-                    escapeStdlibPackageName(dataClass.packageName.asString()),
-                    "${dataClass.simpleName.asString()}$\$DeepCopy"
-                )
-                val functionBuilder = FunSpec.builder("deepCopy")
-                    .receiver(dataClassName)
-                    .addModifiers(KModifier.PUBLIC)
-                    .returns(dataClassName)
-                    .addAnnotation(JvmOverloads::class)
-                    .addTypeVariables(dataClass.typeParameters.map {
-                        it.toTypeVariableName(typeParameterResolver)
-                    }).also { builder ->
-                        dataClass.containingFile?.let { builder.addOriginatingKSFile(it) }
-                    }
-
-                val statementStringBuilder = StringBuilder("%T(")
-                val parameters = ArrayList<Any>()
-
-                dataClass.primaryConstructor!!.parameters.forEach { parameter ->
-                    statementStringBuilder.append("%L, ")
-                    logger.warn("modifiers of ${parameter.type.resolve().declaration}: ${parameter.type.resolve().declaration.modifiers}")
-                    if (Modifier.DATA in parameter.type.resolve().declaration.modifiers && parameter.type.resolve().declaration in deepCopyTypes) {
-                        val deepCopyMethod =
-                            MemberName(dataClass.packageName.asString(), "deepCopy")
-                        if (parameter.type.resolve().isMarkedNullable) {
-                            parameters.add(
-                                CodeBlock.of(
-                                    "${parameter.name!!.asString()}?.%M()",
-                                    deepCopyMethod
-                                )
-                            )
-                        } else {
-                            parameters.add(
-                                CodeBlock.of(
-                                    "${parameter.name!!.asString()}.%M()",
-                                    deepCopyMethod
-                                )
-                            )
-                        }
-                    } else {
-                        parameters.add(parameter.name!!.asString())
-                        logger.warn(parameter.type.toString(), parameter)
-                    }
-
-
-                    functionBuilder.addParameter(
-                        ParameterSpec.builder(
-                            parameter.name!!.asString(),
-                            parameter.type.toTypeName(typeParameterResolver)
-                        ).defaultValue("this.${parameter.name!!.asString()}").build()
-                    )
-                }
-
-                statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
-                functionBuilder.addStatement(
-                    "return $statementStringBuilder",
-                    dataClassName,
-                    *(parameters.toTypedArray())
-                )
-                fileSpecBuilder.addFunction(functionBuilder.build()).build()
-                    .writeTo(environment.codeGenerator, false)
-
-            }
+            logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
+            DeepCopyGenerator().generate(deepCopyTypes)
+            DeepCopyIndexGenerator().generate(deepCopyTypeFromConfigs)
         } catch (e: Exception) {
             logger.exception(e)
         }
