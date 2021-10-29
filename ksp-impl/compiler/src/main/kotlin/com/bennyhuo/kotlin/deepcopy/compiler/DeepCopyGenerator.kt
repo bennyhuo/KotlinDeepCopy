@@ -33,7 +33,7 @@ class DeepCopyGenerator() {
                 .returns(dataClassName)
                 .addAnnotation(JvmOverloads::class)
                 .addTypeVariables(dataClass.typeParameters.map {
-                    it.toTypeVariableName(typeParameterResolver)
+                    it.toTypeVariableName(typeParameterResolver).let { TypeVariableName(it.name, it.bounds) }
                 }).also { builder ->
                     dataClass.containingFile?.let { builder.addOriginatingKSFile(it) }
                 }
