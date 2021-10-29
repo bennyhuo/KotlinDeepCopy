@@ -2,7 +2,6 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.util.*
-import kotlin.collections.HashSet
 
 class DeepCopyLoopDetector(private val declaration: KSClassDeclaration) {
 
@@ -15,13 +14,17 @@ class DeepCopyLoopDetector(private val declaration: KSClassDeclaration) {
         pop()
     }
 
-    private fun detect(declaration: KSClassDeclaration, isNullable: Boolean) {
+    private fun detect(declaration: KSClassDeclaration, checkNullable: Boolean) {
         declaration.primaryConstructor!!.parameters
             .map {
                 it.type.resolve()
-            }.filter {
-                // Only nullable types should be checked for top level.
-                it.isMarkedNullable == isNullable
+            }.let {
+                if (checkNullable) {
+                    it.filter {
+                        // Only nullable types should be checked for top level.
+                        it.isMarkedNullable
+                    }
+                } else it
             }.mapNotNull {
                 it.declaration as? KSClassDeclaration
             }.filter {
@@ -34,7 +37,7 @@ class DeepCopyLoopDetector(private val declaration: KSClassDeclaration) {
     }
 
     private fun push(declaration: KSClassDeclaration) {
-        if (!typeSet.add(declaration)){
+        if (!typeSet.add(declaration)) {
             throw CopyLoopException(declaration)
         }
         typeStack.push(declaration)
