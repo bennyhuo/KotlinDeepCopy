@@ -1,5 +1,7 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
+import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -22,8 +24,8 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
         
         try {
             logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
-            
-            val deepCopyConfigs = resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig")
+
+            val deepCopyConfigs = resolver.getSymbolsWithAnnotation(DeepCopyConfig::class.qualifiedName!!)
                     .filterIsInstance<KSClassDeclaration>()
             val deepCopyTypeFromConfigs = deepCopyConfigs.flatMap {
                         it.annotations
@@ -40,14 +42,14 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
                     .toSet()
 
             val deepCopyTypes =
-                resolver.getSymbolsWithAnnotation("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy")
+                resolver.getSymbolsWithAnnotation(DeepCopy::class.qualifiedName!!)
                     .filterIsInstance<KSClassDeclaration>()
                     .filter { Modifier.DATA in it.modifiers }
                     .toSet() + deepCopyTypeFromConfigs
 
             logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
             DeepCopyGenerator().generate(deepCopyTypes)
-            DeepCopyIndexGenerator().generate(deepCopyTypeFromConfigs, deepCopyConfigs.mapNotNull { it.containingFile }.toList())
+            IndexGenerator().generate(deepCopyTypeFromConfigs, deepCopyConfigs.mapNotNull { it.containingFile }.toList())
         } catch (e: Exception) {
             logger.exception(e)
         }

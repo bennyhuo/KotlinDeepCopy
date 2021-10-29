@@ -83,6 +83,7 @@ class DeepCopyGenerator() {
             fileSpecBuilder.addFunction(functionBuilder.build()).build()
                 .writeTo(KspContext.environment.codeGenerator, false)
 
+            DeepCopyLoopDetector(dataClass).detect()
         }
     }
 

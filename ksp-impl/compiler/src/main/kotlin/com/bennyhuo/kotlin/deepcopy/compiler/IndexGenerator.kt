@@ -12,14 +12,18 @@ import com.squareup.kotlinpoet.ksp.writeTo
 /**
  * Created by benny.
  */
-class DeepCopyIndexGenerator {
+class IndexGenerator {
+
+    companion object {
+        const val INDEX_PACKAGE = "com.bennyhuo.kotlin.deepcopy"
+    }
 
     fun generate(deepCopyTypes: Set<KSClassDeclaration>, dependencies: List<KSFile>) {
         if (deepCopyTypes.isEmpty()) return
         
         val indexName = "DeepCopy_${generateName(deepCopyTypes)}"
         FileSpec.builder(
-            "com.bennyhuo.kotlin.deepcopy",
+            INDEX_PACKAGE,
             indexName
         ).addType(
             TypeSpec.classBuilder(indexName)

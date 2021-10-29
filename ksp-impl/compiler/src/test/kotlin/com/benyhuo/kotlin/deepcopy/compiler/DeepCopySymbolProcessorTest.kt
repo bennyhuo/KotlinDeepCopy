@@ -49,6 +49,11 @@ class DeepCopySymbolProcessorTest {
         doTest("testData/Config.kt")
     }
 
+    @Test
+    fun testRecursive() {
+        doTest("testData/Recursive.kt")
+    }
+
     private fun doTest(path: String) {
         val lines = File(path).readLines().dropWhile { it.trim() != SOURCE_START_LINE }
         val sourceLines = lines.takeWhile { it.trim() != GENERATED_START_LINE }.drop(1)
