@@ -10,5 +10,12 @@ data class Hello<out P1, out P2>(
 )
 
 
-@DeepCopyConfig(values = [Pair::class, Triple::class])
+@DeepCopyConfig(values = [Triple::class])
 class Config
+
+@DeepCopy
+data class A(
+    val pair: Pair<String, Any>,
+    var triple: Triple<String, Int, Any>,
+    val hello: Hello<Int, Double>
+)

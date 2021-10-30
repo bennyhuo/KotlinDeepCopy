@@ -10,5 +10,5 @@ data class Hello<out P1, out P2>(
 )
 
 
-@DeepCopyConfig(values = [Pair::class, Triple::class])
+@DeepCopyConfig(values = [Pair::class])
 class Config

@@ -1,7 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.*
@@ -9,7 +8,7 @@ import com.squareup.kotlinpoet.ksp.*
 /**
  * Created by benny.
  */
-class DeepCopyGenerator() {
+class DeepCopyGenerator {
 
     fun generate(deepCopyTypes: Set<KSClassDeclaration>) {
         deepCopyTypes.forEach { dataClass: KSClassDeclaration ->
@@ -39,32 +38,17 @@ class DeepCopyGenerator() {
                 }
 
             val statementStringBuilder = StringBuilder("%T(")
-            val parameters = ArrayList<Any>()
 
             dataClass.primaryConstructor!!.parameters.forEach { parameter ->
-                statementStringBuilder.append("%L, ")
-                if (Modifier.DATA in parameter.type.resolve().declaration.modifiers && parameter.type.resolve().declaration in deepCopyTypes) {
-                    val deepCopyMethod =
-                        MemberName(dataClass.packageName.asString(), "deepCopy")
-                    if (parameter.type.resolve().isMarkedNullable) {
-                        parameters.add(
-                            CodeBlock.of(
-                                "${parameter.name!!.asString()}?.%M()",
-                                deepCopyMethod
-                            )
-                        )
-                    } else {
-                        parameters.add(
-                            CodeBlock.of(
-                                "${parameter.name!!.asString()}.%M()",
-                                deepCopyMethod
-                            )
-                        )
-                    }
+                val type = parameter.type.resolve()
+                if (type.declaration.canDeepCopy) {
+                    fileSpecBuilder.addImport(type.declaration.escapedPackageName, "deepCopy")
+                    
+                    val nullableMark = if (type.isMarkedNullable) "?" else ""
+                    statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.deepCopy(), ")
                 } else {
-                    parameters.add(parameter.name!!.asString())
+                    statementStringBuilder.append("${parameter.name!!.asString()}, ")
                 }
-
 
                 functionBuilder.addParameter(
                     ParameterSpec.builder(
@@ -78,8 +62,8 @@ class DeepCopyGenerator() {
             functionBuilder.addStatement(
                 "return $statementStringBuilder",
                 dataClassName,
-                *(parameters.toTypedArray())
             )
+            
             fileSpecBuilder.addFunction(functionBuilder.build()).build()
                 .writeTo(KspContext.environment.codeGenerator, false)
 

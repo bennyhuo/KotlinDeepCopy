@@ -2,9 +2,13 @@ package com.bennyhuo.kotlin.deepcopy.sample.collection
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope
+import com.bennyhuo.kotlin.deepcopy.sample.differentpackage.User
 
 @DeepCopy
 data class Team(val name: String, val workers: List<Worker>)
+
+@DeepCopy
+data class Team3(val name: String, val workers: List<User>)
 
 @DeepCopy
 data class Worker(val name: String)

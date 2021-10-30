@@ -1,13 +1,11 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 
 /**
@@ -24,32 +22,19 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
         
         try {
             logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
-
-            val deepCopyConfigs = resolver.getSymbolsWithAnnotation(DeepCopyConfig::class.qualifiedName!!)
-                    .filterIsInstance<KSClassDeclaration>()
-            val deepCopyTypeFromConfigs = deepCopyConfigs.flatMap {
-                        it.annotations
-                    }.flatMap {
-                        it.arguments
-                    }.flatMap {
-                        when (val value = it.value) {
-                            is List<*> -> value.asSequence()
-                            else -> sequenceOf(value)
-                        }
-                    }.filterIsInstance<KSType>()
-                    .map { it.declaration }
-                    .filterIsInstance<KSClassDeclaration>()
-                    .toSet()
+            val index = Index(resolver)
+            index.generateCurrent()
+            
+            logger.warn("typesFromCurrentIndex: ${index.typesFromCurrentIndex.joinToString { it.simpleName.asString() }}")
 
             val deepCopyTypes =
                 resolver.getSymbolsWithAnnotation(DeepCopy::class.qualifiedName!!)
                     .filterIsInstance<KSClassDeclaration>()
                     .filter { Modifier.DATA in it.modifiers }
-                    .toSet() + deepCopyTypeFromConfigs
+                    .toSet() + index.typesFromCurrentIndex
 
             logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
             DeepCopyGenerator().generate(deepCopyTypes)
-            IndexGenerator().generate(deepCopyTypeFromConfigs, deepCopyConfigs.mapNotNull { it.containingFile }.toList())
         } catch (e: Exception) {
             logger.exception(e)
         }

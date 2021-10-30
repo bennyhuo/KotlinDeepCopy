@@ -17,6 +17,7 @@ class DeepCopySymbolProcessorTest {
     companion object {
         const val SOURCE_START_LINE = "// SOURCE"
         const val GENERATED_START_LINE = "// GENERATED"
+        val FILE_NAME_PATTERN = Regex("""// ((\w+)\.(\w+))\s*""")
     }
 
     @Test
@@ -43,7 +44,7 @@ class DeepCopySymbolProcessorTest {
     fun testInnerClasses() {
         doTest("testData/InnerClasses.kt")
     }
-    
+
     @Test
     fun testConfig() {
         doTest("testData/Config.kt")
@@ -54,17 +55,38 @@ class DeepCopySymbolProcessorTest {
         doTest("testData/Recursive.kt")
     }
 
+    class SourceFileInfo(val name: String) {
+        val sourceBuilder = StringBuilder()
+
+        override fun toString(): String {
+            return "$name: \n$sourceBuilder"
+        }
+    }
+
     private fun doTest(path: String) {
         val lines = File(path).readLines().dropWhile { it.trim() != SOURCE_START_LINE }
         val sourceLines = lines.takeWhile { it.trim() != GENERATED_START_LINE }.drop(1)
         val generatedLines = lines.dropWhile { it.trim() != GENERATED_START_LINE }.drop(1)
 
-        val kotlinSource = SourceFile.kotlin("test.kt", sourceLines.joinToString("\n"))
+        val sourceFileLines = ArrayList<SourceFileInfo>()
+        sourceFileLines.add(SourceFileInfo("default_file.kt"))
+        sourceLines.fold(sourceFileLines) { acc, line ->
+            val result = FILE_NAME_PATTERN.find(line)
+            if (result == null) {
+                acc.last().sourceBuilder.append(line).appendLine()
+            } else {
+                acc.add(SourceFileInfo(result.groupValues[1]))
+            }
+            acc
+        }
+
+        val sourceFiles = sourceFileLines.map { SourceFile.new(it.name, it.sourceBuilder.toString()) }
+        
         val expectGenerateSource = generatedLines.joinToString("\n")
 
         val compilation = KotlinCompilation().apply {
             inheritClassPath = true
-            sources = listOf(kotlinSource)
+            sources = sourceFiles
             symbolProcessorProviders = listOf(DeepCopySymbolProcessorProvider())
         }
 
