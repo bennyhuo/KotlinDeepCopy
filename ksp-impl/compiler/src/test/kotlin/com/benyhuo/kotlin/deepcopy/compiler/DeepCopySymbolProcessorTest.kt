@@ -55,6 +55,11 @@ class DeepCopySymbolProcessorTest {
         doTest("testData/Recursive.kt")
     }
 
+    @Test
+    fun testCollections() {
+        doTest("testData/Collections.kt")
+    }
+
     class SourceFileInfo(val name: String) {
         val sourceBuilder = StringBuilder()
 
@@ -80,8 +85,9 @@ class DeepCopySymbolProcessorTest {
             acc
         }
 
-        val sourceFiles = sourceFileLines.map { SourceFile.new(it.name, it.sourceBuilder.toString()) }
-        
+        val sourceFiles =
+            sourceFileLines.map { SourceFile.new(it.name, it.sourceBuilder.toString()) }
+
         val expectGenerateSource = generatedLines.joinToString("\n")
 
         val compilation = KotlinCompilation().apply {

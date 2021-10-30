@@ -28,7 +28,7 @@ class DeepCopyLoopDetector(private val declaration: KSClassDeclaration) {
             }.mapNotNull {
                 it.declaration as? KSClassDeclaration
             }.filter {
-                it.canDeepCopy
+                it.deepCopiable
             }.forEach {
                 push(it)
                 detect(it, false)

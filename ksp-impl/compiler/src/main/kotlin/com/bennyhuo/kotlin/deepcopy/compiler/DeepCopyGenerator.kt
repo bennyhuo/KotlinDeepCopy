@@ -1,8 +1,11 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.ksp.*
 
 /**
@@ -28,7 +31,6 @@ class DeepCopyGenerator {
             )
             val functionBuilder = FunSpec.builder("deepCopy")
                 .receiver(dataClassName)
-                .addModifiers(KModifier.PUBLIC)
                 .returns(dataClassName)
                 .addAnnotation(JvmOverloads::class)
                 .addTypeVariables(dataClass.typeParameters.map {
@@ -41,11 +43,50 @@ class DeepCopyGenerator {
 
             dataClass.primaryConstructor!!.parameters.forEach { parameter ->
                 val type = parameter.type.resolve()
-                if (type.declaration.canDeepCopy) {
+                if (type.declaration.deepCopiable) {
                     fileSpecBuilder.addImport(type.declaration.escapedPackageName, "deepCopy")
                     
                     val nullableMark = if (type.isMarkedNullable) "?" else ""
                     statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.deepCopy(), ")
+                } else if (type.declaration.isSupportedCollectionType) {
+                    val elementType = type.arguments.single().type!!.resolve().declaration
+                    val method = if (elementType.deepCopiable) {
+                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                        fileSpecBuilder.addImport(elementType.escapedPackageName, "deepCopy")
+                        "deepCopy { it.deepCopy() }"
+                    } else {
+                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
+                        "copy()"
+                    }
+                    val nullableMark = if (type.isMarkedNullable) "?" else ""
+                    statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.${method}, ")
+                } else if (type.declaration.isSupportedMapType) {
+                    val keyType = type.arguments[0].type!!.resolve().declaration
+                    val valueType = type.arguments[1].type!!.resolve().declaration
+                    val method = when {
+                        keyType.deepCopiable && valueType.deepCopiable -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
+                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
+                            "deepCopy({ it.deepCopy() }, { it.deepCopy() })"
+                        }
+                        keyType.deepCopiable && !valueType.deepCopiable -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
+                            "deepCopy({ it.deepCopy() }, { it })"
+                        }
+                        !keyType.deepCopiable && valueType.deepCopiable -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
+                            "deepCopy({ it }, { it.deepCopy() })"   
+                        }
+                        else -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
+                            "copy()"
+                        }
+                    }
+                    val nullableMark = if (type.isMarkedNullable) "?" else ""
+                    statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.${method}, ")
                 } else {
                     statementStringBuilder.append("${parameter.name!!.asString()}, ")
                 }

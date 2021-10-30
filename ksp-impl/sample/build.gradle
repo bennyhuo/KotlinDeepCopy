@@ -9,6 +9,7 @@ sourceCompatibility = 1.8
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation(project(":annotations"))
+    implementation(project(":runtime"))
     implementation(project(":ksp-impl:library"))
 
     ksp(project(":ksp-impl:compiler"))
