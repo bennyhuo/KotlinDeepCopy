@@ -1,8 +1,8 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
+import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.packageName
 import com.bennyhuo.aptutils.types.simpleName
-import com.bennyhuo.aptutils.utils.writeToFile
 import com.squareup.kotlinpoet.*
 
 class DeepCopyGenerator(val kTypeElement: KTypeElement){
@@ -17,6 +17,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
             .receiver(kTypeElement.kotlinClassName)
             .addModifiers(KModifier.PUBLIC)
             .returns(kTypeElement.kotlinClassName)
+            .addOriginatingElement(kTypeElement.typeElement)
 
         functionBuilder.addTypeVariables(kTypeElement.typeVariablesWithoutVariance)
             .addAnnotation(JvmOverloads::class)
@@ -69,6 +70,6 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
             functionBuilder.addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", it).build())
         }
 
-        fileSpecBuilder.addFunction(functionBuilder.build()).build().writeToFile()
+        fileSpecBuilder.addFunction(functionBuilder.build()).build().writeTo(AptContext.filer)
     }
 }
