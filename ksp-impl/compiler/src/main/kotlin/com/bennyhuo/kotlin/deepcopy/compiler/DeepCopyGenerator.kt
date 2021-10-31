@@ -32,7 +32,9 @@ class DeepCopyGenerator {
             val functionBuilder = FunSpec.builder("deepCopy")
                 .receiver(dataClassName)
                 .returns(dataClassName)
-                .addAnnotation(JvmOverloads::class)
+                .also { builder -> 
+                    if (isKotlinJvm) builder.addAnnotation(JvmOverloads::class)
+                }
                 .addTypeVariables(dataClass.typeParameters.map {
                     it.toTypeVariableName(typeParameterResolver).let { TypeVariableName(it.name, it.bounds) }
                 }).also { builder ->

@@ -1,4 +1,6 @@
 // SOURCE
+package com.bennyhuo.kotlin.deepcopy.sample
+
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy

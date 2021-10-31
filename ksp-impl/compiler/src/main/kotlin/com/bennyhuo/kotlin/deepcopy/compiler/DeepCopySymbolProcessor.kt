@@ -13,7 +13,6 @@ import com.google.devtools.ksp.symbol.Modifier
  */
 class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironment) :
     SymbolProcessor {
-
     private val logger = environment.logger
 
     override fun process(resolver: Resolver): List<KSAnnotated> {

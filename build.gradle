@@ -16,12 +16,12 @@ buildscript {
 }
 
 subprojects {
-    if (name != "sample") {
-        group = GROUP
-        version = VERSION_NAME
-
-        apply plugin: "com.vanniktech.maven.publish"
-    }
+//    if (!name.startsWith("sample")) {
+//        group = GROUP
+//        version = VERSION_NAME
+//
+//        apply plugin: "com.vanniktech.maven.publish"
+//    }
 
     repositories {
         maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }

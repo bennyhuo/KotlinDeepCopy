@@ -18,6 +18,7 @@ include ":apt-impl:sample"
 include ":ksp-impl:compiler"
 include ":ksp-impl:sample"
 include ":ksp-impl:library"
+include 'ksp-impl:sample-js'
 
 //include ":kcp-impl:plugin-compiler"
 //include ":kcp-impl:plugin-gradle"
