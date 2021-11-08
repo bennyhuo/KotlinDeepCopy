@@ -9,7 +9,8 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0"
     api "com.bennyhuo.aptutils:aptutils:1.7.1"
-    api 'com.squareup:kotlinpoet:1.2.0'
+    api "com.squareup:kotlinpoet:1.10.2"
+    api "com.squareup:kotlinpoet-metadata:1.10.2"
 
     api project(":annotations")
 

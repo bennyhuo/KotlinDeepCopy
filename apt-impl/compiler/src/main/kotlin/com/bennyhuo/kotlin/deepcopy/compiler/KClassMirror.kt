@@ -1,6 +1,7 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.metadata.isData
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import com.squareup.kotlinpoet.ClassName as KClassName
