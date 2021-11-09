@@ -1,10 +1,9 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.metadata.isData
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
-import com.squareup.kotlinpoet.ClassName as KClassName
 
 class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
 
@@ -12,6 +11,16 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
 
         val typeElement: KTypeElement? by lazy {
             KTypeElement.from(type)
+        }
+        
+        val typeArgumentElements: List<KTypeElement?> by lazy {
+            if (type is ParameterizedTypeName) {
+                type.typeArguments.map { 
+                    KTypeElement.from(it)
+                }
+            } else {
+                emptyList()
+            }
         }
     }
 
@@ -34,7 +43,7 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
                 name: String,
                 id: Int,
                 variance: KmVariance
-            ): KmTypeParameterVisitor? {
+            ): KmTypeParameterVisitor {
                 return KmTypeParameterVisitorImpl(flags, name, id, variance).also { typeParameters += it }
             }
 
@@ -44,9 +53,9 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
                         override fun visitValueParameter(
                             flags: Flags,
                             parameterName: String
-                        ): KmValueParameterVisitor? {
+                        ): KmValueParameterVisitor {
                             return object : KmValueParameterVisitor() {
-                                override fun visitType(flags: Flags): KmTypeVisitor? {
+                                override fun visitType(flags: Flags): KmTypeVisitor {
                                     return object: KmTypeVisitorImpl(flags, typeParameters){
                                         override fun visitEnd() {
                                             super.visitEnd()

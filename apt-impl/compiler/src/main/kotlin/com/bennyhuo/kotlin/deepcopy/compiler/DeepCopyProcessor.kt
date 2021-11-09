@@ -1,16 +1,16 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
-import com.bennyhuo.aptutils.types.asElement
-import com.bennyhuo.aptutils.types.asTypeMirror
+import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.MirroredTypesException
 
-@SupportedAnnotationTypes("com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy", "kotlin.Metadata")
+@SupportedAnnotationTypes(
+    "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy",
+    "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig", 
+    "kotlin.Metadata")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 class DeepCopyProcessor : AbstractProcessor() {
 
@@ -20,27 +20,19 @@ class DeepCopyProcessor : AbstractProcessor() {
     }
 
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        roundEnv.getElementsAnnotatedWith(DeepCopyConfig::class.java)
-            .flatMap {
-                try {
-                    it.getAnnotation(DeepCopyConfig::class.java).values
-                        //Error promoted earlier and this is only for type inference.
-                        .map { cls -> cls.asTypeMirror() }
-                } catch (e: MirroredTypesException) {
-                    e.typeMirrors
-                }
-            }.map {
-                it.asElement()
-            }.plus(roundEnv.getElementsAnnotatedWith(DeepCopy::class.java))
+        
+        Logger.warn("apt.....")
+        
+        val index = Index(roundEnv)
+        index.generateCurrent()
+        
+        roundEnv.getElementsAnnotatedWith(DeepCopy::class.java)
+            .filterIsInstance<TypeElement>()
             .filter { it.kind.isClass }
-            .mapNotNull { (it as? TypeElement)?.let{
-                KTypeElement.from(it, true)
-            }}
-            .takeIf { it.isNotEmpty() }
-            ?.also {
-                DeepCopySupportedTypesGenerator().generate(it)
-            }
-            ?.forEach {
+            .plus(Index.instance.typesFromCurrentIndex)
+            .map {
+                KTypeElement.from(it)
+            }.forEach {
                 DeepCopyLoopDetector(it).detect()
                 DeepCopyGenerator(it).generate()
             }

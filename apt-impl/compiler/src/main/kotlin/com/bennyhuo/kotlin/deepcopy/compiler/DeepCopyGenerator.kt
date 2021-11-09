@@ -25,46 +25,71 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         val suppressWarnings = hashSetOf<String>()
 
         val statementStringBuilder = StringBuilder("%T(")
-        val parameters = ArrayList<Any>()
 
         kTypeElement.components.forEach { component ->
-            statementStringBuilder.append("%L, ")
-            when {
-                component.type is TypeVariableName -> {
-                    val elementDeepCopyHandler = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope.ElementDeepCopyHandler")
-                    //cannot tell whether the type variable is nullable from declaration.
-                    parameters.add(CodeBlock.of("%T().run{ (${component.name} as Any?)?.deepCopyElement() as %T  }", elementDeepCopyHandler, component.type))
+            val kTypeElement = component.typeElement
+            if (kTypeElement != null) {
+                if (kTypeElement.canDeepCopy) {
+                    fileSpecBuilder.addImport(
+                        kTypeElement.escapedPackageName,
+                        "deepCopy"
+                    )
 
-                    suppressWarnings += "UNCHECKED_CAST"
-                }
-                component.typeElement?.canDeepCopy == true -> {
-                    val typeElement = component.typeElement!!
-                    when {
-                        typeElement.isDataType ->{
-                            val deepCopyMethod = MemberName(escapeStdlibPackageName(component.typeElement!!.packageName()), "deepCopy")
-                            if(component.type.isNullable){
-                                parameters.add(CodeBlock.of("${component.name}?.%M()", deepCopyMethod))
-                            } else {
-                                parameters.add(CodeBlock.of("${component.name}.%M()", deepCopyMethod))
-                            }
+                    val nullableMark = if (component.type.isNullable) "?" else ""
+                    statementStringBuilder.append("${component.name}${nullableMark}.deepCopy(), ")
+                } else if (kTypeElement.isCollectionType) {
+                    val elementType = component.typeArgumentElements.singleOrNull()
+                    val method = if (elementType.isDeepCopiable()){
+                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                        fileSpecBuilder.addImport(elementType.escapedPackageName, "deepCopy")
+                        "deepCopy { it.deepCopy() }"
+                    } else {
+                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
+                        "copy()"
+                    }
+                    val nullableMark = if (component.type.isNullable) "?" else ""
+                    statementStringBuilder.append("${component.name}${nullableMark}.${method}, ")
+                } else if (kTypeElement.isMapType) {
+                    
+                    val keyType = component.typeArgumentElements[0]
+                    val valueType = component.typeArgumentElements[1]
+                    val method = when {
+                        keyType.isDeepCopiable() && valueType.isDeepCopiable() -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
+                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
+                            "deepCopy({ it.deepCopy() }, { it.deepCopy() })"
                         }
-                        typeElement.isMapType || typeElement.isCollectionType->{
-                            val deepCopyScope = ClassName.bestGuess("com.bennyhuo.kotlin.deepcopy.runtime.DeepCopyScope")
-                            if(component.type.isNullable){
-                                parameters.add(CodeBlock.of("%T.run{ ${component.name}?.deepCopy() }", deepCopyScope))
-                            } else {
-                                parameters.add(CodeBlock.of("%T.run{ ${component.name}.deepCopy() }", deepCopyScope))
-                            }
+                        keyType.isDeepCopiable() && !valueType.isDeepCopiable() -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
+                            "deepCopy({ it.deepCopy() }, { it })"
+                        }
+                        !keyType.isDeepCopiable() && valueType.isDeepCopiable() -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
+                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
+                            "deepCopy({ it }, { it.deepCopy() })"
+                        }
+                        else -> {
+                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
+                            "copy()"
                         }
                     }
+                    val nullableMark = if (component.type.isNullable) "?" else ""
+                    statementStringBuilder.append("${component.name}${nullableMark}.${method}, ")
+                } else {
+                    statementStringBuilder.append("${component.name}, ")
                 }
-                else -> parameters.add(component.name)
+            } else {
+                statementStringBuilder.append("${component.name}, ")
             }
+            
             functionBuilder.addParameter(ParameterSpec.builder(component.name, component.type).defaultValue("this.${component.name}").build())
         }
         statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
 
-        functionBuilder.addStatement("return $statementStringBuilder", kTypeElement.kotlinClassName, *(parameters.toTypedArray()))
+        functionBuilder.addStatement("return $statementStringBuilder", 
+            kTypeElement.kotlinClassName)
 
         suppressWarnings.forEach {
             functionBuilder.addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("%S", it).build())

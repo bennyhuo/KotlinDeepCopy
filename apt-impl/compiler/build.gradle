@@ -19,6 +19,11 @@ dependencies {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    
+    kotlinOptions {
+        freeCompilerArgs += "-Xuse-experimental=com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview"
+        freeCompilerArgs += "-Xopt-in=kotlin.contracts.ExperimentalContracts"
+    }
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"

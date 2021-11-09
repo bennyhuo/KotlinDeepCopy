@@ -2,39 +2,42 @@ package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.asKotlinTypeName
-import com.bennyhuo.aptutils.types.isSubTypeOf
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.ParameterizedTypeName
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeVariableName
-import com.squareup.kotlinpoet.metadata.specs.toTypeSpec
-import com.squareup.kotlinpoet.metadata.toKmClass
+import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.squareup.kotlinpoet.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
 import javax.lang.model.element.TypeElement
+import kotlin.contracts.contract
 
-class KTypeElement private constructor(val typeElement: TypeElement, val kotlinClassName: TypeName, val enableDeepCopy: Boolean) : TypeElement by typeElement {
+class KTypeElement private constructor(
+    val typeElement: TypeElement,
+    val kotlinClassName: TypeName
+) : TypeElement by typeElement {
 
     companion object {
         private val refs = WeakHashMap<String, KTypeElement>()
 
-        fun from(typeName: TypeName, enableDeepCopy: Boolean = false): KTypeElement? {
-            val className = when(typeName){
+        fun from(typeName: TypeName): KTypeElement? {
+            val className = when (typeName) {
                 is ParameterizedTypeName -> typeName.rawType.canonicalName
                 is ClassName -> typeName.canonicalName
-                is TypeVariableName -> return null
+                is TypeVariableName,
+                is WildcardTypeName -> return null
                 else -> throw IllegalArgumentException("Illegal type: $typeName")
             }
             val mappedCollectionName = kotlinCollectionTypeToJvmType[className]
             val name = mappedCollectionName ?: className
-            return refs[typeName.toString()] ?: AptContext.elements.getTypeElement(name)?.let{
-                KTypeElement(it, typeName, enableDeepCopy)
+            return refs[typeName.toString()] ?: AptContext.elements.getTypeElement(name)?.let {
+                KTypeElement(it, typeName)
             }?.also { refs[typeName.toString()] = it }
         }
 
-        fun from(typeElement: TypeElement, enableDeepCopy: Boolean = false): KTypeElement {
+        fun from(typeElement: TypeElement): KTypeElement {
             val className = typeElement.qualifiedName.toString()
-            return refs[className] ?: KTypeElement(typeElement, typeElement.asType().asKotlinTypeName(), enableDeepCopy).also { refs[className] = it }
+            return refs[className] ?: KTypeElement(
+                typeElement,
+                typeElement.asType().asKotlinTypeName()
+            ).also { refs[className] = it }
         }
     }
 
@@ -45,37 +48,21 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
     val isDataClass = kClassMirror?.isData ?: false
 
     val isCollectionType by lazy {
-        typeElement.asType().isSubTypeOf("java.util.Collection")
+        typeElement.isSupportedCollectionType
     }
 
     val isMapType by lazy {
-        typeElement.asType().isSubTypeOf("java.util.Map")
-    }
-
-    val elementClassName by lazy {
-        when {
-            isCollectionType -> (kotlinClassName as ParameterizedTypeName).typeArguments[0]
-            isMapType -> (kotlinClassName as ParameterizedTypeName).typeArguments[1]
-            else -> null
-        } as? ClassName
-    }
-
-    val elementType by lazy {
-        elementClassName?.let{ KTypeElement.from(it) }
+        typeElement.isSupportedMapType
     }
 
     val isDataType by lazy {
-        isDataClass && (enableDeepCopy ||
-                refs[when (kotlinClassName) {
-                    is ParameterizedTypeName -> kotlinClassName.rawType.canonicalName
-                    is ClassName -> kotlinClassName.canonicalName
-                    else -> throw java.lang.IllegalArgumentException()
-                }]?.enableDeepCopy == true)
+        isDataClass
     }
 
-    val canDeepCopy = isDataType || isCollectionType || isMapType
+    val canDeepCopy = isDataType && (typeElement.getAnnotation(DeepCopy::class.java) != null
+            || this in Index)
 
-    val components = kClassMirror?.components ?: emptyList<KClassMirror.Component>()
+    val components = kClassMirror?.components ?: emptyList()
 
     val typeVariablesWithoutVariance = kClassMirror?.typeParameters?.map {
         it.typeVariableNameWithoutVariance
@@ -103,3 +90,10 @@ class KTypeElement private constructor(val typeElement: TypeElement, val kotlinC
         return kotlinClassName.toString()
     }
 }
+
+fun KTypeElement?.isDeepCopiable(): Boolean {
+    contract {
+        returns(true) implies (this@isDeepCopiable != null)
+    }
+    return this?.canDeepCopy == true
+} 

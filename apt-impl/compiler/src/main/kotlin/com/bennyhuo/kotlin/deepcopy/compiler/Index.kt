@@ -1,12 +1,14 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.AptContext
+import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.aptutils.types.asElement
+import com.bennyhuo.aptutils.types.asTypeMirror
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyIndex
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.TypeMirror
+import javax.lang.model.type.MirroredTypesException
 
 class Index(roundEnvironment: RoundEnvironment) {
 
@@ -41,25 +43,26 @@ class Index(roundEnvironment: RoundEnvironment) {
             }.mapNotNull {
                 AptContext.elements.getTypeElement(it)
             }.toSet()
-//            .onEach {
-//                //logger.warn(">>> ${it.qualifiedName!!.asString()}")
-//            }
+            .onEach {
+                Logger.warn(">>> ${it.qualifiedName}")
+            }
     }
 
     val typesFromCurrentIndex by lazy {
-        currentConfigs.flatMap {
-            it.annotationMirrors
+        currentConfigs.asSequence().map {
+            it.getAnnotation(DeepCopyConfig::class.java)
         }.flatMap {
-            it.elementValues.values
-        }.flatMap {
-            when (val value = it.value) {
-                is List<*> -> value
-                else -> listOf(value)
+            try {
+                it.values.map { it.asTypeMirror() }
+            } catch (e: MirroredTypesException) {
+                e.typeMirrors
             }
-        }.filterIsInstance<TypeMirror>()
-            .map { it.asElement() }
+        }.map { it.asElement() }
             .filterIsInstance<TypeElement>()
             .toSet()
+            .onEach {
+                Logger.warn("current index >>> ${it.qualifiedName}")
+            }
     }
 
     val currentConfigs by lazy {

@@ -1,11 +1,13 @@
 package com.bennyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.aptutils.types.ClassType
+import com.bennyhuo.aptutils.types.packageName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import kotlinx.metadata.jvm.KotlinClassHeader
 import kotlinx.metadata.jvm.KotlinClassMetadata
+import javax.lang.model.element.TypeElement
 
 fun Metadata.parse() = KotlinClassMetadata.read(
     KotlinClassHeader(
@@ -51,3 +53,25 @@ fun mapKotlinCollectionTypeToJvmType(type: ParameterizedTypeName): Parameterized
 
 inline fun escapeStdlibPackageName(packageName: String) =
     if (packageName == "kotlin") "com.bennyhuo.kotlin.deepcopy.builtin" else packageName
+
+
+val KTypeElement.escapedPackageName: String
+    get() = escapeStdlibPackageName(packageName())
+
+private val supportedCollectionTypes = setOf(
+    "java.util.Collection",
+    "java.util.List",
+    "java.util.Set"
+)
+
+private val supportedMapTypes = setOf(
+    "java.util.Map"
+)
+
+val TypeElement.isSupportedCollectionType: Boolean
+    get() = this.qualifiedName.toString() in supportedCollectionTypes
+
+val TypeElement.isSupportedMapType: Boolean
+    get() = this.qualifiedName.toString() in supportedMapTypes
+
+const val RUNTIME_PACKAGE = "com.bennyhuo.kotlin.deepcopy.runtime"
