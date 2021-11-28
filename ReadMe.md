@@ -4,14 +4,14 @@ Provide an easy way to generate `DeepCopy` function for `data class`. DeepCopy o
 
 ## Reflection
 
-Use Kotlin Reflection to provide an extension function for `Any` so that any data class can simple call `deepCopy()` to copy itsself.
+Use Kotlin Reflection to provide an extension function for `DeepCopyable` so that any data class can simple call `deepCopy()` to copy itsself.
 
 See the test code below: 
 
 ```kotlin
-data class Speaker(val name: String, val age: Int)
+data class Speaker(val name: String, val age: Int): DeepCopyable
 
-data class Talk(val name: String, val speaker: Speaker)
+data class Talk(val name: String, val speaker: Speaker): DeepCopyable
 
 class DeepCopyTest {
     @Test
@@ -31,7 +31,7 @@ class DeepCopyTest {
 This library has been deloyed to maven center. 
 
 ```gradle
-implementation("com.bennyhuo.kotlin.reflect:deepcopy-reflect:1.5.0")
+implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.5.31.0")
 ```
 
 ## Apt
@@ -67,19 +67,32 @@ fun Talk.deepCopy(name: String = this.name, speaker: Speaker = this.speaker): Ta
 
 ### How to Setup
 
-This library has been deloyed to maven center:
+The artifacts have been deployed to maven central repository. Set up your project by adding these lines:
 
 ```gradle
-apply plugin: "kotlin-kapt"
+plugins {
+    id("com.google.devtools.ksp") version "1.5.31-1.0.1" // ksp
+    id "org.jetbrains.kotlin.kapt" // kapt
+}
 ...
 
 dependencies {
-    kapt("com.bennyhuo.kotlin.apt:deepcopy-compiler:1.5.0")
-    implementation("com.bennyhuo.kotlin.apt:deepcopy-runtime:1.5.0")
+    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.5.31.0")) // ksp
+    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.5.31.0") // kapt
+    implementation("com.bennyhuo.kotlin.apt:deepcopy-runtime:1.5.31.0")
 }
 ```
 
 # Change Log
+
+## v1.5.31.0 Reflect & Apt & Ksp
+
+* Add support for Kotlin Symbol Processing.
+* Add sample on Kotlin Js for KSP.
+* Add support for multi-module projects.
+* Rework the implementation of collections by removing reflections.
+* Limit the deepCopy extension to a new interface DeepCopyable to make it explicit in reflection implementation. 
+* Upgrade to Kotlin 1.5.31.
 
 ## v1.5.0 Reflect & Apt
 

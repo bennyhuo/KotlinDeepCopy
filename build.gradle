@@ -1,7 +1,7 @@
 buildscript {
     ext {
         kotlin_version = "1.5.31"
-        ksp_version = "1.5.31-1.0.0"
+        ksp_version = "1.5.31-1.0.1"
     }
     repositories {
         maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }

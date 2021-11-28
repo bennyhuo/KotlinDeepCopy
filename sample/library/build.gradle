@@ -19,8 +19,6 @@ dependencies {
         kapt(project(":compiler:compiler-apt"))
         kaptTest project(":compiler:compiler-apt")
     }
-
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 if (useksp) sourceSets.main.java.srcDirs += "build/generated/ksp/main/kotlin"
