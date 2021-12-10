@@ -34,7 +34,7 @@ This library has been deloyed to maven center.
 implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.5.31.0")
 ```
 
-## Apt
+## Apt & Ksp
 
 If you concern about the runtime efficiency, apt may be the solution. You can simply annotate the data class you want to deep copy with a `DeepCopy` annotation:
 
