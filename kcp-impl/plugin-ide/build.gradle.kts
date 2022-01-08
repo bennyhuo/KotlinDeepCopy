@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":kcp-impl:plugin-compiler"))
+    implementation(project(":kcp-impl:compiler-kcp"))
 }
 
 intellij {
-    localPath.set("C:\\Users\\benny\\AppData\\Local\\JetBrains\\Toolbox\\apps\\IDEA-U\\ch-0\\211.7142.45")
+    version.set("2021.3.1")
     plugins.set(listOf("Kotlin"))
     pluginName.set("DeepCopy")
     updateSinceUntilBuild.set(false)

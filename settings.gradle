@@ -11,17 +11,17 @@ include ":reflect-impl"
 
 include ":annotations"
 include ":runtime"
+include "test-common"
 
 include ":compiler:compiler-ksp"
 include ":compiler:compiler-apt"
 
 include ":sample:library"
 include ":sample:sample-jvm"
-include 'sample:sample-js'
+include ":sample:sample-js"
 
-//include ":kcp-impl:plugin-compiler"
-//include ":kcp-impl:plugin-gradle"
-//include ":kcp-impl:plugin-ide"
+include ":kcp-impl:compiler-kcp"
+include ":kcp-impl:plugin-gradle"
+include ":kcp-impl:plugin-ide"
 //include ":kcp-impl:sample"
-include 'test-common'
 

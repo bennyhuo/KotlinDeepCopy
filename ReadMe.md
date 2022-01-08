@@ -4,10 +4,10 @@ Provide an easy way to generate `DeepCopy` function for `data class`. DeepCopy o
 
 ## Reflection
 
-Use Kotlin Reflection to provide an extension function for `DeepCopyable` so that any data class can simple call `deepCopy()` to copy itsself.
+Use Kotlin Reflection to provide an extension function for `DeepCopyable` so that any data class can simply call `deepCopy()` to copy itsself.
 
 See the test code below: 
-
+~~~~
 ```kotlin
 data class Speaker(val name: String, val age: Int): DeepCopyable
 

@@ -14,7 +14,8 @@ dependencies {
 
   testImplementation(kotlin("test-junit"))
   testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
-  testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.5")
+
+  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.2")
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -22,6 +23,6 @@ compileKotlin.kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
 
 
 buildConfig {
-  packageName(group.toString())
+  packageName("$group.kcp")
   buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${project.properties["KOTLIN_PLUGIN_ID"]}\"")
 }

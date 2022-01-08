@@ -10,9 +10,9 @@ dependencies {
 }
 
 buildConfig {
-  val project = project(":kcp-impl:plugin-compiler")
-  packageName(project.group.toString())
-  buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${project.properties["KOTLIN_PLUGIN_ID"]}\"")
+  val project = project(":kcp-impl:compiler-kcp")
+  packageName("${project.group}.kcp")
+  buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${project.property("KOTLIN_PLUGIN_ID")}\"")
   buildConfigField("String", "KOTLIN_PLUGIN_GROUP", "\"${project.group}\"")
   buildConfigField("String", "KOTLIN_PLUGIN_NAME", "\"${project.name}\"")
   buildConfigField("String", "KOTLIN_PLUGIN_VERSION", "\"${project.version}\"")
