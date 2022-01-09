@@ -19,17 +19,18 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 import com.bennyhuo.kotlin.compiletesting.extensions.module.KotlinModule
 import com.bennyhuo.kotlin.compiletesting.extensions.module.compileAll
 import com.bennyhuo.kotlin.compiletesting.extensions.module.resolveAllDependencies
+import com.bennyhuo.kotlin.compiletesting.extensions.result.ResultCollector
 import com.bennyhuo.kotlin.compiletesting.extensions.source.SingleFileModuleInfoLoader
-import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.SourceFile
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.junit.Test
-import kotlin.test.assertEquals
 
-class IrPluginTest {
+class DeepCopyTest {
     @Test
     fun basic() {
-        val loader = SingleFileModuleInfoLoader("testData/basic.txt")
+        testBase("basic.kt")
+    }
+
+    private fun testBase(fileName: String) {
+        val loader = SingleFileModuleInfoLoader("testData/$fileName")
         val sourceModuleInfos = loader.loadSourceModuleInfos()
 
         val modules = sourceModuleInfos.map {
@@ -39,11 +40,17 @@ class IrPluginTest {
         modules.resolveAllDependencies()
         modules.compileAll()
 
-        modules.forEach {
-            println("runJvm: ${it.runJvm()}")
+        val resultMap = modules.associate {
+            it.name to it.runJvm()
         }
 
-        val expectModuleInfos = loader.loadExpectModuleInfos()
-
+        loader.loadExpectModuleInfos().fold(ResultCollector()) { collector, expectModuleInfo ->
+            collector.collectModule(expectModuleInfo.name)
+            expectModuleInfo.sourceFileInfos.forEach {
+                collector.collectFile(it.fileName)
+                collector.collectLine(it.sourceBuilder, resultMap[expectModuleInfo.name]?.get(it.fileName))
+            }
+            collector
+        }.apply()
     }
 }
