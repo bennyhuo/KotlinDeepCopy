@@ -29,6 +29,11 @@ class DeepCopyTest {
         testBase("basic.kt")
     }
 
+    @Test
+    fun modules() {
+        testBase("modules.kt")
+    }
+
     private fun testBase(fileName: String) {
         val loader = SingleFileModuleInfoLoader("testData/$fileName")
         val sourceModuleInfos = loader.loadSourceModuleInfos()
