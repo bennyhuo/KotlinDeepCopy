@@ -2,12 +2,9 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
-import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 /**
@@ -16,8 +13,8 @@ import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 class DeepCopyResolveExtension: SyntheticResolveExtension {
 
     override fun getSyntheticFunctionNames(thisDescriptor: ClassDescriptor): List<Name> {
-        if (thisDescriptor.isData) {
-            return listOf(Name.identifier("deepCopy"))
+        if (thisDescriptor.isDeepCopiable()) {
+            return listOf(Name.identifier(DEEP_COPY_FUNCTION_NAME))
         }
         return super.getSyntheticFunctionNames(thisDescriptor)
     }
@@ -29,19 +26,21 @@ class DeepCopyResolveExtension: SyntheticResolveExtension {
         fromSupertypes: List<SimpleFunctionDescriptor>,
         result: MutableCollection<SimpleFunctionDescriptor>
     ) {
-        if (thisDescriptor.isData && name.identifier == "deepCopy") {
-            result += createCopyFunctionDescriptor(
+        println("generateSyntheticMethods: ${thisDescriptor.name} - ${name.identifier}")
+        if (thisDescriptor.isDeepCopiable() && name.identifier == DEEP_COPY_FUNCTION_NAME) {
+            result += createDeepCopyFunctionDescriptor(
                 thisDescriptor.unsubstitutedPrimaryConstructor?.valueParameters!!,
-                thisDescriptor
+                thisDescriptor,
             )
         }
     }
 
-    fun createCopyFunctionDescriptor(
+    private fun createDeepCopyFunctionDescriptor(
         constructorParameters: Collection<ValueParameterDescriptor>,
         classDescriptor: ClassDescriptor,
     ): SimpleFunctionDescriptor {
-        val functionDescriptor = SimpleFunctionDescriptorImpl.create(
+
+        val functionDescriptor = DeepCopyFunctionDescriptorImpl(
             classDescriptor,
             Annotations.EMPTY,
             Name.identifier("deepCopy"),
@@ -68,6 +67,7 @@ class DeepCopyResolveExtension: SyntheticResolveExtension {
             Modality.FINAL,
             DescriptorVisibilities.PUBLIC
         )
+
         return functionDescriptor
     }
 }

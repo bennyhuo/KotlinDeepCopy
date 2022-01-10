@@ -8,39 +8,32 @@ public @interface DeepCopy {
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy
-data class DataClass(val name: String)
+data class DataClass(var name: String)
+
+data class PlainClass(var name: String)
 
 @DeepCopy
-data class Container(val dataClass: DataClass, val id: Int)
-
-class PlainClass(val name: String)
+data class Container(val dataClass: DataClass, val plainClass: PlainClass)
 
 fun main() {
-    val container = Container(DataClass("x"), 0)
+    val container = Container(DataClass("x0"), PlainClass("y0"))
     val copy = container.deepCopy()
-    println(copy)
-}
-// FILE: Main2.kt [com.bennyhuo.kotlin.deepcopy.sample.Main2Kt#main]
-package com.bennyhuo.kotlin.deepcopy.sample
+    
+    println(container !== copy)
+    println(container.dataClass !== copy.dataClass)
+    println(container.plainClass === copy.plainClass)
+    
+    container.dataClass.name = "x1"
+    container.plainClass.name = "y1"
 
-import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-
-@DeepCopy
-data class DataClass(val name: String)
-
-@DeepCopy
-data class Container(val dataClass: DataClass, val id: Int)
-
-class PlainClass(val name: String)
-
-fun main() {
-    val container = Container(DataClass("y"), 1)
-    val copy = container.deepCopy()
-    println(copy)
+    println(copy.dataClass.name == "x0")
+    println(copy.plainClass.name == "y1")
 }
 
 // GENERATED
 // FILE: Main.kt
-Container(dataClass=DataClass(name=x), id=0)
-// FILE: Main2.kt
-Container(dataClass=DataClass(name=y), id=1)
+true
+true
+true
+true
+true

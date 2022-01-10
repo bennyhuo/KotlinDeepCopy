@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
-import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.builders.*
@@ -15,37 +14,35 @@ import org.jetbrains.kotlin.ir.expressions.mapTypeParameters
 import org.jetbrains.kotlin.ir.expressions.mapValueParameters
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.*
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
 class DeepCopyClassTransformer(val pluginContext: IrPluginContext) :
     IrElementTransformerVoidWithContext() {
+
     override fun visitClassNew(declaration: IrClass): IrStatement {
         val result = super.visitClassNew(declaration)
-        if (declaration.isData) {
-            println("data class: ${declaration.name}")
-            declaration.functions.firstOrNull { it.name.identifier == "deepCopy" }
-                ?.let { function ->
-                    val functionBuilder =
-                        MemberFunctionBuilder(declaration, function, pluginContext)
-                    functionBuilder.build {
-                        declaration.primaryConstructor?.valueParameters?.forEachIndexed { index, valueParameter ->
-                            println("${valueParameter.name}: ${valueParameter.type.classFqName}| ${valueParameter.type.annotations}")
-                            irFunction.valueParameters[index].defaultValue =
-                                pluginContext.irFactory.createExpressionBody(
-                                    irGetProperty(
-                                        irThis(),
-                                        declaration.properties.first { it.name == valueParameter.name })
-                                )
-                        }
 
-                        generateCopyFunction(declaration.primaryConstructor?.symbol!!)
+        if (declaration.isDeepCopiable()) {
+            declaration.functions.firstOrNull {
+                it.descriptor is DeepCopyFunctionDescriptorImpl
+            }?.let { function ->
+                MemberFunctionBuilder(declaration, function, pluginContext).build {
+                    declaration.primaryConstructor?.valueParameters?.forEachIndexed { index, valueParameter ->
+                        irFunction.valueParameters[index].defaultValue =
+                            pluginContext.irFactory.createExpressionBody(
+                                irGetProperty(
+                                    irThis(),
+                                    declaration.properties.first { it.name == valueParameter.name })
+                            )
                     }
+
+                    generateCopyFunction(declaration.primaryConstructor?.symbol!!)
                 }
+            } ?: throw IllegalStateException("no synthetic deepCopy function found in ${declaration.name}")
         } else {
-            println("not data class ${declaration.name}")
+            println("not deepCopiable: ${declaration.name}")
         }
         return result
     }
@@ -59,11 +56,6 @@ private class MemberFunctionBuilder(
     startOffset: Int = SYNTHETIC_OFFSET,
     endOffset: Int = SYNTHETIC_OFFSET,
 ) : IrBlockBodyBuilder(pluginContext, Scope(irFunction.symbol), startOffset, endOffset) {
-    inline fun addToClass(builder: MemberFunctionBuilder.(IrFunction) -> Unit): IrFunction {
-        build(builder)
-        irClass.declarations.add(irFunction)
-        return irFunction
-    }
 
     inline fun <T : IrDeclaration> T.buildWithScope(builder: (T) -> Unit): T =
         also { irDeclaration ->
@@ -88,15 +80,6 @@ private class MemberFunctionBuilder(
         )
     }
 
-    fun irOther(): IrExpression {
-        val irFirstParameter = irFunction.valueParameters[0]
-        return IrGetValueImpl(
-            startOffset, endOffset,
-            irFirstParameter.type,
-            irFirstParameter.symbol
-        )
-    }
-
     fun transform(typeParameterDescriptor: TypeParameterDescriptor): IrType =
         pluginContext.irBuiltIns.anyType
 
@@ -114,14 +97,6 @@ private class MemberFunctionBuilder(
         }
     }
 
-    fun putDefault(parameter: ValueParameterDescriptor, value: IrExpression) {
-        irFunction.putDefault(parameter, irExprBody(value))
-    }
-
-    fun generateComponentFunction(irProperty: IrProperty) {
-        +irReturn(irGetProperty(irThis(), irProperty))
-    }
-
     fun generateCopyFunction(constructorSymbol: IrConstructorSymbol) {
         +irReturn(
             irCall(
@@ -132,14 +107,11 @@ private class MemberFunctionBuilder(
                 mapTypeParameters(::transform)
                 mapValueParameters {
                     val irValueParameter = irFunction.valueParameters[it.index]
-                    irValueParameter.type.getClass()?.takeIf { it.isData }
-                        ?.functions?.firstOrNull {
-                            it.name.identifier == "deepCopy"
-                        }?.let(::irCall)
+
+                    irValueParameter.type.getClass()?.deepCopyFunction()?.let(::irCall)
                         ?.apply {
                             dispatchReceiver = irGet(irValueParameter.type, irValueParameter.symbol)
-                        }
-                        ?: irGet(irValueParameter.type, irValueParameter.symbol)
+                        } ?: irGet(irValueParameter.type, irValueParameter.symbol)
                 }
             }
         )

@@ -20,12 +20,16 @@ import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 @DeepCopy
 data class Project(var name: String, var owner: User)
 
-// MODULE: main / lib-project
-// FILE: Main.kt [MainKt#main]
+// MODULE: lib-country / lib-deepcopy
+// FILE: Country.kt
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy
 data class Country(var name: String)
+
+// MODULE: main / lib-project, lib-country
+// FILE: Main.kt [MainKt#main]
+import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy
 data class Company(

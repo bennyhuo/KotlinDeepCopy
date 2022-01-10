@@ -30,6 +30,11 @@ class DeepCopyTest {
     }
 
     @Test
+    fun declaredDeepCopy() {
+        testBase("declaredDeepCopy.kt")
+    }
+
+    @Test
     fun modules() {
         testBase("modules.kt")
     }
