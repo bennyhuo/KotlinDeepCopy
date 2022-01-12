@@ -1,12 +1,5 @@
 // SOURCE
-// MODULE: lib-deepcopy
-// FILE: DeepCopy.java
-package com.bennyhuo.kotlin.deepcopy.annotations;
-
-public @interface DeepCopy {
-}
-
-// MODULE: lib-user / lib-deepcopy
+// MODULE: lib-user
 // FILE: User.kt
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
@@ -20,7 +13,7 @@ import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 @DeepCopy
 data class Project(var name: String, var owner: User)
 
-// MODULE: lib-country / lib-deepcopy
+// MODULE: lib-country
 // FILE: Country.kt
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
@@ -57,7 +50,7 @@ fun main() {
     println(company)
     println(company2)
 
-    println(company.projects == company2.projects)
+    println(company.projects === company2.projects)
 }
 // GENERATED
 // MODULE: main

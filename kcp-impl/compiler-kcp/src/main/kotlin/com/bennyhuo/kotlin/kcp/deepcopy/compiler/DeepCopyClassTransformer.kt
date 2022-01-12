@@ -147,7 +147,14 @@ private class MemberFunctionBuilder(
                 dispatchReceiver = irExpression
             }
         } else {
-            irExpression
+            val deepCopyFunctionForCollections = irClass?.deepCopyFunctionForCollections(pluginContext)
+            if (deepCopyFunctionForCollections == null) {
+                irExpression
+            } else {
+                irCall(deepCopyFunctionForCollections).apply {
+                    extensionReceiver = irExpression
+                }
+            }
         }
     }
 

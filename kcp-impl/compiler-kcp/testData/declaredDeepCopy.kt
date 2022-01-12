@@ -1,9 +1,4 @@
 // SOURCE
-// FILE: DeepCopy.java
-package com.bennyhuo.kotlin.deepcopy.annotations;
-
-public @interface DeepCopy {
-}
 // FILE: Main.kt [MainKt#main]
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 

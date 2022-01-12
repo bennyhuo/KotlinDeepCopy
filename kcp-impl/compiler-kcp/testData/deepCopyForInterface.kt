@@ -1,15 +1,7 @@
 // SOURCE
-// FILE: DeepCopy.kt
-package com.bennyhuo.kotlin.deepcopy.annotations;
-
-annotation class DeepCopy
-
-interface DeepCopiable<T> {
-    fun deepCopy(): T
-}
 // FILE: Main.kt [MainKt#main]
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopiable
+import com.bennyhuo.kotlin.deepcopy.DeepCopiable
 
 @DeepCopy
 data class DataClass(var name: String): DeepCopiable<DataClass>

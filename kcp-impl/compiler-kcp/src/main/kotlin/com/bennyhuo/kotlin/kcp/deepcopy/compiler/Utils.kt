@@ -1,5 +1,6 @@
 package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.SourceElement
@@ -10,11 +11,12 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.types.classFqName
-import org.jetbrains.kotlin.ir.types.isPrimitiveType
+import org.jetbrains.kotlin.ir.types.isCollection
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.js.descriptorUtils.nameIfStandardType
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
@@ -26,12 +28,10 @@ import org.jetbrains.kotlin.types.KotlinType
  */
 const val DEEP_COPY_FUNCTION_NAME = "deepCopy"
 const val DEEP_COPY_ANNOTATION_NAME = "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy"
-val deepCopyFqName = FqName(DEEP_COPY_ANNOTATION_NAME)
-
-const val DEEP_COPY_INTERFACE_NAME = "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopiable"
+const val DEEP_COPY_INTERFACE_NAME = "com.bennyhuo.kotlin.deepcopy.DeepCopiable"
 
 fun IrClass.annotatedAsDeepCopiableDataClass(): Boolean {
-    return isData && this.hasAnnotation(deepCopyFqName)
+    return isData && this.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))
 }
 
 fun IrClass.implementsDeepCopiableInterface(): Boolean {
@@ -45,6 +45,23 @@ fun IrClass.deepCopyFunctionForDataClass(): IrFunction? {
         it.name.identifier == DEEP_COPY_FUNCTION_NAME
                 && (primaryConstructor?.valueParameters?.matchWith(it.valueParameters) ?: true)
     }
+}
+
+fun IrClass.deepCopyFunctionForCollections(pluginContext: IrPluginContext): IrFunction? {
+    val fqName = defaultType.classFqName?.asString()
+    if (fqName in arrayOf(
+            "kotlin.collections.Iterable", "kotlin.collections.MutableIterable",
+            "kotlin.collections.Collection", "kotlin.collections.MutableCollection",
+            "kotlin.collections.List", "kotlin.collections.MutableList",
+            "kotlin.collections.Set", "kotlin.collections.MutableSet"
+        )
+    ) {
+        return pluginContext.referenceFunctions(FqName("com.bennyhuo.kotlin.deepcopy.deepCopy"))
+            .singleOrNull {
+                it.owner.extensionReceiverParameter?.type?.classFqName?.asString() == fqName
+            }?.owner
+    }
+    return null
 }
 
 fun IrClass.copyFunctionForDataClass(): IrFunction? {
@@ -71,7 +88,7 @@ fun List<IrValueParameter>.matchWith(valueParameters: List<IrValueParameter>): B
 }
 
 fun ClassDescriptor.annotatedAsDeepCopiableDataClass(): Boolean {
-    return isData && this.annotations.hasAnnotation(deepCopyFqName)
+    return isData && this.annotations.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))
 }
 
 fun ClassDescriptor.implementsDeepCopiableInterface(): Boolean {
