@@ -12,39 +12,39 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.mapTypeParameters
 import org.jetbrains.kotlin.ir.expressions.mapValueParameters
-import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.*
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
-class DeepCopyClassTransformer(val pluginContext: IrPluginContext) :
-    IrElementTransformerVoidWithContext() {
+class DeepCopyClassTransformer(private val pluginContext: IrPluginContext) : IrElementTransformerVoidWithContext() {
 
     override fun visitClassNew(declaration: IrClass): IrStatement {
-        val result = super.visitClassNew(declaration)
-
-        if (declaration.isDeepCopiable()) {
-            declaration.functions.firstOrNull {
-                it.descriptor is DeepCopyFunctionDescriptorImpl
-            }?.let { function ->
+        if (declaration.annotatedAsDeepCopiableDataClass()) {
+            declaration.deepCopyFunctionForDataClass()?.let { function ->
                 MemberFunctionBuilder(declaration, function, pluginContext).build {
                     declaration.primaryConstructor?.valueParameters?.forEachIndexed { index, valueParameter ->
-                        irFunction.valueParameters[index].defaultValue =
-                            pluginContext.irFactory.createExpressionBody(
-                                irGetProperty(
-                                    irThis(),
-                                    declaration.properties.first { it.name == valueParameter.name })
-                            )
+                        irFunction.valueParameters[index].defaultValue = pluginContext.irFactory.createExpressionBody(
+                            irGetProperty(
+                                irThis(),
+                                declaration.properties.first { it.name == valueParameter.name })
+                        )
                     }
 
-                    generateCopyFunction(declaration.primaryConstructor?.symbol!!)
+                    generateDeepCopyFunctionForDataClass()
                 }
-            } ?: throw IllegalStateException("no synthetic deepCopy function found in ${declaration.name}")
-        } else {
-            println("not deepCopiable: ${declaration.name}")
+            }
         }
-        return result
+
+        if (declaration.implementsDeepCopiableInterface()) {
+            declaration.deepCopyFunctionForDeepCopiable()?.let { function ->
+                MemberFunctionBuilder(declaration, function, pluginContext).build {
+                    generateDeepCopyFunctionForDeepCopiable()
+                }
+            }
+        }
+
+        return super.visitClassNew(declaration)
     }
 }
 
@@ -97,23 +97,58 @@ private class MemberFunctionBuilder(
         }
     }
 
-    fun generateCopyFunction(constructorSymbol: IrConstructorSymbol) {
+    fun generateDeepCopyFunctionForDataClass() {
+        generateDeepCopyFunction { parameter ->
+            val irValueParameter = irFunction.valueParameters[parameter.index]
+            generateParameterValue(
+                irValueParameter.type.getClass(),
+                irGet(irValueParameter.type, irValueParameter.symbol)
+            )
+        }
+    }
+
+    fun generateDeepCopyFunctionForDeepCopiable() {
+        generateDeepCopyFunction { parameter ->
+            generateParameterValue(
+                parameter.type.getClass(),
+                irGetProperty(
+                    irThis(),
+                    irClass.properties.first { it.name == it.name }
+                )
+            )
+        }
+    }
+
+    private fun generateDeepCopyFunction(
+        valueParameterMapper: (irConstructorValueParameter: IrValueParameter) -> IrExpression
+    ) {
+        val primaryConstructor = irClass.primaryConstructor!!
         +irReturn(
             irCall(
-                constructorSymbol,
+                primaryConstructor.symbol,
                 irClass.defaultType,
                 constructedClass = irClass
             ).apply {
                 mapTypeParameters(::transform)
                 mapValueParameters {
-                    val irValueParameter = irFunction.valueParameters[it.index]
-
-                    irValueParameter.type.getClass()?.deepCopyFunction()?.let(::irCall)
-                        ?.apply {
-                            dispatchReceiver = irGet(irValueParameter.type, irValueParameter.symbol)
-                        } ?: irGet(irValueParameter.type, irValueParameter.symbol)
+                    valueParameterMapper(primaryConstructor.valueParameters[it.index])
                 }
             }
         )
     }
+
+    private fun generateParameterValue(irClass: IrClass?, irExpression: IrExpression): IrExpression {
+        val possibleCopyFunction = irClass?.deepCopyFunctionForDataClass()
+            ?: irClass?.deepCopyFunctionForDeepCopiable()
+            ?: irClass?.copyFunctionForDataClass()
+
+        return if (possibleCopyFunction != null) {
+            irCall(possibleCopyFunction).apply {
+                dispatchReceiver = irExpression
+            }
+        } else {
+            irExpression
+        }
+    }
+
 }

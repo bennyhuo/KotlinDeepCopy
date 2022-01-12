@@ -35,6 +35,11 @@ class DeepCopyTest {
     }
 
     @Test
+    fun deepCopyForInterface() {
+        testBase("deepCopyForInterface.kt")
+    }
+
+    @Test
     fun modules() {
         testBase("modules.kt")
     }

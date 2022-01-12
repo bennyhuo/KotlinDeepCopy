@@ -1,4 +1,5 @@
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import kotlin.jvm.JvmName
 
 @DeepCopy
 data class District(var name: String)

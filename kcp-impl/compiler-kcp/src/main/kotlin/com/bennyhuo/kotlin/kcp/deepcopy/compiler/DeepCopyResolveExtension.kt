@@ -1,5 +1,6 @@
 package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
+import org.jetbrains.kotlin.backend.common.lower.copyAsValueParameter
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
@@ -10,10 +11,10 @@ import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 /**
  * Created by benny at 2021/6/25 8:01.
  */
-class DeepCopyResolveExtension: SyntheticResolveExtension {
+class DeepCopyResolveExtension : SyntheticResolveExtension {
 
     override fun getSyntheticFunctionNames(thisDescriptor: ClassDescriptor): List<Name> {
-        if (thisDescriptor.isDeepCopiable()) {
+        if (thisDescriptor.annotatedAsDeepCopiableDataClass()) {
             return listOf(Name.identifier(DEEP_COPY_FUNCTION_NAME))
         }
         return super.getSyntheticFunctionNames(thisDescriptor)
@@ -26,48 +27,22 @@ class DeepCopyResolveExtension: SyntheticResolveExtension {
         fromSupertypes: List<SimpleFunctionDescriptor>,
         result: MutableCollection<SimpleFunctionDescriptor>
     ) {
-        println("generateSyntheticMethods: ${thisDescriptor.name} - ${name.identifier}")
-        if (thisDescriptor.isDeepCopiable() && name.identifier == DEEP_COPY_FUNCTION_NAME) {
-            result += createDeepCopyFunctionDescriptor(
-                thisDescriptor.unsubstitutedPrimaryConstructor?.valueParameters!!,
-                thisDescriptor,
-            )
+        if (name.identifier == DEEP_COPY_FUNCTION_NAME) {
+            // @DeepCopy
+            if (thisDescriptor.annotatedAsDeepCopiableDataClass()) {
+                result += DeepCopyFunctionDescriptorImpl(thisDescriptor).apply {
+                    initialize(thisDescriptor.unsubstitutedPrimaryConstructor!!.valueParameters.map {
+                        it.copy(this, declaresDefaultValue = true)
+                    })
+                }
+            }
+
+            // : DeepCopiable<T>
+            if (thisDescriptor.implementsDeepCopiableInterface()) {
+                result += DeepCopyFunctionDescriptorImpl(thisDescriptor).apply {
+                    initialize()
+                }
+            }
         }
-    }
-
-    private fun createDeepCopyFunctionDescriptor(
-        constructorParameters: Collection<ValueParameterDescriptor>,
-        classDescriptor: ClassDescriptor,
-    ): SimpleFunctionDescriptor {
-
-        val functionDescriptor = DeepCopyFunctionDescriptorImpl(
-            classDescriptor,
-            Annotations.EMPTY,
-            Name.identifier("deepCopy"),
-            CallableMemberDescriptor.Kind.SYNTHESIZED,
-            classDescriptor.source
-        )
-
-        val parameterDescriptors = arrayListOf<ValueParameterDescriptor>()
-
-        for (parameter in constructorParameters) {
-            val parameterDescriptor = ValueParameterDescriptorImpl(
-                functionDescriptor, null, parameter.index, parameter.annotations, parameter.name, parameter.type, true,
-                parameter.isCrossinline, parameter.isNoinline, parameter.varargElementType, parameter.source
-            )
-            parameterDescriptors.add(parameterDescriptor)
-        }
-
-        functionDescriptor.initialize(
-            null,
-            classDescriptor.thisAsReceiverParameter,
-            emptyList<TypeParameterDescriptor>(),
-            parameterDescriptors,
-            classDescriptor.defaultType,
-            Modality.FINAL,
-            DescriptorVisibilities.PUBLIC
-        )
-
-        return functionDescriptor
     }
 }

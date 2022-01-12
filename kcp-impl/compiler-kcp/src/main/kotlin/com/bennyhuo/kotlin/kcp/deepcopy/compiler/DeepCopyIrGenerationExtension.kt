@@ -28,10 +28,10 @@ class DeepCopyIrGenerationExtension(
     private val messageCollector: MessageCollector
 ) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-//        messageCollector.toLogger().warning(moduleFragment.dump())
+        messageCollector.toLogger().warning(moduleFragment.dump())
         moduleFragment.transformChildrenVoid(DeepCopyClassTransformer(pluginContext))
 
-//        messageCollector.toLogger().warning("------------------")
-//        messageCollector.toLogger().warning(moduleFragment.dump())
+        messageCollector.toLogger().warning("------------------")
+        messageCollector.toLogger().warning(moduleFragment.dump())
     }
 }
