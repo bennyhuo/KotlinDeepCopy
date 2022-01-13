@@ -1,32 +1,50 @@
 <idea-plugin>
-  <id>com.bennyhuo.kotlin.deepcopy</id>
-  <name>DeepCopy for Kotlin Data Class</name>
-  <version>1.0</version>
-  <vendor email="bennyhuo@kotliner.cn" url="http://www.bennyhuo.com">Bennyhuo</vendor>
+    <id>com.bennyhuo.kotlin.deepcopy</id>
+    <name>DeepCopy for Kotlin Data Class</name>
+    <version>1.0</version>
+    <vendor email="bennyhuo@kotliner.cn" url="http://www.bennyhuo.com">Bennyhuo</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
     DeepCopy for Kotlin Data Class make the synthetic 'deepCopy' function available in IntelliJ IDEA.]]>
-  </description>
+    </description>
 
-  <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
-  <idea-version since-build="173.0"/>
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+    <idea-version since-build="173.0"/>
 
-  <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
-       on how to target different products -->
-  <depends>com.intellij.modules.platform</depends>
-  <depends>org.jetbrains.kotlin</depends>
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.gradle</depends>
 
-  <extensions defaultExtensionNs="org.jetbrains.kotlin">
-    <irGenerationExtension implementation="com.bennyhuo.kotlin.kcp.deepcopy.compiler.DeepCopyIrGenerationExtension"/>
-    <syntheticResolveExtension implementation="com.bennyhuo.kotlin.kcp.deepcopy.compiler.DeepCopyResolveExtension"/>
-  </extensions>
+    <extensionPoints>
+        <extensionPoint
+            interface="com.bennyhuo.kotlin.deepcopy.ide.DeepCopyAvailabilityProvider"
+            dynamic="true"
+            area="IDEA_PROJECT"
+            qualifiedName="com.bennyhuo.kotlin.deepcopy.ide.availabilityProvider"/>
+    </extensionPoints>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <irGenerationExtension implementation="com.bennyhuo.kotlin.deepcopy.ide.IdeDeepCopyIrGenerationExtension"/>
+        <syntheticResolveExtension implementation="com.bennyhuo.kotlin.deepcopy.ide.IdeDeepCopyResolveExtension"/>
+    </extensions>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+    <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
+        <projectResolve implementation="com.bennyhuo.kotlin.deepcopy.ide.DeepCopyProjectResolverExtension"
+                        order="last"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <externalProjectDataService implementation="com.bennyhuo.kotlin.deepcopy.ide.DeepCopyIdeModelDataService"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.bennyhuo.kotlin.deepcopy.ide">
+        <availabilityProvider implementation="com.bennyhuo.kotlin.deepcopy.ide.GradleDeepCopyAvailabilityProvider"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
 
 </idea-plugin>

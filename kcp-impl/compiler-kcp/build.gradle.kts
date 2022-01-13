@@ -4,10 +4,12 @@ plugins {
   kotlin("jvm")
   kotlin("kapt")
   id("com.github.gmazzo.buildconfig")
+  id("com.github.johnrengelman.shadow")
 }
 
 dependencies {
-  compileOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable")
+  compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
+  compileOnly("org.jetbrains.kotlin:kotlin-compiler")
 
   kapt("com.google.auto.service:auto-service:1.0-rc7")
   compileOnly("com.google.auto.service:auto-service-annotations:1.0-rc7")
@@ -24,8 +26,9 @@ dependencies {
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
 
-
 buildConfig {
   packageName("$group.kcp")
   buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${project.properties["KOTLIN_PLUGIN_ID"]}\"")
 }
+
+testWithEmbedded()

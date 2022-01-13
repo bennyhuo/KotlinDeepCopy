@@ -21,6 +21,7 @@ include ":sample:sample-jvm"
 include ":sample:sample-js"
 
 include ":kcp-impl:compiler-kcp"
+include ":kcp-impl:compiler-kcp-embeddable"
 include ":kcp-impl:plugin-gradle"
 include ":kcp-impl:plugin-ide"
 //include ":kcp-impl:sample"
