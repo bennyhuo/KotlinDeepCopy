@@ -29,6 +29,7 @@
         <irGenerationExtension implementation="com.bennyhuo.kotlin.deepcopy.ide.IdeDeepCopyIrGenerationExtension"/>
         <syntheticResolveExtension implementation="com.bennyhuo.kotlin.deepcopy.ide.IdeDeepCopyResolveExtension"/>
         <storageComponentContainerContributor implementation="com.bennyhuo.kotlin.deepcopy.ide.IdeDeepCopyComponentContainerContributor"/>
+        <quickFixContributor implementation="com.bennyhuo.kotlin.deepcopy.ide.DeepCopyQuickFixContributor"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
