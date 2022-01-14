@@ -3,8 +3,8 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-dependencies {
-    runtimeOnly(project(":kcp-impl:compiler-kcp"))
-}
-
 jarWithEmbedded()
+
+dependencies {
+    embedded(project(":kcp-impl:compiler-kcp"))
+}

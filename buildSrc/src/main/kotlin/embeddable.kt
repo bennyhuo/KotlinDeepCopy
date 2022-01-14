@@ -5,15 +5,18 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.compile.AbstractCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
 import java.io.File
 
+const val embedded = "embedded"
 const val kotlinEmbeddableRootPackage = "org.jetbrains.kotlin"
 
 val packagesToRelocate =
@@ -73,17 +76,23 @@ private fun ShadowJar.configureEmbeddableCompilerRelocation(withJavaxInject: Boo
 }
 
 private fun Project.compilerShadowJar(taskName: String, body: ShadowJar.() -> Unit): TaskProvider<out ShadowJar> {
+    val embeddedConfig = configurations.getOrCreate(embedded)
+    val javaPluginExtension = extensions.getByType<JavaPluginExtension>()
+
     return tasks.register<ShadowJar>(taskName) {
         group = "shadow"
         destinationDirectory.set(project.file(File(buildDir, "libs")))
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        from((tasks.getByName("shadowJar") as ShadowJar).configurations)
-        from((tasks.getByName("shadowJar") as ShadowJar).source)
+        from(embeddedConfig)
+        from(javaPluginExtension.sourceSets.getByName("main").output)
         body()
     }
 }
 
-fun Project.embeddableCompiler(taskName: String = "embeddable", body: ShadowJar.() -> Unit = {}): TaskProvider<out ShadowJar> =
+fun Project.embeddableCompiler(
+    taskName: String = "embeddable",
+    body: ShadowJar.() -> Unit = {}
+): TaskProvider<out ShadowJar> =
     compilerShadowJar(taskName) {
         configureEmbeddableCompilerRelocation()
         body()
@@ -98,13 +107,19 @@ fun Project.jarWithEmbedded() {
 }
 
 fun Project.testWithEmbedded() {
+    configurations.create("embedded").extendsFrom(configurations.getByName("implementation"))
     embeddableCompiler()
+
+    // filter classes dir from compileJava and compileKotlin
+    val excludedCompiledFiles = tasks.withType<AbstractCompile>().filter {
+        "test" !in it.name.toLowerCase()
+    }.map {
+        it.destinationDirectory.get().asFile
+    }
+
     tasks.named<Test>("test") {
         dependsOn(tasks.getByName("embeddable"))
         this.classpath += tasks.getByName("embeddable").outputs.files
-        this.classpath =
-            files(*this.classpath.filterNot {
-                it.absolutePath.replace("\\", "/").removeSuffix("/").endsWith(("build/classes/kotlin/main"))
-            }.toTypedArray())
+        this.classpath = this.classpath.filter { it !in excludedCompiledFiles }
     }
 }
