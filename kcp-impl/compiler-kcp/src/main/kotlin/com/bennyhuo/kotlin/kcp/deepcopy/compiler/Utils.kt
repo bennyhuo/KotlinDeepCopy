@@ -30,6 +30,13 @@ const val DEEP_COPY_FUNCTION_NAME = "deepCopy"
 const val DEEP_COPY_ANNOTATION_NAME = "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy"
 const val DEEP_COPY_INTERFACE_NAME = "com.bennyhuo.kotlin.deepcopy.DeepCopiable"
 
+val collectionTypes = arrayOf(
+    "kotlin.collections.Iterable", "kotlin.collections.MutableIterable",
+    "kotlin.collections.Collection", "kotlin.collections.MutableCollection",
+    "kotlin.collections.List", "kotlin.collections.MutableList",
+    "kotlin.collections.Set", "kotlin.collections.MutableSet"
+)
+
 fun IrClass.annotatedAsDeepCopiableDataClass(): Boolean {
     return isData && this.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))
 }
@@ -49,13 +56,7 @@ fun IrClass.deepCopyFunctionForDataClass(): IrFunction? {
 
 fun IrClass.deepCopyFunctionForCollections(pluginContext: IrPluginContext): IrFunction? {
     val fqName = defaultType.classFqName?.asString()
-    if (fqName in arrayOf(
-            "kotlin.collections.Iterable", "kotlin.collections.MutableIterable",
-            "kotlin.collections.Collection", "kotlin.collections.MutableCollection",
-            "kotlin.collections.List", "kotlin.collections.MutableList",
-            "kotlin.collections.Set", "kotlin.collections.MutableSet"
-        )
-    ) {
+    if (fqName in collectionTypes) {
         return pluginContext.referenceFunctions(FqName("com.bennyhuo.kotlin.deepcopy.deepCopy"))
             .singleOrNull {
                 it.owner.extensionReceiverParameter?.type?.classFqName?.asString() == fqName

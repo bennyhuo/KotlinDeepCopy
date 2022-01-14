@@ -40,6 +40,11 @@ class DeepCopyTest {
     }
 
     @Test
+    fun collectionElementCheck() {
+        testBase("collectionElementCheck.kt")
+    }
+
+    @Test
     fun modules() {
         testBase("modules.kt")
     }

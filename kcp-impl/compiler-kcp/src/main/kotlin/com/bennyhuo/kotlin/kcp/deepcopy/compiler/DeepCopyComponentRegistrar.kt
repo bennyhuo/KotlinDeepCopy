@@ -18,11 +18,10 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
 import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
 @AutoService(ComponentRegistrar::class)
@@ -39,6 +38,10 @@ class DeepCopyComponentRegistrar : ComponentRegistrar {
         IrGenerationExtension.registerExtension(
             project,
             DeepCopyIrGenerationExtension()
+        )
+        StorageComponentContainerContributor.registerExtension(
+            project,
+            DeepCopyComponentContainerContributor()
         )
     }
 }

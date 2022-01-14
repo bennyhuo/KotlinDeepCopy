@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm")
+  java
   kotlin("kapt")
   id("com.github.gmazzo.buildconfig")
   id("com.github.johnrengelman.shadow")
@@ -24,7 +25,7 @@ dependencies {
 }
 
 val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
+compileKotlin.kotlinOptions.freeCompilerArgs += listOf("-Xjvm-default=enable", "-opt-in=kotlin.RequiresOptIn")
 
 buildConfig {
   packageName("$group.kcp")

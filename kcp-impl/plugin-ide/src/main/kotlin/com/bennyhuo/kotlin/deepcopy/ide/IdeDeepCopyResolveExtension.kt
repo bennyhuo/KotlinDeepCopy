@@ -8,8 +8,8 @@ import com.intellij.psi.PsiElement
  */
 class IdeDeepCopyResolveExtension: DeepCopyResolveExtension() {
 
-    override fun isAvailable(psiElement: PsiElement): Boolean {
-        return DeepCopyAvailability.isAvailable(psiElement)
+    override fun PsiElement.isDeepCopyPluginEnabled(): Boolean {
+        return DeepCopyAvailability.isAvailable(this)
     }
 
 }
