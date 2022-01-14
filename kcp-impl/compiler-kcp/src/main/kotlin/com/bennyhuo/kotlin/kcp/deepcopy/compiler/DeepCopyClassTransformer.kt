@@ -130,7 +130,7 @@ private class MemberFunctionBuilder(
                 parameter.type.getClass(),
                 irGetProperty(
                     irThis(),
-                    irClass.properties.first { it.name == it.name }
+                    irClass.properties.first { it.name == parameter.name }
                 )
             )
         }
