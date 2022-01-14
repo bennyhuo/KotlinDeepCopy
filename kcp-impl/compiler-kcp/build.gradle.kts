@@ -12,8 +12,8 @@ dependencies {
   compileOnly("org.jetbrains.kotlin:kotlin-stdlib")
   compileOnly("org.jetbrains.kotlin:kotlin-compiler")
 
-  kapt("com.google.auto.service:auto-service:1.0-rc7")
-  compileOnly("com.google.auto.service:auto-service-annotations:1.0-rc7")
+  kapt("com.google.auto.service:auto-service:1.0.1")
+  compileOnly("com.google.auto.service:auto-service-annotations:1.0.1")
 
   testImplementation(project(":annotations"))
   testImplementation(project(":runtime"))
@@ -21,7 +21,7 @@ dependencies {
   testImplementation(kotlin("test-junit"))
   testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
 
-  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.2")
+  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.4")
 }
 
 val compileKotlin: KotlinCompile by tasks
