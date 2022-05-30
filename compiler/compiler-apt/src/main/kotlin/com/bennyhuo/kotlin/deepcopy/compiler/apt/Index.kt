@@ -36,7 +36,7 @@ class Index(roundEnvironment: RoundEnvironment) {
         AptContext.elements.getPackageElement(IndexGenerator.INDEX_PACKAGE)
             .enclosedElements
             .filterIsInstance<TypeElement>()
-            .map {
+            .mapNotNull {
                 it.getAnnotation(DeepCopyIndex::class.java)
             }.flatMap {
                 it.values.toList()

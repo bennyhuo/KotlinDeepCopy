@@ -1,5 +1,6 @@
 package com.benyhuo.kotlin.deepcopy.compiler
 
+import com.tschuchort.compiletesting.KotlinCompilation
 import org.junit.Test
 
 /**
@@ -7,7 +8,7 @@ import org.junit.Test
  */
 class KaptTest {
     
-    fun doTest(path: String) = doTest(path, compilationWithKapt())
+    fun doTest(path: String) = doTest(path, compilationWithKapt(), KotlinCompilation::kaptSourceDir)
     
     @Test
     fun testBasic() {

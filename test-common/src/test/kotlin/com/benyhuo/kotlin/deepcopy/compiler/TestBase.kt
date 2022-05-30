@@ -4,7 +4,6 @@ import com.bennyhuo.kotlin.deepcopy.compiler.apt.DeepCopyProcessor
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.DeepCopySymbolProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
 import kotlin.test.assertEquals
@@ -24,7 +23,7 @@ class SourceFileInfo(val name: String) {
     }
 }
 
-fun doTest(path: String, compilation: KotlinCompilation) {
+fun doTest(path: String, compilation: KotlinCompilation, outputDir: KotlinCompilation.() -> File) {
     val lines = File(path).readLines()
         .dropWhile { it.trim() != SOURCE_START_LINE }
     val sourceLines =
@@ -52,7 +51,7 @@ fun doTest(path: String, compilation: KotlinCompilation) {
     compilation.sources = sourceFiles
     assertEquals(compilation.compile().exitCode, KotlinCompilation.ExitCode.OK)
 
-    val generatedSource = compilation.kspSourcesDir.walkTopDown()
+    val generatedSource = compilation.outputDir().walkTopDown()
         .filter { !it.isDirectory }
         .fold(StringBuilder()) { acc, it ->
             acc.append("//-------${it.name}------\n")

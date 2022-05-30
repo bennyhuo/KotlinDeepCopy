@@ -1,5 +1,7 @@
 package com.benyhuo.kotlin.deepcopy.compiler
 
+import com.tschuchort.compiletesting.KotlinCompilation
+import com.tschuchort.compiletesting.kspSourcesDir
 import org.junit.Test
 
 /**
@@ -7,7 +9,7 @@ import org.junit.Test
  */
 class KspTest {
     
-    fun doTest(path: String) = doTest(path, compilationWithKsp())
+    fun doTest(path: String) = doTest(path, compilationWithKsp(), KotlinCompilation::kspSourcesDir)
     
     @Test
     fun testBasic() {
