@@ -4,17 +4,32 @@ import com.bennyhuo.kotlin.deepcopy.reflect.DeepCopyable
 import com.bennyhuo.kotlin.deepcopy.reflect.deepCopy
 import org.junit.Test
 
-data class District(var name: String)
-
 data class Location(var lat: Double, var lng: Double)
 
-data class Company(var name: String, var location: Location, var district: District): DeepCopyable
+data class Company(var name: String, var location: Location) : DeepCopyable
 
-data class Speaker(var name: String, var age: Int, var company: Company): DeepCopyable
+data class Speaker(var name: String, var age: Int, var company: Company) : DeepCopyable
 
-data class Talk(var name: String, var speaker: Speaker): DeepCopyable
+data class Talk(var name: String, var speaker: Speaker) : DeepCopyable
+
+
+data class Point(var x: Int, var y: Int): DeepCopyable
+data class Text(var id: Long, var text: String, var point: Point): DeepCopyable
 
 class DeepCopyTest {
+
+    @Test
+    fun test0() {
+        val text = Text(0, "Kotlin", Point(10, 20))
+        val newText = text.copy(1)
+        newText.point.x = 100
+        println(text)
+
+        val newText2 = text.deepCopy().apply { id = 2 }
+        newText2.point.x = 200
+        println(text)
+    }
+
     @Test
     fun test() {
         val talk = Talk(
@@ -24,19 +39,12 @@ class DeepCopyTest {
                 1,
                 Company(
                     "猿辅导",
-                    Location(39.9, 116.3),
-                    District("北京郊区")
+                    Location(39.9, 116.3)
                 )
             )
         )
 
         val copiedTalk = talk.deepCopy()
-//        copiedTalk.name = "Kotlin 编译器插件：我们不期待"
-//        copiedTalk.speaker.company = Company(
-//            "猿辅导",
-//            Location(39.9, 116.3),
-//            District("华鼎世家对面")
-//        )
 
         assert(talk.speaker !== copiedTalk.speaker)
         assert(talk.speaker.company !== copiedTalk.speaker.company)

@@ -8,6 +8,7 @@ pluginManagement {
 rootProject.name = 'deepcopy'
 
 include ":reflect-impl"
+include ":reflect-impl-js"
 
 include ":annotations"
 include ":runtime"
