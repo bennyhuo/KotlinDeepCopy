@@ -9,18 +9,25 @@ interface DeepCopyable
 
 fun <T : DeepCopyable> T.deepCopy(): T {
     val constructor = this::class.js.asDynamic()
-    val newInstance = js("{}")
-    newInstance.__proto__ = constructor.prototype
-    val parameters = (1..Int.MAX_VALUE).takeWhile {
-        constructor.prototype["component${it}_${hash("component${it}")}_k$"] !== undefined
+    val parameters = (1..Int.MAX_VALUE).asSequence().map {
+        componentFunction(constructor.prototype, "component${it}")
+    }.takeWhile {
+        it !== undefined
     }.map {
-        constructor.prototype["component${it}_${hash("component${it}")}_k$"].call(this).unsafeCast<Any>()
+        it.call(this).unsafeCast<Any>()
             .let {
                 (it as? DeepCopyable)?.deepCopy() ?: it
             }
-    }.toTypedArray()
+    }.toList().toTypedArray()
+
+    val newInstance = js("{}")
+    newInstance.__proto__ = constructor.prototype
     constructor.apply(newInstance, parameters)
     return newInstance as T
 }
 
-private fun hash(name: String) = abs(name.hashCode()).toString(36)
+private fun componentFunction(
+    prototype: dynamic, name: String
+) = prototype[name]
+    ?: prototype["${name}_${abs(name.hashCode()).toString(36)}_k$"]
+    ?: prototype["${name}_0_k$"]

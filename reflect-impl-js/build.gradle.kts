@@ -14,7 +14,7 @@ kotlin {
         moduleName = "deepcopy-reflect-js"
 
         binaries.executable()
-//        binaries.library()
+        binaries.library()
         nodejs {
 
         }
