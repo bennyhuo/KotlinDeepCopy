@@ -2,14 +2,19 @@ package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyIndex
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSType
 
-class Index(resolver: Resolver) {
+class Index(
+    override val env: SymbolProcessorEnvironment,
+    resolver: Resolver
+) : LoggerMixin {
 
     companion object {
         val instance: Index
@@ -41,9 +46,6 @@ class Index(resolver: Resolver) {
             }.mapNotNull {
                 resolver.getClassDeclarationByName(it)
             }.toSet()
-            .onEach {
-                logger.warn(">>> ${it.qualifiedName!!.asString()}")
-            }
     }
 
     val typesFromCurrentIndex by lazy {
@@ -68,7 +70,7 @@ class Index(resolver: Resolver) {
     }
 
     fun generateCurrent() {
-        IndexGenerator().generate(
+        IndexGenerator(env).generate(
             typesFromCurrentIndex, currentConfigs.mapNotNull { it.containingFile }.toList()
         )
     }

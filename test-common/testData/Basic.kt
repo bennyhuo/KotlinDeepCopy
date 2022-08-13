@@ -20,34 +20,48 @@ data class Talk(val name: String, val speaker: Speaker)
 
 // GENERATED
 //-------Company$$DeepCopy.kt------
+package com.bennyhuo.kotlin.deepcopy.sample
+
+import com.bennyhuo.kotlin.deepcopy.sample.deepCopy
 import kotlin.String
 
-fun Company.deepCopy(
+public fun Company.deepCopy(
     name: String = this.name,
     location: Location = this.location,
     district: District = this.district
-): Company = Company(name, location.deepCopy(), district.deepCopy()) 
+): Company = Company(name, location.deepCopy(), district.deepCopy())
 //-------District$$DeepCopy.kt------
+package com.bennyhuo.kotlin.deepcopy.sample
+
 import kotlin.String
 
-fun District.deepCopy(name: String = this.name): District = District(name) 
+public fun District.deepCopy(name: String = this.name): District = District(name)
 //-------Location$$DeepCopy.kt------
+package com.bennyhuo.kotlin.deepcopy.sample
+
 import kotlin.Double
 
-fun Location.deepCopy(lat: Double = this.lat, lng: Double = this.lng): Location = Location(lat, lng)
-        
+public fun Location.deepCopy(lat: Double = this.lat, lng: Double = this.lng): Location =
+    Location(lat, lng)
 //-------Speaker$$DeepCopy.kt------
+package com.bennyhuo.kotlin.deepcopy.sample
+
+import com.bennyhuo.kotlin.deepcopy.sample.deepCopy
 import kotlin.Int
 import kotlin.String
 
-fun Speaker.deepCopy(
+public fun Speaker.deepCopy(
     name: String = this.name,
     age: Int = this.age,
     company: Company = this.company
-): Speaker = Speaker(name, age, company.deepCopy()) 
+): Speaker = Speaker(name, age, company.deepCopy())
 //-------Talk$$DeepCopy.kt------
+package com.bennyhuo.kotlin.deepcopy.sample
+
+import com.bennyhuo.kotlin.deepcopy.sample.deepCopy
 import kotlin.String
 
-fun Talk.deepCopy(name: String = this.name, speaker: Speaker = this.speaker): Talk = Talk(name,
-        speaker.deepCopy()) 
+public fun Talk.deepCopy(name: String = this.name, speaker: Speaker = this.speaker): Talk =
+    Talk(name, speaker.deepCopy())
+
 

@@ -1,5 +1,9 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.loop.DeepCopyLoopDetector
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.Platform
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -11,9 +15,13 @@ import com.squareup.kotlinpoet.ksp.*
 /**
  * Created by benny.
  */
-class DeepCopyGenerator {
+class DeepCopyGenerator(
+    val env: SymbolProcessorEnvironment,
+) {
 
-    fun generate(deepCopyTypes: Set<KSClassDeclaration>) {
+    fun generate(resolver: Resolver, deepCopyTypes: Set<KSClassDeclaration>) {
+        val platform = Platform(resolver)
+
         deepCopyTypes.forEach { dataClass: KSClassDeclaration ->
 
             val typeParameterResolver = dataClass.typeParameters.toTypeParameterResolver()
@@ -33,7 +41,7 @@ class DeepCopyGenerator {
                 .receiver(dataClassName)
                 .returns(dataClassName)
                 .also { builder -> 
-                    if (isKotlinJvm) builder.addAnnotation(JvmOverloads::class)
+                    if (platform.isKotlinJvm) builder.addAnnotation(JvmOverloads::class)
                 }
                 .addTypeVariables(dataClass.typeParameters.map {
                     it.toTypeVariableName(typeParameterResolver).let { TypeVariableName(it.name, it.bounds) }
@@ -108,9 +116,9 @@ class DeepCopyGenerator {
             )
             
             fileSpecBuilder.addFunction(functionBuilder.build()).build()
-                .writeTo(KspContext.environment.codeGenerator, false)
+                .writeTo(env.codeGenerator, false)
 
-            DeepCopyLoopDetector(dataClass).detect()
+            DeepCopyLoopDetector(env, dataClass).detect()
         }
     }
 

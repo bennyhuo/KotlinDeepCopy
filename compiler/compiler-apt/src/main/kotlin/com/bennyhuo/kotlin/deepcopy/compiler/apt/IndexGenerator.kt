@@ -51,9 +51,6 @@ class IndexGenerator {
                     it.substring(0, 200)
                 } else it
             }
-//            .also {
-//                // logger.warn("Index name: $it")
-//            }
     }
 
 }

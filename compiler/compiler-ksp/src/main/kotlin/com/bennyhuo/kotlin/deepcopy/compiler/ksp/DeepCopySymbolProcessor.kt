@@ -1,6 +1,7 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -11,19 +12,16 @@ import com.google.devtools.ksp.symbol.Modifier
 /**
  * Created by benny at 2021/6/20 19:02.
  */
-class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironment) :
-    SymbolProcessor {
-    private val logger = environment.logger
+class DeepCopySymbolProcessor(
+    override val env: SymbolProcessorEnvironment
+) : SymbolProcessor, LoggerMixin {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        KspContext.environment = environment
-        KspContext.resolver = resolver
-        
         try {
             logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
-            val index = Index(resolver)
+            val index = Index(env, resolver)
             index.generateCurrent()
-            
+
             logger.warn("typesFromCurrentIndex: ${index.typesFromCurrentIndex.joinToString { it.simpleName.asString() }}")
 
             val deepCopyTypes =
@@ -33,7 +31,7 @@ class DeepCopySymbolProcessor(private val environment: SymbolProcessorEnvironmen
                     .toSet() + index.typesFromCurrentIndex
 
             logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
-            DeepCopyGenerator().generate(deepCopyTypes)
+            DeepCopyGenerator(env).generate(resolver, deepCopyTypes)
         } catch (e: Exception) {
             logger.exception(e)
         }

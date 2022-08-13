@@ -1,6 +1,8 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyIndex
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.AnnotationSpec
@@ -12,7 +14,9 @@ import com.squareup.kotlinpoet.ksp.writeTo
 /**
  * Created by benny.
  */
-class IndexGenerator {
+class IndexGenerator(
+    override val env: SymbolProcessorEnvironment
+): LoggerMixin {
 
     companion object {
         const val INDEX_PACKAGE = "com.bennyhuo.kotlin.deepcopy"
@@ -39,7 +43,7 @@ class IndexGenerator {
                     }
                 }
                 .build()
-        ).build().writeTo(KspContext.environment.codeGenerator, true)
+        ).build().writeTo(env.codeGenerator, true)
     }
 
     private fun generateName(deepCopyTypes: Set<KSClassDeclaration>): String {

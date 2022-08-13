@@ -1,9 +1,15 @@
-package com.bennyhuo.kotlin.deepcopy.compiler.ksp
+package com.bennyhuo.kotlin.deepcopy.compiler.ksp.loop
 
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.deepCopiable
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.util.*
 
-class DeepCopyLoopDetector(private val declaration: KSClassDeclaration) {
+class DeepCopyLoopDetector(
+    override val env: SymbolProcessorEnvironment,
+    private val declaration: KSClassDeclaration
+) : LoggerMixin {
 
     private val typeStack = Stack<KSClassDeclaration>()
     private val typeSet = HashSet<KSClassDeclaration>()
@@ -38,7 +44,7 @@ class DeepCopyLoopDetector(private val declaration: KSClassDeclaration) {
 
     private fun push(declaration: KSClassDeclaration) {
         if (!typeSet.add(declaration)) {
-            throw CopyLoopException(declaration)
+            throw DeepCopyLoopException(declaration)
         }
         typeStack.push(declaration)
     }

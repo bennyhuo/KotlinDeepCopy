@@ -1,32 +1,16 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.isAnnotationPresent
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
-
-val isKotlinJs by lazy { 
-    KspContext.resolver.getClassDeclarationByName("kotlin.js.JsName") != null
-}
-
-val isKotlinNative by lazy { 
-    KspContext.resolver.getClassDeclarationByName("kotlin.native.CName") != null
-}
-
-val isKotlinJvm by lazy { 
-    !isKotlinNative && !isKotlinJs    
-}
-
 
 inline fun escapeStdlibPackageName(packageName: String) =
     if (packageName == "kotlin") "com.bennyhuo.kotlin.deepcopy.builtin" else packageName
 
 
 val KSDeclaration.escapedPackageName: String
-    get() = escapeStdlibPackageName(packageName.asString()).also {
-        logger.warn("$this: ${packageName.asString()} -> $it")
-    }
+    get() = escapeStdlibPackageName(packageName.asString())
 
 val KSDeclaration.deepCopiable: Boolean
     get() = this is KSClassDeclaration &&
