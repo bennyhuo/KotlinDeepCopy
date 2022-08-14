@@ -3,6 +3,7 @@ package com.bennyhuo.kotlin.deepcopy.compiler.apt
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopException
 import com.squareup.kotlinpoet.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
@@ -76,7 +77,7 @@ class KTypeElement private constructor(
 
     fun mark() {
         if (marked) {
-            throw CopyLoopException(this)
+            throw DeepCopyLoopException(this)
         } else {
             marked = true
         }

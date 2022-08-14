@@ -5,9 +5,11 @@ plugins {
 }
 
 dependencies {
-    implementation("com.google.devtools.ksp:symbol-processing-api:1.5.31-1.0.1")
-    implementation("com.squareup:kotlinpoet:1.10.0")
-    implementation("com.squareup:kotlinpoet-ksp:1.10.0")
+    implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
+    implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
+    implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
+
+    implementation("com.bennyhuo.kotlin:ksp-module-support:0.1")
     
     implementation(project(":annotations"))
 }

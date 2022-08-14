@@ -20,7 +20,7 @@ class DeepCopyGenerator(
 ) {
 
     fun generate(resolver: Resolver, deepCopyTypes: Set<KSClassDeclaration>) {
-        val platform = Platform(resolver)
+        val platform = Platform(env)
 
         deepCopyTypes.forEach { dataClass: KSClassDeclaration ->
 

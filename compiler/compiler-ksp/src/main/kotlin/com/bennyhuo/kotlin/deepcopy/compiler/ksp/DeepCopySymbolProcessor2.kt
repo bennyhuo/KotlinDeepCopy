@@ -1,9 +1,11 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
+import com.bennyhuo.kotlin.processor.module.common.MODULE_MIXED
+import com.bennyhuo.kotlin.processor.module.ksp.KspModuleProcessor
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -12,29 +14,37 @@ import com.google.devtools.ksp.symbol.Modifier
 /**
  * Created by benny at 2021/6/20 19:02.
  */
-class DeepCopySymbolProcessor(
-    override val env: SymbolProcessorEnvironment
-) : SymbolProcessor, LoggerMixin {
+class DeepCopySymbolProcessor2(
+    env: SymbolProcessorEnvironment
+) : KspModuleProcessor(env), LoggerMixin {
+    override val annotationsForIndex = setOf(DeepCopyConfig::class.java.name)
 
-    override fun process(resolver: Resolver): List<KSAnnotated> {
+    override val processorName: String = "deepCopy"
+
+    override val supportedModuleTypes: Set<Int> = setOf(MODULE_MIXED)
+
+    override fun processMain(
+        resolver: Resolver,
+        annotatedSymbols: Map<String, Set<KSAnnotated>>
+    ): List<KSAnnotated> {
         try {
-            logger.warn("DeepCopySymbolProcessor, ${KotlinVersion.CURRENT}")
-            val index = Index(env, resolver)
-            index.generateCurrent()
-
-            logger.warn("typesFromCurrentIndex: ${index.typesFromCurrentIndex.joinToString { it.simpleName.asString() }}")
+            val index = Index(annotatedSymbols[DeepCopyConfig::class.java.name])
 
             val deepCopyTypes =
                 resolver.getSymbolsWithAnnotation(DeepCopy::class.qualifiedName!!)
                     .filterIsInstance<KSClassDeclaration>()
                     .filter { Modifier.DATA in it.modifiers }
-                    .toSet() + index.typesFromCurrentIndex
+                    .toSet() + index.typesFromIndex
 
             logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
             DeepCopyGenerator(env).generate(resolver, deepCopyTypes)
+
+            Index.release()
         } catch (e: Exception) {
             logger.exception(e)
         }
+
         return emptyList()
     }
+
 }

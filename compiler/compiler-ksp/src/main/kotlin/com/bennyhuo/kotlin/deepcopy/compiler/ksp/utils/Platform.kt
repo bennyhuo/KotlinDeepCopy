@@ -1,23 +1,15 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils
 
-import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.JvmPlatformInfo
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 
 /**
  * Created by benny.
  */
-class Platform(private val resolver: Resolver) {
-
-    val isKotlinJs by lazy {
-        resolver.getClassDeclarationByName("kotlin.js.JsName") != null
-    }
-
-    val isKotlinNative by lazy {
-        resolver.getClassDeclarationByName("kotlin.native.CName") != null
-    }
+class Platform(private val env: SymbolProcessorEnvironment) {
 
     val isKotlinJvm by lazy {
-        !isKotlinNative && !isKotlinJs
+        env.platforms.singleOrNull { it is JvmPlatformInfo } != null
     }
 
 }

@@ -1,6 +1,7 @@
-package com.bennyhuo.kotlin.deepcopy.compiler.apt
+package com.bennyhuo.kotlin.deepcopy.compiler.apt.loop
 
 import com.bennyhuo.aptutils.logger.Logger
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.KTypeElement
 import java.util.*
 
 class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
