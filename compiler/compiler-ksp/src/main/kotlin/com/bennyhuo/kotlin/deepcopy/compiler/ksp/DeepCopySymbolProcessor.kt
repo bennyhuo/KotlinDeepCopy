@@ -14,7 +14,7 @@ import com.google.devtools.ksp.symbol.Modifier
 /**
  * Created by benny at 2021/6/20 19:02.
  */
-class DeepCopySymbolProcessor2(
+class DeepCopySymbolProcessor(
     env: SymbolProcessorEnvironment
 ) : KspModuleProcessor(env), LoggerMixin {
     override val annotationsForIndex = setOf(DeepCopyConfig::class.java.name)
@@ -28,18 +28,18 @@ class DeepCopySymbolProcessor2(
         annotatedSymbols: Map<String, Set<KSAnnotated>>
     ): List<KSAnnotated> {
         try {
-            val index = Index(annotatedSymbols[DeepCopyConfig::class.java.name])
+            val configIndex = DeepCopyConfigIndex(annotatedSymbols[DeepCopyConfig::class.java.name])
 
             val deepCopyTypes =
                 resolver.getSymbolsWithAnnotation(DeepCopy::class.qualifiedName!!)
                     .filterIsInstance<KSClassDeclaration>()
                     .filter { Modifier.DATA in it.modifiers }
-                    .toSet() + index.typesFromIndex
+                    .toSet() + configIndex.deepCopyClassDeclarations
 
             logger.warn("DeepCopyTypes: ${deepCopyTypes.joinToString { it.simpleName.asString() }}")
             DeepCopyGenerator(env).generate(resolver, deepCopyTypes)
 
-            Index.release()
+            DeepCopyConfigIndex.release()
         } catch (e: Exception) {
             logger.exception(e)
         }

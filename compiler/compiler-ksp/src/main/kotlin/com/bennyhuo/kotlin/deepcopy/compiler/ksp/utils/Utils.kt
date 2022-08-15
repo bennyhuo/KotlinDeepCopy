@@ -14,7 +14,7 @@ val KSDeclaration.escapedPackageName: String
 
 val KSDeclaration.deepCopiable: Boolean
     get() = this is KSClassDeclaration &&
-            (isAnnotationPresent(DeepCopy::class) || this in Index)
+            (isAnnotationPresent(DeepCopy::class) || this in DeepCopyConfigIndex)
 
 
 private val supportedCollectionTypes = setOf(

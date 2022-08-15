@@ -5,16 +5,16 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSType
 
-class Index(configs: Collection<KSAnnotated>?) {
+class DeepCopyConfigIndex(configs: Collection<KSAnnotated>?) {
 
     companion object {
-        val instance: Index
+        val instance: DeepCopyConfigIndex
             get() = currentInstance!!
 
-        private var currentInstance: Index? = null
+        private var currentInstance: DeepCopyConfigIndex? = null
 
         operator fun contains(declaration: KSDeclaration): Boolean {
-            return declaration in instance.typesFromIndex
+            return declaration in instance.deepCopyClassDeclarations
         }
 
         fun release() {
@@ -26,7 +26,7 @@ class Index(configs: Collection<KSAnnotated>?) {
         currentInstance = this
     }
 
-    val typesFromIndex = configs?.filterIsInstance<KSClassDeclaration>()
+    val deepCopyClassDeclarations = configs?.filterIsInstance<KSClassDeclaration>()
         ?.flatMap {
             it.annotations
         }?.flatMap {
