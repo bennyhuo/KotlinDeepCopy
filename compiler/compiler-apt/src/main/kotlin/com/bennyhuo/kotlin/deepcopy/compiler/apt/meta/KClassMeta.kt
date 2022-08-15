@@ -1,35 +1,16 @@
-package com.bennyhuo.kotlin.deepcopy.compiler.apt
+package com.bennyhuo.kotlin.deepcopy.compiler.apt.meta
 
-import com.squareup.kotlinpoet.ParameterizedTypeName
-import com.squareup.kotlinpoet.TypeName
 import kotlinx.metadata.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
 
-class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
-
-    data class Component(val name: String, val type: TypeName) {
-
-        val typeElement: KTypeElement? by lazy {
-            KTypeElement.from(type)
-        }
-        
-        val typeArgumentElements: List<KTypeElement?> by lazy {
-            if (type is ParameterizedTypeName) {
-                type.typeArguments.map {
-                    KTypeElement.from(it)
-                }
-            } else {
-                emptyList()
-            }
-        }
-    }
+class KClassMeta(kotlinClassMetadata: KotlinClassMetadata.Class) {
 
     var isData: Boolean = false
         private set
 
-    val components = mutableListOf<Component>()
+    val components = mutableListOf<KComponent>()
 
-    val typeParameters = mutableListOf<KmTypeParameterVisitorImpl>()
+    val typeParameters = mutableListOf<KTypeParameter>()
 
     init {
         kotlinClassMetadata.accept(object : KmClassVisitor() {
@@ -44,7 +25,7 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
                 id: Int,
                 variance: KmVariance
             ): KmTypeParameterVisitor {
-                return KmTypeParameterVisitorImpl(flags, name, id, variance).also { typeParameters += it }
+                return KTypeParameter(flags, name, id, variance).also { typeParameters += it }
             }
 
             override fun visitConstructor(flags: Flags): KmConstructorVisitor? {
@@ -52,14 +33,14 @@ class KClassMirror(kotlinClassMetadata: KotlinClassMetadata.Class) {
                     return object : KmConstructorVisitor() {
                         override fun visitValueParameter(
                             flags: Flags,
-                            parameterName: String
+                            name: String
                         ): KmValueParameterVisitor {
                             return object : KmValueParameterVisitor() {
                                 override fun visitType(flags: Flags): KmTypeVisitor {
-                                    return object: KmTypeVisitorImpl(flags, typeParameters){
+                                    return object: KType(flags, typeParameters){
                                         override fun visitEnd() {
                                             super.visitEnd()
-                                            components += Component(parameterName, type)
+                                            components += KComponent(name, type)
                                         }
                                     }
                                 }

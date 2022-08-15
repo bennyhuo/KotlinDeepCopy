@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.deepcopy.compiler.apt
+package com.bennyhuo.kotlin.deepcopy.compiler.apt.meta
 
 import com.bennyhuo.aptutils.logger.Logger
 import com.squareup.kotlinpoet.*
@@ -9,7 +9,7 @@ import kotlinx.metadata.Flags
 import kotlinx.metadata.KmTypeVisitor
 import kotlinx.metadata.KmVariance
 
-open class KmTypeVisitorImpl(val flags: Flags, val typeParametersInContainer: List<KmTypeParameterVisitorImpl> = emptyList(), val variance: KmVariance = KmVariance.INVARIANT, val typeFlexibilityId: String? = null, val parent: KmTypeVisitorImpl? = null) :
+open class KType(val flags: Flags, val typeParametersInContainer: List<KTypeParameter> = emptyList(), val variance: KmVariance = KmVariance.INVARIANT, val typeFlexibilityId: String? = null, val parent: KType? = null) :
     KmTypeVisitor() {
 
     private var name: ClassName = ""
@@ -66,20 +66,20 @@ open class KmTypeVisitorImpl(val flags: Flags, val typeParametersInContainer: Li
         }
     }
 
-    private val typeParameters = ArrayList<KmTypeVisitorImpl>()
+    private val typeParameters = ArrayList<KType>()
 
-    private val upperBounds = ArrayList<KmTypeVisitorImpl>()
+    private val upperBounds = ArrayList<KType>()
 
-    private var abbreviatedTypeVisitor: KmTypeVisitorImpl? = null
+    private var abbreviatedTypeVisitor: KType? = null
 
     override fun visitAbbreviatedType(flags: Flags): KmTypeVisitor? {
-        return KmTypeVisitorImpl(flags, typeParametersInContainer, parent = this).also {
+        return KType(flags, typeParametersInContainer, parent = this).also {
             abbreviatedTypeVisitor = it
         }
     }
 
     override fun visitArgument(flags: Flags, variance: KmVariance): KmTypeVisitor? {
-        return KmTypeVisitorImpl(flags, typeParametersInContainer, variance, parent = this).also {
+        return KType(flags, typeParametersInContainer, variance, parent = this).also {
             typeParameters += it
         }
     }
@@ -90,14 +90,14 @@ open class KmTypeVisitorImpl(val flags: Flags, val typeParametersInContainer: Li
     }
 
     override fun visitFlexibleTypeUpperBound(flags: Flags, typeFlexibilityId: String?): KmTypeVisitor? {
-        return KmTypeVisitorImpl(flags, typeParametersInContainer, variance, typeFlexibilityId, parent = this).also {
+        return KType(flags, typeParametersInContainer, variance, typeFlexibilityId, parent = this).also {
             upperBounds  += it
         }
     }
 
     override fun visitStarProjection() {
         super.visitStarProjection()
-        typeParameters += KmTypeVisitorImpl(0, typeParametersInContainer, parent = this).also {
+        typeParameters += KType(0, typeParametersInContainer, parent = this).also {
             it.visitClass("*")
             it.isReified = false
         }
@@ -123,8 +123,8 @@ open class KmTypeVisitorImpl(val flags: Flags, val typeParametersInContainer: Li
     }
 
     fun dump(){
-        val parentInfo = sequence<KmTypeVisitorImpl> {
-            var parent = this@KmTypeVisitorImpl.parent
+        val parentInfo = sequence<KType> {
+            var parent = this@KType.parent
             while (parent != null){
                 yield(parent)
                 parent = parent.parent

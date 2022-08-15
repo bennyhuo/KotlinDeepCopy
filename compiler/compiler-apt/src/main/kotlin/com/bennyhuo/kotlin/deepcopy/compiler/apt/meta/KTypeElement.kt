@@ -1,8 +1,9 @@
-package com.bennyhuo.kotlin.deepcopy.compiler.apt
+package com.bennyhuo.kotlin.deepcopy.compiler.apt.meta
 
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.*
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopException
 import com.squareup.kotlinpoet.*
 import kotlinx.metadata.jvm.KotlinClassMetadata
@@ -42,11 +43,11 @@ class KTypeElement private constructor(
         }
     }
 
-    private val kClassMirror: KClassMirror? = getAnnotation(Metadata::class.java)?.let {
+    private val kClassMeta: KClassMeta? = getAnnotation(Metadata::class.java)?.let {
         it.parse() as? KotlinClassMetadata.Class
-    }?.let(::KClassMirror)
+    }?.let(::KClassMeta)
 
-    val isDataClass = kClassMirror?.isData ?: false
+    val isDataClass = kClassMeta?.isData ?: false
 
     val isCollectionType by lazy {
         typeElement.isSupportedCollectionType
@@ -56,20 +57,16 @@ class KTypeElement private constructor(
         typeElement.isSupportedMapType
     }
 
-    val isDataType by lazy {
-        isDataClass
-    }
-
-    val canDeepCopy = isDataType && (typeElement.getAnnotation(DeepCopy::class.java) != null
+    val isDeepCopiable = isDataClass && (typeElement.getAnnotation(DeepCopy::class.java) != null
             || this in Index)
 
-    val components = kClassMirror?.components ?: emptyList()
+    val components = kClassMeta?.components ?: emptyList()
 
-    val typeVariablesWithoutVariance = kClassMirror?.typeParameters?.map {
+    val typeVariablesWithoutVariance = kClassMeta?.typeParameters?.map {
         it.typeVariableNameWithoutVariance
     } ?: emptyList()
 
-    val typeVariables = kClassMirror?.typeParameters?.map {
+    val typeVariables = kClassMeta?.typeParameters?.map {
         it.typeVariableName
     } ?: emptyList()
 
@@ -96,5 +93,5 @@ fun KTypeElement?.isDeepCopiable(): Boolean {
     contract {
         returns(true) implies (this@isDeepCopiable != null)
     }
-    return this?.canDeepCopy == true
+    return this?.isDeepCopiable == true
 } 

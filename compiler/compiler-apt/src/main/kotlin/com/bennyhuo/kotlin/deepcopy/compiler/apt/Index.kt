@@ -6,6 +6,7 @@ import com.bennyhuo.aptutils.types.asElement
 import com.bennyhuo.aptutils.types.asTypeMirror
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyIndex
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.MirroredTypesException

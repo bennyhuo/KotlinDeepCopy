@@ -1,7 +1,7 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.apt.loop
 
 import com.bennyhuo.aptutils.logger.Logger
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.KTypeElement
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
 import java.util.*
 
 class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
@@ -14,7 +14,7 @@ class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
             // Only nullable types should be checked.
             .filter { it.type.isNullable }
             .mapNotNull { it.typeElement }
-            .filter { it.canDeepCopy }
+            .filter { it.isDeepCopiable }
             .forEach {
                 push(it)
                 detectNext(it)
@@ -25,7 +25,7 @@ class DeepCopyLoopDetector(private val kTypeElement: KTypeElement) {
 
     private fun detectNext(kTypeElement: KTypeElement) {
         kTypeElement.components.mapNotNull { it.typeElement }
-            .filter { it.canDeepCopy }
+            .filter { it.isDeepCopiable }
             .forEach {
                 push(it)
                 detectNext(it)

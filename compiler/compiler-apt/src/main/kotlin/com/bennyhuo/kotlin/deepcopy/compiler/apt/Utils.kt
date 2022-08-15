@@ -2,6 +2,7 @@ package com.bennyhuo.kotlin.deepcopy.compiler.apt
 
 import com.bennyhuo.aptutils.types.ClassType
 import com.bennyhuo.aptutils.types.packageName
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy

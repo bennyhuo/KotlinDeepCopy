@@ -4,6 +4,7 @@ import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.logger.Logger
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopDetector
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement

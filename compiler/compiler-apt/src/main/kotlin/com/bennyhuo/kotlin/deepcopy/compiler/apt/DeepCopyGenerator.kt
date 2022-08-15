@@ -3,6 +3,8 @@ package com.bennyhuo.kotlin.deepcopy.compiler.apt
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.packageName
 import com.bennyhuo.aptutils.types.simpleName
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.isDeepCopiable
 import com.squareup.kotlinpoet.*
 
 class DeepCopyGenerator(val kTypeElement: KTypeElement){
@@ -29,7 +31,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         kTypeElement.components.forEach { component ->
             val kTypeElement = component.typeElement
             if (kTypeElement != null) {
-                if (kTypeElement.canDeepCopy) {
+                if (kTypeElement.isDeepCopiable) {
                     fileSpecBuilder.addImport(
                         kTypeElement.escapedPackageName,
                         "deepCopy"
