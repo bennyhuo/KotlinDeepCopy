@@ -17,8 +17,7 @@ import javax.lang.model.element.TypeElement
 
 @SupportedAnnotationTypes(
     "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy",
-    "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig",
-    "kotlin.Metadata"
+    "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig"
 )
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 class DeepCopyProcessor : AptModuleProcessor() {
