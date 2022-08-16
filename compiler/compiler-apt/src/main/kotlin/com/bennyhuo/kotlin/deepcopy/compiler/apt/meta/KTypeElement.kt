@@ -58,7 +58,7 @@ class KTypeElement private constructor(
     }
 
     val isDeepCopiable = isDataClass && (typeElement.getAnnotation(DeepCopy::class.java) != null
-            || this in Index)
+            || typeElement in DeepCopyConfigIndex)
 
     val components = kClassMeta?.components ?: emptyList()
 

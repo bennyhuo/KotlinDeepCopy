@@ -6,7 +6,7 @@ import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 @DeepCopyConfig(values = [Pair::class, Triple::class])
 class Config
 
-@DeepCopyConfig(values = Pair::class)
+@DeepCopyConfig(values = [Pair::class])
 class ConfigSingle
 
 // b.kt
