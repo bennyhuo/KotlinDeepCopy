@@ -10,6 +10,13 @@ kotlin {
     js {
         nodejs {}
     }
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                api("com.bennyhuo.kotlin:annotations-module-support:0.1")
+            }
+        }
+    }
 }
 
 rootProject.plugins.withType<NodeJsRootPlugin> {

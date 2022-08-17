@@ -31,7 +31,7 @@ class DeepCopySymbolProcessor(
             val configIndex = DeepCopyConfigIndex(annotatedSymbols[DeepCopyConfig::class.java.name])
 
             val deepCopyTypes =
-                resolver.getSymbolsWithAnnotation(DeepCopy::class.qualifiedName!!)
+                resolver.getSymbolsWithAnnotation(DeepCopy::class.java.name)
                     .filterIsInstance<KSClassDeclaration>()
                     .filter { Modifier.DATA in it.modifiers }
                     .toSet() + configIndex.deepCopyClassDeclarations
