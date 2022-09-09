@@ -1,9 +1,7 @@
 plugins {
     java
-    id("com.github.johnrengelman.shadow")
+    id("com.bennyhuo.kotlin.plugin.embeddable")
 }
-
-jarWithEmbedded()
 
 dependencies {
     embedded(project(":kcp-impl:compiler-kcp"))

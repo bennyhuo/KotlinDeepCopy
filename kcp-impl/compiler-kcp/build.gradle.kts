@@ -5,7 +5,7 @@ plugins {
   java
   kotlin("kapt")
   id("com.github.gmazzo.buildconfig")
-  id("com.github.johnrengelman.shadow")
+  id("com.bennyhuo.kotlin.plugin.embeddable.test")
 }
 
 dependencies {
@@ -21,7 +21,7 @@ dependencies {
   testImplementation(kotlin("test-junit"))
   testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
 
-  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.4")
+  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:1.7.10.0")
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -31,5 +31,3 @@ buildConfig {
   packageName("$group.kcp")
   buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${project.properties["KOTLIN_PLUGIN_ID"]}\"")
 }
-
-testWithEmbedded()

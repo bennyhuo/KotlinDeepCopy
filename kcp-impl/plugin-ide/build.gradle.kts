@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.intellij") version("1.1.2")
+    id("org.jetbrains.intellij") version("1.9.0")
 }
 
 dependencies {
@@ -8,7 +8,7 @@ dependencies {
 }
 
 intellij {
-    version.set("2021.3.1")
+    version.set("2022.2.1")
     plugins.set(listOf("Kotlin", "com.intellij.gradle"))
     pluginName.set("DeepCopy")
     updateSinceUntilBuild.set(false)

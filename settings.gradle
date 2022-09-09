@@ -5,6 +5,12 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+    }
+}
+
 rootProject.name = 'deepcopy'
 
 include ":reflect-impl"
@@ -27,3 +33,11 @@ include ":kcp-impl:plugin-gradle"
 include ":kcp-impl:plugin-ide"
 //include ":kcp-impl:sample"
 
+["Symbol-Processing-Utils",
+ "kotlin-compiler-plugin-embeddable-plugin",
+ "kotlin-compile-testing-extensions"].each {
+    def f = file("../$it")
+    if (f.exists()) {
+        includeBuild(f)
+    }
+}

@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.js")
+    kotlin("multiplatform")
     id("com.google.devtools.ksp") version kspVersion
 }
 
@@ -9,24 +9,25 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-js"))
-    implementation(project(":annotations"))
-    ksp(project(":compiler:compiler-ksp"))
-}
-
 kotlin {
-    sourceSets {
-        val main by getting {
-            kotlin.srcDir("build/generated/ksp/main/kotlin")
-        }
-    }
-}
-
-kotlin {
-    js {
+    js(IR) {
         nodejs {
         }
         binaries.executable()
     }
+
+    sourceSets {
+        val jsMain by getting {
+            kotlin.srcDir("build/generated/ksp/js/jsMain/kotlin")
+
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+                implementation(project(":annotations"))
+            }
+        }
+    }
+}
+
+dependencies {
+    "kspJs"(project(":compiler:compiler-ksp"))
 }

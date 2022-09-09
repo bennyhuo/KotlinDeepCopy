@@ -1,29 +1,12 @@
-buildscript {
-    dependencies {
-        classpath(project(":kcp-impl:plugin-gradle"))
-    }
-}
-
-
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.jvm' version "1.7.10"
+    id "com.bennyhuo.kotlin.plugin.deepcopy" version "1.7.10.0-SNAPSHOT"
 }
-
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute module("com.bennyhuo.kotlin:deepcopy-compiler-kcp") using project(":kcp-impl:compiler-kcp") because "we work with the unreleased development version"
-    }
-}
-
-apply plugin:"com.bennyhuo.kotlin.kcp.deepcopy"
-
-sourceCompatibility = 1.8
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation(project(":annotations"))
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0-SNAPSHOT")
 }
 
 compileKotlin {
