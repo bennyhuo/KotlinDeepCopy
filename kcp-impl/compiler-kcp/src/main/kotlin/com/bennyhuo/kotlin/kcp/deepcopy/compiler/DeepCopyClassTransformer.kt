@@ -6,28 +6,15 @@ import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
-import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
-import org.jetbrains.kotlin.ir.builders.Scope
-import org.jetbrains.kotlin.ir.builders.irCall
-import org.jetbrains.kotlin.ir.builders.irGet
-import org.jetbrains.kotlin.ir.builders.irGetField
-import org.jetbrains.kotlin.ir.builders.irReturn
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.declarations.IrProperty
-import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.builders.*
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.mapTypeParameters
 import org.jetbrains.kotlin.ir.expressions.mapValueParameters
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.getClass
-import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
-import org.jetbrains.kotlin.ir.util.defaultType
-import org.jetbrains.kotlin.ir.util.primaryConstructor
-import org.jetbrains.kotlin.ir.util.properties
-import org.jetbrains.kotlin.ir.util.withReferenceScope
+import org.jetbrains.kotlin.ir.util.*
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
 class DeepCopyClassTransformer(
@@ -36,27 +23,32 @@ class DeepCopyClassTransformer(
 ) : IrElementTransformerVoidWithContext(), PluginAvailability by pluginAvailability {
 
     override fun visitClassNew(declaration: IrClass): IrStatement {
-        if (declaration.isDeepCopyPluginEnabled()) {
-            if (declaration.annotatedAsDeepCopiableDataClass()) {
-                declaration.deepCopyFunctionForDataClass()?.let { function ->
-                    MemberFunctionBuilder(declaration, function, pluginContext).build {
-                        declaration.primaryConstructor?.valueParameters?.forEachIndexed { index, valueParameter ->
-                            irFunction.valueParameters[index].defaultValue = pluginContext.irFactory.createExpressionBody(
-                                irGetProperty(
-                                    irThis(),
-                                    declaration.properties.first { it.name == valueParameter.name })
-                            )
-                        }
+        if (!declaration.isDeepCopyPluginEnabled()) return super.visitClassNew(declaration)
 
-                        generateDeepCopyFunctionForDataClass()
+        if (declaration.annotatedAsDeepCopiableDataClass()) {
+            declaration.deepCopyFunctionForDataClass()?.takeIf {
+                it.body == null
+            }?.let { function ->
+                MemberFunctionBuilder(declaration, function, pluginContext).build {
+                    declaration.primaryConstructor?.valueParameters?.forEachIndexed { index, valueParameter ->
+                        irFunction.valueParameters[index].defaultValue = pluginContext.irFactory.createExpressionBody(
+                            irGetProperty(
+                                irThis(),
+                                declaration.properties.first { it.name == valueParameter.name })
+                        )
                     }
+
+                    generateDeepCopyFunctionForDataClass()
                 }
             }
-            if (declaration.implementsDeepCopiableInterface()) {
-                declaration.deepCopyFunctionForDeepCopiable()?.let { function ->
-                    MemberFunctionBuilder(declaration, function, pluginContext).build {
-                        generateDeepCopyFunctionForDeepCopiable()
-                    }
+        }
+        // Only generate implementation for data classes.
+        if (declaration.isData && declaration.implementsDeepCopiableInterface()) {
+            declaration.deepCopyFunctionForDeepCopiable()?.takeIf {
+                it.body == null
+            }?.let { function ->
+                MemberFunctionBuilder(declaration, function, pluginContext).build {
+                    generateDeepCopyFunctionForDeepCopiable()
                 }
             }
         }

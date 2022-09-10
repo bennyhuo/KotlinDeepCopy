@@ -3,6 +3,20 @@
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.DeepCopiable
 
+class A: DeepCopiable<A> {
+    override fun deepCopy(): A {
+        return A()
+    }
+}
+
+data class B(val a: A): DeepCopiable<B> {
+    override fun deepCopy(): B {
+        return B(a.deepCopy())
+    }
+}
+
+data class C(val a: A, val b: B): DeepCopiable<C>
+
 @DeepCopy
 data class DataClass(var name: String): DeepCopiable<DataClass>
 
@@ -14,6 +28,13 @@ data class Container(val dataClass: DataClass, val plainClass: PlainClass)
 data class User(var name: String, var age: Int): DeepCopiable<User>
 
 fun main() {
+    val a = A()
+    val b = B(a)
+    val c = C(a, b)
+    println(a.deepCopy() !== a)
+    println(b.deepCopy().a !== a)
+    println(c.deepCopy().b !== b)
+
     val container = Container(DataClass("x0"), PlainClass("y0"))
     val copy = container.deepCopy()
 
@@ -36,6 +57,9 @@ fun main() {
 
 // GENERATED
 // FILE: Main.kt
+true
+true
+true
 true
 true
 false

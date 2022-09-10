@@ -3,7 +3,11 @@
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy
-data class DataClass(var name: String)
+data class DataClass(var name: String) {
+    fun deepCopy(name: String = this.name): DataClass {
+        return DataClass(name)
+    }
+}
 
 data class PlainClass(var name: String)
 

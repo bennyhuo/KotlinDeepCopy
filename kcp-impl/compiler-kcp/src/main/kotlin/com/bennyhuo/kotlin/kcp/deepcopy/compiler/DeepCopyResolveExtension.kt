@@ -2,6 +2,7 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
+import org.jetbrains.kotlin.js.inline.util.zipWithDefault
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
@@ -28,7 +29,12 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
         if (thisDescriptor.isDeepCopyPluginEnabled()) {
             if (name.identifier == DEEP_COPY_FUNCTION_NAME) {
                 // @DeepCopy
-                if (thisDescriptor.annotatedAsDeepCopiableDataClass()) {
+                if (thisDescriptor.annotatedAsDeepCopiableDataClass()
+                    && result.none {
+                        it.typeParameters.isEmpty() && it.valueParameters.zipWithDefault(
+                            thisDescriptor.unsubstitutedPrimaryConstructor!!.valueParameters, null
+                        ).all { it.first?.type == it.second.type }
+                    }) {
                     result += DeepCopyFunctionDescriptorImpl(thisDescriptor).apply {
                         initialize(thisDescriptor.unsubstitutedPrimaryConstructor!!.valueParameters.map {
                             it.copy(this, declaresDefaultValue = true)
@@ -36,8 +42,10 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
                     }
                 }
 
-                // : DeepCopiable<T>
-                if (thisDescriptor.implementsDeepCopiableInterface()) {
+                // data class & DeepCopiable<T>
+                if (thisDescriptor.isData && thisDescriptor.implementsDeepCopiableInterface()
+                    && result.none { it.typeParameters.isEmpty() && it.valueParameters.isEmpty() }
+                ) {
                     result += DeepCopyFunctionDescriptorImpl(thisDescriptor).apply {
                         initialize()
                     }

@@ -11,12 +11,10 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.types.classFqName
-import org.jetbrains.kotlin.ir.types.isCollection
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
-import org.jetbrains.kotlin.js.descriptorUtils.nameIfStandardType
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
@@ -42,7 +40,7 @@ fun IrClass.annotatedAsDeepCopiableDataClass(): Boolean {
 }
 
 fun IrClass.implementsDeepCopiableInterface(): Boolean {
-    return isData && this.superTypes.find { it.classFqName?.asString() == DEEP_COPY_INTERFACE_NAME } != null
+    return this.superTypes.find { it.classFqName?.asString() == DEEP_COPY_INTERFACE_NAME } != null
 }
 
 fun IrClass.deepCopyFunctionForDataClass(): IrFunction? {
