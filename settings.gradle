@@ -33,11 +33,12 @@ include ":kcp-impl:plugin-gradle"
 include ":kcp-impl:plugin-ide"
 //include ":kcp-impl:sample"
 
-["Symbol-Processing-Utils",
- "kotlin-compiler-plugin-embeddable-plugin",
- "kotlin-compile-testing-extensions"].each {
-    def f = file("../$it")
-    if (f.exists()) {
-        includeBuild(f)
+def local = file("composite_build.local")
+if (local.exists()) {
+    local.readLines().each {
+        def f = file("../$it")
+        if (f.exists()) {
+            includeBuild(f)
+        }
     }
 }

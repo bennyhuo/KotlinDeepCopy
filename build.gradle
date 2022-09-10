@@ -16,17 +16,20 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.10" apply false
     id("org.jetbrains.dokka") version "1.7.10" apply false
     id("com.github.gmazzo.buildconfig") version "2.1.0" apply false
+    id("com.vanniktech.maven.publish") version "0.22.0" apply false
+    id("com.bennyhuo.kotlin.plugin.embeddable") version "1.7.10.0" apply false
+    id("com.bennyhuo.kotlin.plugin.embeddable.test") version "1.7.10.0" apply false
 }
 
-subprojects {
-    if (!name.startsWith("sample") && !parent?.name?.startsWith("sample")) {
+subprojects { project ->
+    if(!project.hasProperty("shouldPublish") || project.property("shouldPublish") == "false") {
         group = GROUP
         version = VERSION_NAME
 
-        apply plugin: "com.vanniktech.maven.publish"
+        project.apply plugin: "com.vanniktech.maven.publish"
     }
 
     repositories {
-        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
+        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public" }
     }
 }
