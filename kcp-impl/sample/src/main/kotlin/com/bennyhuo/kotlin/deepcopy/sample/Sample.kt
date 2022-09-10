@@ -28,11 +28,22 @@ class A : DeepCopiable<A> {
     }
 }
 
+@DeepCopy
 data class AA(val a: A) : DeepCopiable<AA> {
     override fun deepCopy(): AA {
         return AA(a)
     }
 }
+
+data class B(val name: String)
+
+data class DataClass(var name: String) : DeepCopiable<DataClass>
+
+data class DataClass2(var name: String)
+
+@DeepCopy
+data class Container(val dataClasses: List<DataClass>, val dataClasses2: List<DataClass2>)
+
 
 fun main(args: Array<String>) {
     val talk = Talk(
@@ -68,4 +79,26 @@ fun main(args: Array<String>) {
     )
     println(talk === copiedTalk)
     println(talk.speaker === copiedTalk.speaker)
+
+    println(talk is DeepCopiable<*>)
+    println(B("Hello") as Any !is DeepCopiable<*>)
+
+    val container = Container(
+            listOf(
+                    DataClass("a"),
+                    DataClass("b"),
+                    DataClass("c"),
+                    DataClass("d"),
+            ),
+            listOf(
+                    DataClass2("a"),
+                    DataClass2("b"),
+                    DataClass2("c"),
+                    DataClass2("d"),
+            )
+    )
+
+    val copy = container.deepCopy()
+    println(container.dataClasses.zip(copy.dataClasses).all { (first, second) -> first != second })
+    println(container.dataClasses2.zip(copy.dataClasses2).all { (first, second) -> first == second })
 }

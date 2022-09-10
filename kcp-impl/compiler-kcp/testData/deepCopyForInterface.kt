@@ -36,6 +36,10 @@ fun main() {
     println(c.deepCopy().b !== b)
 
     val container = Container(DataClass("x0"), PlainClass("y0"))
+    println(container is DeepCopiable<*>)
+    println(container.dataClass is DeepCopiable<*>)
+    println(container.plainClass as Any !is DeepCopiable<*>)
+
     val copy = container.deepCopy()
 
     println(container !== copy)
@@ -57,6 +61,9 @@ fun main() {
 
 // GENERATED
 // FILE: Main.kt
+true
+true
+true
 true
 true
 true

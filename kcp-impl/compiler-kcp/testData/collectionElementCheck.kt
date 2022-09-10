@@ -1,9 +1,9 @@
 // SOURCE
-// FILE: Main.kt
+// FILE: Main.kt [MainKt#main]
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.DeepCopiable
 
-data class DataClass(var name: String): DeepCopiable<DataClass>
+data class DataClass(var name: String) : DeepCopiable<DataClass>
 data class DataClass2(var name: String)
 
 @DeepCopy
@@ -25,8 +25,12 @@ fun main() {
         )
     )
 
-    println(container)
+    val copy = container.deepCopy()
+    println(container.dataClasses.zip(copy.dataClasses).all { (first, second) -> first === second })
+    println(container.dataClasses2.zip(copy.dataClasses2).all { (first, second) -> first === second })
 }
 
 // GENERATED
 // FILE: Main.kt
+false
+true

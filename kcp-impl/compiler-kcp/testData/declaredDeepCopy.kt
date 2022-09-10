@@ -4,10 +4,7 @@ import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy
 data class DataClass(val name: String) {
-    /**
-     * This will not affect the synthetic deepCopy function.
-     */
-    fun deepCopy() : DataClass {
+    override fun deepCopy() : DataClass {
         return DataClass(name)
     }
 }

@@ -3,9 +3,11 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
+import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -15,6 +17,7 @@ import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
@@ -121,3 +124,13 @@ fun ValueParameterDescriptor.copy(
         source,
     )
 }
+
+internal fun ModuleDescriptor.deepCopiableType() =
+    requireNotNull(
+        findClassAcrossModuleDependencies(
+            ClassId(
+                FqName("com.bennyhuo.kotlin.deepcopy"),
+                Name.identifier("DeepCopiable")
+            )
+        )
+    ) { "Can't locate class $DEEP_COPY_INTERFACE_NAME" }
