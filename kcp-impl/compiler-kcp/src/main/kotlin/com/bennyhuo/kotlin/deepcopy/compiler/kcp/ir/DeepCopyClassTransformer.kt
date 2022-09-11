@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
-import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.ir.util.properties
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
@@ -55,12 +54,12 @@ class DeepCopyClassTransformer(
         ).generateBody { constructorParameter ->
             val irValueParameter = irFunction.valueParameters[constructorParameter.index]
             irGet(irValueParameter.type, irValueParameter.symbol)
-        }.generateDefaultParameter { index, parameter ->
-            val constructorParameter = irClass.primaryConstructor!!.valueParameters[index]
+        }.generateDefaultParameter { parameter ->
             pluginContext.irFactory.createExpressionBody(
                 irGetProperty(
                     irFunction.irThis(),
-                    irClass.properties.first { it.name == constructorParameter.name })
+                    irClass.properties.single { it.name == parameter.name }
+                )
             )
         }
     }

@@ -35,10 +35,10 @@ class DeepCopyFunctionBuilder(
     }
 
     fun generateDefaultParameter(
-        valueMapper: DeepCopyFunctionBuilder.(Int, IrValueParameter) -> IrExpressionBody?
+        valueMapper: DeepCopyFunctionBuilder.(IrValueParameter) -> IrExpressionBody?
     ): DeepCopyFunctionBuilder {
-        irFunction.valueParameters.forEachIndexed { index, irValueParameter ->
-            irValueParameter.defaultValue = valueMapper(index, irValueParameter)
+        irFunction.valueParameters.forEach { irValueParameter ->
+            irValueParameter.defaultValue = valueMapper(irValueParameter)
         }
         return this
     }
