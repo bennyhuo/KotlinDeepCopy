@@ -27,13 +27,17 @@ class DeepCopyClassTransformer(
         if (!declaration.isDeepCopyPluginEnabled()) return super.visitClassNew(declaration)
 
         if (declaration.annotatedAsDeepCopyableDataClass()) {
-            declaration.deepCopyFunctionForDataClass()?.let { function ->
+            declaration.deepCopyFunctionForDataClass()?.takeIf {
+                it.body == null
+            }?.let { function ->
                 generateDeepCopyFunctionForDataClass(declaration, function)
             }
         }
         // Only generate implementation for data classes.
         if (declaration.isData && declaration.implementsDeepCopyableInterface()) {
-            declaration.deepCopyFunctionForDeepCopyable()?.let { function ->
+            declaration.deepCopyFunctionForDeepCopyable()?.takeIf {
+                it.body == null
+            }?.let { function ->
                 generateDeepCopyFunctionForDeepCopyable(declaration, function)
             }
         }
