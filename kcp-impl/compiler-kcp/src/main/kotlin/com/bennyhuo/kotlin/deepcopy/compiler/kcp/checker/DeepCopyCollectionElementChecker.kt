@@ -4,7 +4,6 @@ import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DEEP_COPY_INTERFACE_NAME
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.annotatedAsDeepCopyableDataClass
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.collectionTypes
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.implementsDeepCopyableInterface
-import com.bennyhuo.kotlin.kcp.deepcopy.compiler.ErrorsDeepCopy
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
@@ -69,7 +68,7 @@ class DeepCopyCollectionElementChecker : DeclarationChecker {
                         it.getJetTypeFqName(false) == DEEP_COPY_INTERFACE_NAME
                     }) {
                     context.trace.report(
-                        ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCopyable.on(userType, type.toString())
+                        ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCOPYABLE.on(userType, type.toString())
                     )
                 }
             }
