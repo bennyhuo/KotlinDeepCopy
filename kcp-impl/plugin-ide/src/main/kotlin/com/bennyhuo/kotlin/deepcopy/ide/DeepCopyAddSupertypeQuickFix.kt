@@ -26,7 +26,7 @@ class DeepCopyAddSupertypeQuickFix(ktClass: KtClass) : KotlinQuickFixAction<KtCl
 
     override fun getFamilyName() = text
 
-    override fun getText() = KotlinDeepCopyBundle.message("deepcopy.fix.add.deepcopiable.supertype")
+    override fun getText() = KotlinDeepCopyBundle.message("deepcopy.fix.add.deepcopyable.supertype")
 
     override fun invoke(project: Project, editor: Editor?, file: KtFile) {
         val ktClass = element ?: return

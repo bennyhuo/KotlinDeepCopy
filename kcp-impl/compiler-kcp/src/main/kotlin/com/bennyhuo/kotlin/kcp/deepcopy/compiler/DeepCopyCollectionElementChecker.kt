@@ -28,7 +28,7 @@ class DeepCopyCollectionElementChecker : DeclarationChecker {
             descriptor is ClassDescriptor
             && declaration is KtClass
             && descriptor.isData
-            && (descriptor.implementsDeepCopiableInterface() || descriptor.annotatedAsDeepCopiableDataClass())
+            && (descriptor.implementsDeepCopyableInterface() || descriptor.annotatedAsDeepCopyableDataClass())
         ) {
             val parameterDeclarations = declaration.primaryConstructorParameters
             descriptor.unsubstitutedPrimaryConstructor
@@ -64,7 +64,7 @@ class DeepCopyCollectionElementChecker : DeclarationChecker {
                         it.getJetTypeFqName(false) == DEEP_COPY_INTERFACE_NAME
                     }) {
                     context.trace.report(
-                        ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCOPIABLE.on(userType, type.toString())
+                        ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCopyable.on(userType, type.toString())
                     )
                 }
             }

@@ -12,7 +12,7 @@ inline fun escapeStdlibPackageName(packageName: String) =
 val KSDeclaration.escapedPackageName: String
     get() = escapeStdlibPackageName(packageName.asString())
 
-val KSDeclaration.deepCopiable: Boolean
+val KSDeclaration.deepCopyable: Boolean
     get() = this is KSClassDeclaration &&
             (isAnnotationPresent(DeepCopy::class) || this in DeepCopyConfigIndex)
 

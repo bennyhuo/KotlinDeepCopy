@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.types.KotlinType
  */
 const val DEEP_COPY_FUNCTION_NAME = "deepCopy"
 const val DEEP_COPY_ANNOTATION_NAME = "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy"
-const val DEEP_COPY_INTERFACE_NAME = "com.bennyhuo.kotlin.deepcopy.DeepCopiable"
+const val DEEP_COPY_INTERFACE_NAME = "com.bennyhuo.kotlin.deepcopy.DeepCopyable"
 
 val collectionTypes = arrayOf(
     "kotlin.collections.Iterable", "kotlin.collections.MutableIterable",
@@ -38,16 +38,16 @@ val collectionTypes = arrayOf(
     "kotlin.collections.Set", "kotlin.collections.MutableSet"
 )
 
-fun IrClass.annotatedAsDeepCopiableDataClass(): Boolean {
+fun IrClass.annotatedAsDeepCopyableDataClass(): Boolean {
     return isData && this.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))
 }
 
-fun IrClass.implementsDeepCopiableInterface(): Boolean {
+fun IrClass.implementsDeepCopyableInterface(): Boolean {
     return this.superTypes.find { it.classFqName?.asString() == DEEP_COPY_INTERFACE_NAME } != null
 }
 
 fun IrClass.deepCopyFunctionForDataClass(): IrFunction? {
-    if (!annotatedAsDeepCopiableDataClass()) return null
+    if (!annotatedAsDeepCopyableDataClass()) return null
 
     return functions.singleOrNull {
         it.name.identifier == DEEP_COPY_FUNCTION_NAME
@@ -75,8 +75,8 @@ fun IrClass.copyFunctionForDataClass(): IrFunction? {
     }
 }
 
-fun IrClass.deepCopyFunctionForDeepCopiable(): IrFunction? {
-    if (!implementsDeepCopiableInterface()) return null
+fun IrClass.deepCopyFunctionForDeepCopyable(): IrFunction? {
+    if (!implementsDeepCopyableInterface()) return null
 
     return functions.singleOrNull {
         it.name.identifier == DEEP_COPY_FUNCTION_NAME && it.valueParameters.isEmpty()
@@ -89,11 +89,11 @@ fun List<IrValueParameter>.matchWith(valueParameters: List<IrValueParameter>): B
     return this.zip(valueParameters).all { it.first.type == it.second.type }
 }
 
-fun ClassDescriptor.annotatedAsDeepCopiableDataClass(): Boolean {
+fun ClassDescriptor.annotatedAsDeepCopyableDataClass(): Boolean {
     return isData && this.annotations.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))
 }
 
-fun ClassDescriptor.implementsDeepCopiableInterface(): Boolean {
+fun ClassDescriptor.implementsDeepCopyableInterface(): Boolean {
     return this.getSuperInterfaces().find { it.fqNameUnsafe.asString() == DEEP_COPY_INTERFACE_NAME } != null
 }
 
@@ -125,12 +125,12 @@ fun ValueParameterDescriptor.copy(
     )
 }
 
-internal fun ModuleDescriptor.deepCopiableType() =
+internal fun ModuleDescriptor.deepCopyableType() =
     requireNotNull(
         findClassAcrossModuleDependencies(
             ClassId(
                 FqName("com.bennyhuo.kotlin.deepcopy"),
-                Name.identifier("DeepCopiable")
+                Name.identifier("DeepCopyable")
             )
         )
     ) { "Can't locate class $DEEP_COPY_INTERFACE_NAME" }

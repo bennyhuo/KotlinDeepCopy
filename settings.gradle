@@ -31,7 +31,6 @@ include ":kcp-impl:compiler-kcp"
 include ":kcp-impl:compiler-kcp-embeddable"
 include ":kcp-impl:plugin-gradle"
 include ":kcp-impl:plugin-ide"
-//include ":kcp-impl:sample"
 
 def local = file("composite_build.local")
 if (local.exists()) {

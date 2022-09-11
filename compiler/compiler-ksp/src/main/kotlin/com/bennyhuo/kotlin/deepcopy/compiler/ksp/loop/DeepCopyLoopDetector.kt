@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp.loop
 
-import com.bennyhuo.kotlin.deepcopy.compiler.ksp.deepCopiable
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.deepCopyable
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -34,7 +34,7 @@ class DeepCopyLoopDetector(
             }.mapNotNull {
                 it.declaration as? KSClassDeclaration
             }.filter {
-                it.deepCopiable
+                it.deepCopyable
             }.forEach {
                 push(it)
                 detect(it, false)

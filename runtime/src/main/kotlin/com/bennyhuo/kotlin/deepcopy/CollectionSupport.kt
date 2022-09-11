@@ -5,7 +5,7 @@ package com.bennyhuo.kotlin.deepcopy
  * Created by benny at 2022/1/12 8:49 PM.
  */
 private fun <T> deepCopyMapper(value: T): T {
-    return if (value is DeepCopiable<*>) {
+    return if (value is DeepCopyable<*>) {
         value.deepCopy() as T
     } else {
         when(value) {

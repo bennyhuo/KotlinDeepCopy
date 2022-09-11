@@ -3,9 +3,17 @@ package com.bennyhuo.kotlin.deepcopy.compiler.apt.meta
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.*
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.DeepCopyConfigIndex
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.isSupportedCollectionType
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.isSupportedMapType
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.kotlinCollectionTypeToJvmType
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopException
-import com.squareup.kotlinpoet.*
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.parse
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeVariableName
+import com.squareup.kotlinpoet.WildcardTypeName
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import java.util.*
 import javax.lang.model.element.TypeElement
@@ -57,7 +65,7 @@ class KTypeElement private constructor(
         typeElement.isSupportedMapType
     }
 
-    val isDeepCopiable = isDataClass && (typeElement.getAnnotation(DeepCopy::class.java) != null
+    val isDeepCopyable = isDataClass && (typeElement.getAnnotation(DeepCopy::class.java) != null
             || typeElement in DeepCopyConfigIndex)
 
     val components = kClassMeta?.components ?: emptyList()
@@ -89,9 +97,9 @@ class KTypeElement private constructor(
     }
 }
 
-fun KTypeElement?.isDeepCopiable(): Boolean {
+fun KTypeElement?.isDeepCopyable(): Boolean {
     contract {
-        returns(true) implies (this@isDeepCopiable != null)
+        returns(true) implies (this@isDeepCopyable != null)
     }
-    return this?.isDeepCopiable == true
+    return this?.isDeepCopyable == true
 } 

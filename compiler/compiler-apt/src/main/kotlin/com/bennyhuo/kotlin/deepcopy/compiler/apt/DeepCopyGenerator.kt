@@ -4,8 +4,12 @@ import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.packageName
 import com.bennyhuo.aptutils.types.simpleName
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.isDeepCopiable
-import com.squareup.kotlinpoet.*
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.isDeepCopyable
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 
 class DeepCopyGenerator(val kTypeElement: KTypeElement){
 
@@ -31,7 +35,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         kTypeElement.components.forEach { component ->
             val kTypeElement = component.typeElement
             if (kTypeElement != null) {
-                if (kTypeElement.isDeepCopiable) {
+                if (kTypeElement.isDeepCopyable) {
                     fileSpecBuilder.addImport(
                         kTypeElement.escapedPackageName,
                         "deepCopy"
@@ -41,7 +45,7 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
                     statementStringBuilder.append("${component.name}${nullableMark}.deepCopy(), ")
                 } else if (kTypeElement.isCollectionType) {
                     val elementType = component.typeArgumentElements.singleOrNull()
-                    val method = if (elementType.isDeepCopiable()){
+                    val method = if (elementType.isDeepCopyable()){
                         fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                         fileSpecBuilder.addImport(elementType.escapedPackageName, "deepCopy")
                         "deepCopy { it.deepCopy() }"
@@ -56,18 +60,18 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
                     val keyType = component.typeArgumentElements[0]
                     val valueType = component.typeArgumentElements[1]
                     val method = when {
-                        keyType.isDeepCopiable() && valueType.isDeepCopiable() -> {
+                        keyType.isDeepCopyable() && valueType.isDeepCopyable() -> {
                             fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                             fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
                             fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
                             "deepCopy({ it.deepCopy() }, { it.deepCopy() })"
                         }
-                        keyType.isDeepCopiable() && !valueType.isDeepCopiable() -> {
+                        keyType.isDeepCopyable() && !valueType.isDeepCopyable() -> {
                             fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                             fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
                             "deepCopy({ it.deepCopy() }, { it })"
                         }
-                        !keyType.isDeepCopiable() && valueType.isDeepCopiable() -> {
+                        !keyType.isDeepCopyable() && valueType.isDeepCopyable() -> {
                             fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                             fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
                             "deepCopy({ it }, { it.deepCopy() })"

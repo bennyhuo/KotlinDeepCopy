@@ -10,7 +10,12 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
-import com.squareup.kotlinpoet.ksp.*
+import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
+import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.ksp.toTypeParameterResolver
+import com.squareup.kotlinpoet.ksp.toTypeVariableName
+import com.squareup.kotlinpoet.ksp.writeTo
 
 /**
  * Created by benny.
@@ -53,14 +58,14 @@ class DeepCopyGenerator(
 
             dataClass.primaryConstructor!!.parameters.forEach { parameter ->
                 val type = parameter.type.resolve()
-                if (type.declaration.deepCopiable) {
+                if (type.declaration.deepCopyable) {
                     fileSpecBuilder.addImport(type.declaration.escapedPackageName, "deepCopy")
                     
                     val nullableMark = if (type.isMarkedNullable) "?" else ""
                     statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.deepCopy(), ")
                 } else if (type.declaration.isSupportedCollectionType) {
                     val elementType = type.arguments.single().type!!.resolve().declaration
-                    val method = if (elementType.deepCopiable) {
+                    val method = if (elementType.deepCopyable) {
                         fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                         fileSpecBuilder.addImport(elementType.escapedPackageName, "deepCopy")
                         "deepCopy { it.deepCopy() }"
@@ -74,18 +79,18 @@ class DeepCopyGenerator(
                     val keyType = type.arguments[0].type!!.resolve().declaration
                     val valueType = type.arguments[1].type!!.resolve().declaration
                     val method = when {
-                        keyType.deepCopiable && valueType.deepCopiable -> {
+                        keyType.deepCopyable && valueType.deepCopyable -> {
                             fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                             fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
                             fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
                             "deepCopy({ it.deepCopy() }, { it.deepCopy() })"
                         }
-                        keyType.deepCopiable && !valueType.deepCopiable -> {
+                        keyType.deepCopyable && !valueType.deepCopyable -> {
                             fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                             fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
                             "deepCopy({ it.deepCopy() }, { it })"
                         }
-                        !keyType.deepCopiable && valueType.deepCopiable -> {
+                        !keyType.deepCopyable && valueType.deepCopyable -> {
                             fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
                             fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
                             "deepCopy({ it }, { it.deepCopy() })"   

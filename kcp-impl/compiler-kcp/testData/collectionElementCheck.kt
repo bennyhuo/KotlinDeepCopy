@@ -1,9 +1,9 @@
 // SOURCE
 // FILE: Main.kt [MainKt#main]
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.bennyhuo.kotlin.deepcopy.DeepCopiable
+import com.bennyhuo.kotlin.deepcopy.DeepCopyable
 
-data class DataClass(var name: String) : DeepCopiable<DataClass>
+data class DataClass(var name: String) : DeepCopyable<DataClass>
 data class DataClass2(var name: String)
 
 @DeepCopy

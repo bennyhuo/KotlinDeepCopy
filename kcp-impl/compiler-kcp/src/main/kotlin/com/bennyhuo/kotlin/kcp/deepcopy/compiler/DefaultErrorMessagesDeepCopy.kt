@@ -10,8 +10,8 @@ object DefaultErrorMessagesDeepCopy : DefaultErrorMessages.Extension {
 
     init {
         rendererMap.put(
-            ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCOPIABLE,
-            "''{0}'' should implement ''com.bennyhuo.kotlin.deepcopy.DeepCopiable<T>'' to support deep copy.",
+            ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCopyable,
+            "''{0}'' should implement ''com.bennyhuo.kotlin.deepcopy.DeepCopyable<T>'' to support deep copy.",
             Renderers.TO_STRING
         )
     }

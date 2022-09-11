@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.sample
 
-import com.bennyhuo.kotlin.deepcopy.DeepCopiable
+import com.bennyhuo.kotlin.deepcopy.DeepCopyable
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 
 @DeepCopy
@@ -22,14 +22,14 @@ data class Talk(var name: String, var speaker: Speaker) {
     }
 }
 
-class A : DeepCopiable<A> {
+class A : DeepCopyable<A> {
     override fun deepCopy(): A {
         return A()
     }
 }
 
 @DeepCopy
-data class AA(val a: A) : DeepCopiable<AA> {
+data class AA(val a: A) : DeepCopyable<AA> {
     override fun deepCopy(): AA {
         return AA(a)
     }
@@ -37,7 +37,7 @@ data class AA(val a: A) : DeepCopiable<AA> {
 
 data class B(val name: String)
 
-data class DataClass(var name: String) : DeepCopiable<DataClass>
+data class DataClass(var name: String) : DeepCopyable<DataClass>
 
 data class DataClass2(var name: String)
 
@@ -80,8 +80,8 @@ fun main(args: Array<String>) {
     println(talk === copiedTalk)
     println(talk.speaker === copiedTalk.speaker)
 
-    println(talk is DeepCopiable<*>)
-    println(B("Hello") as Any !is DeepCopiable<*>)
+    println(talk is DeepCopyable<*>)
+    println(B("Hello") as Any !is DeepCopyable<*>)
 
     val container = Container(
             listOf(

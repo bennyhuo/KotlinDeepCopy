@@ -21,11 +21,11 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
         thisDescriptor: ClassDescriptor,
         supertypes: MutableList<KotlinType>
     ) {
-        if (thisDescriptor.isDeepCopyPluginEnabled() && thisDescriptor.annotatedAsDeepCopiableDataClass()) {
+        if (thisDescriptor.isDeepCopyPluginEnabled() && thisDescriptor.annotatedAsDeepCopyableDataClass()) {
             supertypes.add(
                 KotlinTypeFactory.simpleNotNullType(
                     TypeAttributes.Empty,
-                    thisDescriptor.module.deepCopiableType(),
+                    thisDescriptor.module.deepCopyableType(),
                     listOf(TypeProjectionImpl(thisDescriptor.defaultType))
                 )
             )
@@ -35,7 +35,7 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
     }
 
     override fun getSyntheticFunctionNames(thisDescriptor: ClassDescriptor): List<Name> {
-        if (thisDescriptor.isDeepCopyPluginEnabled() && thisDescriptor.annotatedAsDeepCopiableDataClass()) {
+        if (thisDescriptor.isDeepCopyPluginEnabled() && thisDescriptor.annotatedAsDeepCopyableDataClass()) {
             return listOf(Name.identifier(DEEP_COPY_FUNCTION_NAME))
         }
         return super.getSyntheticFunctionNames(thisDescriptor)
@@ -51,7 +51,7 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
         if (thisDescriptor.isDeepCopyPluginEnabled()) {
             if (name.identifier == DEEP_COPY_FUNCTION_NAME) {
                 // @DeepCopy
-                if (thisDescriptor.annotatedAsDeepCopiableDataClass()
+                if (thisDescriptor.annotatedAsDeepCopyableDataClass()
                     && result.none {
                         it.typeParameters.isEmpty() && it.valueParameters.zipWithDefault(
                             thisDescriptor.unsubstitutedPrimaryConstructor!!.valueParameters, null
@@ -64,8 +64,8 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
                     }
                 }
 
-                // data class & DeepCopiable<T>
-                if (thisDescriptor.isData && thisDescriptor.implementsDeepCopiableInterface()
+                // data class & DeepCopyable<T>
+                if (thisDescriptor.isData && thisDescriptor.implementsDeepCopyableInterface()
                     && result.none { it.typeParameters.isEmpty() && it.valueParameters.isEmpty() }
                 ) {
                     result += DeepCopyFunctionDescriptorImpl(thisDescriptor).apply {

@@ -1,31 +1,31 @@
 // SOURCE
 // FILE: Main.kt [MainKt#main]
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
-import com.bennyhuo.kotlin.deepcopy.DeepCopiable
+import com.bennyhuo.kotlin.deepcopy.DeepCopyable
 
-class A: DeepCopiable<A> {
+class A: DeepCopyable<A> {
     override fun deepCopy(): A {
         return A()
     }
 }
 
-data class B(val a: A): DeepCopiable<B> {
+data class B(val a: A): DeepCopyable<B> {
     override fun deepCopy(): B {
         return B(a.deepCopy())
     }
 }
 
-data class C(val a: A, val b: B): DeepCopiable<C>
+data class C(val a: A, val b: B): DeepCopyable<C>
 
 @DeepCopy
-data class DataClass(var name: String): DeepCopiable<DataClass>
+data class DataClass(var name: String): DeepCopyable<DataClass>
 
 data class PlainClass(var name: String)
 
 @DeepCopy
 data class Container(val dataClass: DataClass, val plainClass: PlainClass)
 
-data class User(var name: String, var age: Int): DeepCopiable<User>
+data class User(var name: String, var age: Int): DeepCopyable<User>
 
 fun main() {
     val a = A()
@@ -36,9 +36,9 @@ fun main() {
     println(c.deepCopy().b !== b)
 
     val container = Container(DataClass("x0"), PlainClass("y0"))
-    println(container is DeepCopiable<*>)
-    println(container.dataClass is DeepCopiable<*>)
-    println(container.plainClass as Any !is DeepCopiable<*>)
+    println(container is DeepCopyable<*>)
+    println(container.dataClass is DeepCopyable<*>)
+    println(container.plainClass as Any !is DeepCopyable<*>)
 
     val copy = container.deepCopy()
 

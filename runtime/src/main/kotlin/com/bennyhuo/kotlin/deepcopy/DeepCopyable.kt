@@ -1,5 +1,5 @@
 package com.bennyhuo.kotlin.deepcopy
 
-interface DeepCopiable<T> {
+interface DeepCopyable<T> {
     fun deepCopy(): T
 }

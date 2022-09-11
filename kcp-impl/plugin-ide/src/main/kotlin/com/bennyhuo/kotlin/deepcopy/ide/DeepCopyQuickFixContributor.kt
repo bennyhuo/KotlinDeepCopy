@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.idea.quickfix.QuickFixes
 class DeepCopyQuickFixContributor : QuickFixContributor {
     override fun registerQuickFixes(quickFixes: QuickFixes) {
         quickFixes.register(
-            ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCOPIABLE,
+            ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCopyable,
             DeepCopyAddSupertypeQuickFix.Factory
         )
     }
