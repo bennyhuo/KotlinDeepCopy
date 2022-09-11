@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.ide
 
-import com.bennyhuo.kotlin.kcp.deepcopy.compiler.DeepCopyIrGenerationExtension
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.ir.DeepCopyIrGenerationExtension
 import com.intellij.psi.PsiElement
 
 /**

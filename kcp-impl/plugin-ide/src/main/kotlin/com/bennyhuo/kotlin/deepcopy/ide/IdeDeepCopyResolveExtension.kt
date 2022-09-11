@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.ide
 
-import com.bennyhuo.kotlin.kcp.deepcopy.compiler.DeepCopyResolveExtension
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.symbol.DeepCopyResolveExtension
 import com.intellij.psi.PsiElement
 
 /**

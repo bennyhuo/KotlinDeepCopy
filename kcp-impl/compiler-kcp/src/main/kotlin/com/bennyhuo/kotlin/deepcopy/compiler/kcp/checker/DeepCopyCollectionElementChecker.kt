@@ -1,5 +1,10 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp.checker
 
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DEEP_COPY_INTERFACE_NAME
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.annotatedAsDeepCopyableDataClass
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.collectionTypes
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.implementsDeepCopyableInterface
+import com.bennyhuo.kotlin.kcp.deepcopy.compiler.ErrorsDeepCopy
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor

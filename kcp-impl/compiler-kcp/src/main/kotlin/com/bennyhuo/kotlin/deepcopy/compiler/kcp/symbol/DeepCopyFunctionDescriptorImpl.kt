@@ -1,11 +1,10 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp.symbol
 
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DEEP_COPY_FUNCTION_NAME
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.Modality
-import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl

@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.ide
 
-import com.bennyhuo.kotlin.kcp.deepcopy.compiler.DEEP_COPY_INTERFACE_NAME
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DEEP_COPY_INTERFACE_NAME
 import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project

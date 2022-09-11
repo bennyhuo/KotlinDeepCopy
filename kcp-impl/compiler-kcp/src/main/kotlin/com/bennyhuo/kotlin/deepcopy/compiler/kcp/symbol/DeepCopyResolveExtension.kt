@@ -1,5 +1,11 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp.symbol
 
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DEEP_COPY_FUNCTION_NAME
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.PluginAvailability
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.annotatedAsDeepCopyableDataClass
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.copy
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.deepCopyableType
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.implementsDeepCopyableInterface
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.js.inline.util.zipWithDefault

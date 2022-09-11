@@ -1,5 +1,6 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp.checker
 
+import com.bennyhuo.kotlin.kcp.deepcopy.compiler.ErrorsDeepCopy
 import org.jetbrains.kotlin.diagnostics.rendering.DefaultErrorMessages
 import org.jetbrains.kotlin.diagnostics.rendering.DiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.rendering.Renderers

@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.gradle
+package com.bennyhuo.kotlin.deepcopy.gradle
 
 import com.bennyhuo.kotlin.kcp.BuildConfig
 import org.gradle.api.Project

@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor

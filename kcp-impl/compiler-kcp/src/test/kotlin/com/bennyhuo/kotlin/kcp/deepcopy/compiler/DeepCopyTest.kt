@@ -5,6 +5,7 @@ import com.bennyhuo.kotlin.compiletesting.extensions.module.compileAll
 import com.bennyhuo.kotlin.compiletesting.extensions.module.resolveAllDependencies
 import com.bennyhuo.kotlin.compiletesting.extensions.result.ResultCollector
 import com.bennyhuo.kotlin.compiletesting.extensions.source.SingleFileModuleInfoLoader
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DeepCopyComponentRegistrar
 import org.junit.Test
 
 class DeepCopyTest {

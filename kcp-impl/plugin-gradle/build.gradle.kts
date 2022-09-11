@@ -24,7 +24,7 @@ gradlePlugin {
       id = project.properties["KOTLIN_PLUGIN_ID"] as String
       displayName = "Kotlin DeepCopy plugin for data class"
       description = "Kotlin DeepCopy plugin for data class"
-      implementationClass = "com.bennyhuo.kotlin.kcp.deepcopy.gradle.DeepCopyGradlePlugin"
+      implementationClass = "com.bennyhuo.kotlin.deepcopy.gradle.DeepCopyGradlePlugin"
     }
   }
 }

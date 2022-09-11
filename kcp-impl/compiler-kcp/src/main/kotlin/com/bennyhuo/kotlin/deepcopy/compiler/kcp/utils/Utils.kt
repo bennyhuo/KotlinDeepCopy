@@ -1,17 +1,24 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.findClassAcrossModuleDependencies
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
+import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
+import org.jetbrains.kotlin.ir.builders.irCall
+import org.jetbrains.kotlin.ir.builders.irGetField
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.functions
@@ -94,7 +101,8 @@ fun ClassDescriptor.annotatedAsDeepCopyableDataClass(): Boolean {
 }
 
 fun ClassDescriptor.implementsDeepCopyableInterface(): Boolean {
-    return this.getSuperInterfaces().find { it.fqNameUnsafe.asString() == DEEP_COPY_INTERFACE_NAME } != null
+    return this.getSuperInterfaces()
+        .find { it.fqNameUnsafe.asString() == DEEP_COPY_INTERFACE_NAME } != null
 }
 
 fun ValueParameterDescriptor.copy(
@@ -134,3 +142,29 @@ internal fun ModuleDescriptor.deepCopyableType() =
             )
         )
     ) { "Can't locate class $DEEP_COPY_INTERFACE_NAME" }
+
+internal fun IrFunction.irThis(): IrExpression {
+    val irDispatchReceiverParameter = dispatchReceiverParameter!!
+    return IrGetValueImpl(
+        startOffset, endOffset,
+        irDispatchReceiverParameter.type,
+        irDispatchReceiverParameter.symbol
+    )
+}
+
+internal fun IrBuilderWithScope.irGetProperty(
+    receiver: IrExpression,
+    property: IrProperty
+): IrExpression {
+    // In some JVM-specific cases, such as when 'allopen' compiler plugin is applied,
+    // data classes and corresponding properties can be non-final.
+    // We should use getters for such properties (see KT-41284).
+    val backingField = property.backingField
+    return if (property.modality == Modality.FINAL && backingField != null) {
+        irGetField(receiver, backingField)
+    } else {
+        irCall(property.getter!!).apply {
+            dispatchReceiver = receiver
+        }
+    }
+}

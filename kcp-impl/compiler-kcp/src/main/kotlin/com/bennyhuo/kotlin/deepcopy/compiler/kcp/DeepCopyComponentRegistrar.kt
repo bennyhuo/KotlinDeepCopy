@@ -1,8 +1,11 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp
 
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.checker.DeepCopyComponentContainerContributor
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.ir.DeepCopyIrGenerationExtension
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.symbol.DeepCopyResolveExtension
 import com.google.auto.service.AutoService
-import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import com.intellij.mock.MockProject
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor

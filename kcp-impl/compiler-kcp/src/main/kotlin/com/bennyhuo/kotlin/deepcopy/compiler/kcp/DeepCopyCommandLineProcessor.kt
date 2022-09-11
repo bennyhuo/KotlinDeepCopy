@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.kcp.deepcopy.compiler
+package com.bennyhuo.kotlin.deepcopy.compiler.kcp
 
 import com.bennyhuo.kotlin.kcp.BuildConfig
 import com.google.auto.service.AutoService
