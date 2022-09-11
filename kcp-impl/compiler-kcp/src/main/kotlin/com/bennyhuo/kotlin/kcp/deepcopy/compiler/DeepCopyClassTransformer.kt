@@ -39,9 +39,7 @@ class DeepCopyClassTransformer(
         if (!declaration.isDeepCopyPluginEnabled()) return super.visitClassNew(declaration)
 
         if (declaration.annotatedAsDeepCopyableDataClass()) {
-            declaration.deepCopyFunctionForDataClass()?.takeIf {
-                it.body == null
-            }?.let { function ->
+            declaration.deepCopyFunctionForDataClass()?.let { function ->
                 MemberFunctionBuilder(declaration, function, pluginContext).build {
                     declaration.primaryConstructor?.valueParameters?.forEachIndexed { index, valueParameter ->
                         irFunction.valueParameters[index].defaultValue = pluginContext.irFactory.createExpressionBody(
@@ -57,9 +55,7 @@ class DeepCopyClassTransformer(
         }
         // Only generate implementation for data classes.
         if (declaration.isData && declaration.implementsDeepCopyableInterface()) {
-            declaration.deepCopyFunctionForDeepCopyable()?.takeIf {
-                it.body == null
-            }?.let { function ->
+            declaration.deepCopyFunctionForDeepCopyable()?.let { function ->
                 MemberFunctionBuilder(declaration, function, pluginContext).build {
                     generateDeepCopyFunctionForDeepCopyable()
                 }
