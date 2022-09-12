@@ -85,14 +85,30 @@ dependencies {
 
 # Change Log
 
-## v1.5.31.0 Reflect & Apt & Ksp
+## v1.7.10.0 
 
-* Add support for Kotlin Symbol Processing.
-* Add sample on Kotlin Js for KSP.
-* Add support for multi-module projects.
-* Rework the implementation of collections by removing reflections.
-* Limit the deepCopy extension to a new interface DeepCopyable to make it explicit in reflection implementation. 
-* Upgrade to Kotlin 1.5.31.
+Build with Kotlin 1.7.10. 
+
+### Runtime
+
+* Rename `DeepCopiable` to `DeepCopyable` which seems more widely used.
+
+### Reflect
+
+* Make `deepCopy` function available to `DeepCopyable` only.  
+* [NEW] Add support for Kotlin JS.
+
+### APT & KSP
+
+* Support multi-module project in a unified way.
+
+### KCP
+
+* Generate a copy-like function `deepCopy` for data classes annotated with `@DeepCopy`.
+* Generate implementation of `deepCopy` for data classes implemented `DeepCopyable`.
+* Add super type `DeepCopyable` to those data classes annotated with `@DeepCopy`.
+* Carefully handle manually written `deepCopy` function.
+* Add support for Collections.
 
 ## v1.5.0 Reflect & Apt
 

@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.tasks.PublishPluginTask
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.intellij") version("1.9.0")
@@ -12,7 +14,12 @@ intellij {
     plugins.set(listOf("Kotlin", "com.intellij.gradle"))
     pluginName.set("DeepCopy")
     updateSinceUntilBuild.set(false)
-//    alternativeIdePath props["AndroidStudio.path"]
-//    alternativeIdePath props["intellijIU.path"]
+}
 
+tasks {
+    withType<PublishPluginTask> {
+        project.property("intellij.token")?.let {
+            token.set(it.toString())
+        }
+    }
 }
