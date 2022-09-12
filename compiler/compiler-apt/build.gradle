@@ -3,8 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
 }
 
-sourceCompatibility = 1.8
-
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
@@ -14,7 +12,7 @@ dependencies {
 
     api project(":annotations")
 
-    api("com.bennyhuo.kotlin:apt-module-support:0.1")
+    api("com.bennyhuo.kotlin:apt-module-support:1.7.10.1")
 
     testApi group: 'junit', name: 'junit', version: '4.12'
 }

@@ -29,6 +29,10 @@ subprojects { project ->
         project.apply plugin: "com.vanniktech.maven.publish"
     }
 
+    project.pluginManager.withPlugin("java") {
+        project.sourceCompatibility = 1.8
+    }
+
     repositories {
         maven { url "https://mirrors.tencent.com/nexus/repository/maven-public" }
     }
