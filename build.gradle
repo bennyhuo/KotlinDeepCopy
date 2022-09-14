@@ -22,7 +22,7 @@ plugins {
 }
 
 subprojects { project ->
-    if(!project.hasProperty("shouldPublish") || project.property("shouldPublish") == "false") {
+    if(!project.hasProperty("shouldPublish") || project.property("shouldPublish") == "true") {
         group = GROUP
         version = VERSION_NAME
 
