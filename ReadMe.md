@@ -31,7 +31,7 @@ class DeepCopyTest {
 This library has been deloyed to maven center. 
 
 ```gradle
-implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.5.31.0")
+implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.7.10.0")
 ```
 
 ## Apt & Ksp
@@ -71,15 +71,15 @@ The artifacts have been deployed to maven central repository. Set up your projec
 
 ```gradle
 plugins {
-    id("com.google.devtools.ksp") version "1.5.31-1.0.1" // ksp
+    id("com.google.devtools.ksp") version "1.7.10-1.0.6" // ksp
     id "org.jetbrains.kotlin.kapt" // kapt
 }
 ...
 
 dependencies {
-    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.5.31.0")) // ksp
-    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.5.31.0") // kapt
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.5.31.0")
+    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.7.10.0")) // ksp
+    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.7.10.0") // kapt
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0")
 }
 ```
 
