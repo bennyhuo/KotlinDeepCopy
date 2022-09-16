@@ -83,6 +83,23 @@ dependencies {
 }
 ```
 
+## KCP
+
+This is a nearly perfect version I think. It works like `copy` does. You can install this IntelliJ plugin: [DeepCopy](https://plugins.jetbrains.com/plugin/19915-deepcopy-for-kotlin-data-class) and setup your project like this:
+
+```gradle
+plugins {
+    kotlin("jvm") version "1.7.10"
+    id("com.bennyhuo.kotlin.plugin.deepcopy") version "1.7.10.0"
+}
+
+dependencies {
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0")
+}
+```
+
+And then try to call the `deepCopy` function directly!
+
 # Change Log
 
 ## v1.7.10.0 
