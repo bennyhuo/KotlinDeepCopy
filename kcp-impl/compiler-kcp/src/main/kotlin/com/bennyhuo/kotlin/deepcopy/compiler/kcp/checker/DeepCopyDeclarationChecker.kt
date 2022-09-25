@@ -3,8 +3,8 @@ package com.bennyhuo.kotlin.deepcopy.compiler.kcp.checker
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.annotatedAsDeepCopyableDataClass
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.collectionTypes
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.implementsDeepCopyableInterface
+import com.bennyhuo.kotlin.deepcopy.compiler.kcp.userType
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.utils.isDeepCopyable
-import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.psi.KtUserType
-import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
 import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
 import org.jetbrains.kotlin.types.KotlinType
@@ -42,8 +41,6 @@ class DeepCopyDeclarationChecker : DeclarationChecker {
                 }
         }
     }
-
-    private fun PsiElement.userType() = getChildOfType<KtUserType>()
 
     private fun checkType(
         type: KotlinType,

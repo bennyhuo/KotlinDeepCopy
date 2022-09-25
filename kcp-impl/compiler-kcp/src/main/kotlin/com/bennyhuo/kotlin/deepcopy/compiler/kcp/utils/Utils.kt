@@ -1,5 +1,6 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.kcp
 
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -27,6 +28,8 @@ import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtUserType
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
 import org.jetbrains.kotlin.types.KotlinType
@@ -44,6 +47,8 @@ val collectionTypes = arrayOf(
     "kotlin.collections.List", "kotlin.collections.MutableList",
     "kotlin.collections.Set", "kotlin.collections.MutableSet"
 )
+
+fun PsiElement.userType() = getChildOfType<KtUserType>()
 
 fun IrClass.annotatedAsDeepCopyableDataClass(): Boolean {
     return isData && this.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))

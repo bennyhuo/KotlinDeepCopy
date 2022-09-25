@@ -45,7 +45,8 @@ data class DataClass2(var name: String)
 data class Container(val dataClasses: List<DataClass>, val dataClasses2: List<DataClass2>)
 
 
-data class X(val a: Int, val b: Double?, val c: String, val d: Number): DeepCopyable<X>
+typealias NNN = Number
+data class X(val a: Int, val b: Double?, val c: String, val d: NNN): DeepCopyable<X>
 
 fun main(args: Array<String>) {
     val talk = Talk(
