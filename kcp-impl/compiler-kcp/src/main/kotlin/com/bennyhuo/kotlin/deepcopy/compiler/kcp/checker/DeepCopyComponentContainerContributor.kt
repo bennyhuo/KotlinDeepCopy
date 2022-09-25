@@ -13,7 +13,7 @@ open class DeepCopyComponentContainerContributor : StorageComponentContainerCont
         container: StorageComponentContainer, platform: TargetPlatform, moduleDescriptor: ModuleDescriptor
     ) {
         if (moduleDescriptor.isDeepCopyPluginEnabled()) {
-            container.useInstance(DeepCopyCollectionElementChecker())
+            container.useInstance(DeepCopyDeclarationChecker())
         }
     }
 }
