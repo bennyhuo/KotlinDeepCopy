@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.diagnostics.Severity
 interface ErrorsDeepCopy {
     companion object {
         @JvmField
-        val ELEMENT_NOT_IMPLEMENT_DEEPCOPYABLE = DiagnosticFactory1.create<PsiElement, String>(Severity.WARNING)
+        val TYPE_NOT_IMPLEMENT_DEEPCOPYABLE = DiagnosticFactory1.create<PsiElement, String>(Severity.WARNING)
 
         init {
             Errors.Initializer.initializeFactoryNamesAndDefaultErrorMessages(

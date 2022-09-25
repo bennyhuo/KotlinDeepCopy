@@ -58,6 +58,7 @@ open class DeepCopyResolveExtension : SyntheticResolveExtension, PluginAvailabil
             if (name.identifier == DEEP_COPY_FUNCTION_NAME) {
                 // @DeepCopy
                 if (thisDescriptor.annotatedAsDeepCopyableDataClass()
+                    && thisDescriptor.unsubstitutedPrimaryConstructor != null
                     && result.none {
                         it.typeParameters.isEmpty() && it.valueParameters.zipWithDefault(
                             thisDescriptor.unsubstitutedPrimaryConstructor!!.valueParameters, null

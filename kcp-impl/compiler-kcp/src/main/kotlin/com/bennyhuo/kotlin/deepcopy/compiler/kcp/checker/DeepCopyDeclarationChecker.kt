@@ -55,7 +55,8 @@ class DeepCopyDeclarationChecker : DeclarationChecker {
         if (KotlinBuiltIns.isString(type)) return
         if (type !is SimpleType) return
 
-        if (type.getJetTypeFqName(false) in collectionTypes) {
+        val fqName = type.getJetTypeFqName(false)
+        if (fqName in collectionTypes) {
             val typeArgument = userType.typeArguments.single().typeReference?.userType() ?: return
             checkType(type.arguments.single().type, context, typeArgument)
             return
@@ -63,7 +64,7 @@ class DeepCopyDeclarationChecker : DeclarationChecker {
 
         if (!type.isDeepCopyable()) {
             context.trace.report(
-                ErrorsDeepCopy.ELEMENT_NOT_IMPLEMENT_DEEPCOPYABLE.on(userType, type.toString())
+                ErrorsDeepCopy.TYPE_NOT_IMPLEMENT_DEEPCOPYABLE.on(userType, fqName)
             )
         }
     }
