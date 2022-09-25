@@ -31,7 +31,7 @@ class DeepCopyTest {
 This library has been deloyed to maven center. 
 
 ```gradle
-implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.5.31.0")
+implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.7.10.0")
 ```
 
 ## Apt & Ksp
@@ -71,17 +71,34 @@ The artifacts have been deployed to maven central repository. Set up your projec
 
 ```gradle
 plugins {
-    id("com.google.devtools.ksp") version "1.5.31-1.0.1" // ksp
+    id("com.google.devtools.ksp") version "1.7.10-1.0.6" // ksp
     id "org.jetbrains.kotlin.kapt" // kapt
 }
 ...
 
 dependencies {
-    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.5.31.0")) // ksp
-    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.5.31.0") // kapt
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.5.31.0")
+    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.7.10.0")) // ksp
+    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.7.10.0") // kapt
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0")
 }
 ```
+
+## KCP
+
+This is a nearly perfect version I think. It works like `copy` does. You can install this IntelliJ plugin: [DeepCopy](https://plugins.jetbrains.com/plugin/19915-deepcopy-for-kotlin-data-class) and setup your project like this:
+
+```gradle
+plugins {
+    kotlin("jvm") version "1.7.10"
+    id("com.bennyhuo.kotlin.plugin.deepcopy") version "1.7.10.0"
+}
+
+dependencies {
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0")
+}
+```
+
+And then try to call the `deepCopy` function directly!
 
 # Change Log
 
