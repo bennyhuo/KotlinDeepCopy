@@ -52,9 +52,9 @@ fun main() {
 
     println(company.projects === company2.projects)
 }
-// GENERATED
+// EXPECT
 // MODULE: main
-// FILE: Main.kt
+// FILE: Main.kt.stdout
 Company(name=JetBrains, country=Country(name=Czech), projects=[Project(name=IntelliJ, owner=User(name=JetBrains)), Project(name=Kotlin, owner=User(name=JetBrains))])
 Company(name=JetBrains, country=Country(name=Czech), projects=[Project(name=IntelliJ, owner=User(name=JetBrains)), Project(name=Kotlin, owner=User(name=JetBrains))])
 Company(name=JetBrains, country=Country(name=Czech), projects=[Project(name=IntelliJ, owner=User(name=JetBrains)), Project(name=Kotlin, owner=User(name=JetBrains))])

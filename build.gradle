@@ -35,5 +35,6 @@ subprojects { project ->
 
     repositories {
         maven { url "https://mirrors.tencent.com/nexus/repository/maven-public" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }

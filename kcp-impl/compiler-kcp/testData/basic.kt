@@ -35,8 +35,8 @@ fun main() {
     println(user.deepCopy(id = 0).name == "bennyhuo")
 }
 
-// GENERATED
-// FILE: Main.kt
+// EXPECT
+// FILE: Main.kt.stdout
 true
 true
 false

@@ -59,8 +59,8 @@ fun main() {
     println(user === userCopy)
 }
 
-// GENERATED
-// FILE: Main.kt
+// EXPECT
+// FILE: Main.kt.stdout
 true
 true
 true

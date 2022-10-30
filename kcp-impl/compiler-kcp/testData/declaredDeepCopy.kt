@@ -20,6 +20,6 @@ fun main() {
     println(copy)
 }
 
-// GENERATED
-// FILE: Main.kt
+// EXPECT
+// FILE: Main.kt.stdout
 Container(dataClass=DataClass(name=x), id=0)

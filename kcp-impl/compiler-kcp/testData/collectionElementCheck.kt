@@ -30,7 +30,7 @@ fun main() {
     println(container.dataClasses2.zip(copy.dataClasses2).all { (first, second) -> first === second })
 }
 
-// GENERATED
-// FILE: Main.kt
+// EXPECT
+// FILE: Main.kt.stdout
 false
 true
