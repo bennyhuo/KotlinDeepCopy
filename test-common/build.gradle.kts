@@ -14,7 +14,8 @@ dependencies {
     
     testImplementation(project(":compiler:compiler-ksp"))
     testImplementation(project(":compiler:compiler-apt"))
-    
+    testImplementation(project(":runtime"))
+
     testImplementation(kotlin("test-common"))
     testImplementation(kotlin("test-annotations-common"))
     testImplementation(kotlin("test-junit"))
