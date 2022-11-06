@@ -25,10 +25,14 @@ class DeepCopySymbolProcessor(
 
     override fun processMain(
         resolver: Resolver,
-        annotatedSymbols: Map<String, Set<KSAnnotated>>
+        annotatedSymbols: Map<String, Set<KSAnnotated>>,
+        annotatedSymbolsFromLibrary: Map<String, Set<KSAnnotated>>
     ): List<KSAnnotated> {
         try {
-            val configIndex = DeepCopyConfigIndex(annotatedSymbols[DeepCopyConfig::class.java.name])
+            val configIndex = DeepCopyConfigIndex(
+                annotatedSymbols[DeepCopyConfig::class.java.name],
+                annotatedSymbolsFromLibrary[DeepCopyConfig::class.java.name],
+            )
 
             val deepCopyTypes =
                 resolver.getSymbolsWithAnnotation(DeepCopy::class.java.name)

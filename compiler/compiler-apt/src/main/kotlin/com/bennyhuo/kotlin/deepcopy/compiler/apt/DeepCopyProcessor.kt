@@ -34,9 +34,14 @@ class DeepCopyProcessor : AptModuleProcessor() {
 
     override fun processMain(
         roundEnv: RoundEnvironment,
-        annotatedSymbols: Map<String, Set<Element>>
+        annotatedSymbols: Map<String, Set<Element>>,
+        annotatedSymbolsFromLibrary: Map<String, Set<Element>>,
     ) {
-        val configIndex = DeepCopyConfigIndex(annotatedSymbols[DeepCopyConfig::class.java.name])
+        val configIndex = DeepCopyConfigIndex(
+            annotatedSymbols[DeepCopyConfig::class.java.name],
+            annotatedSymbolsFromLibrary[DeepCopyConfig::class.java.name],
+        )
+
         roundEnv.getElementsAnnotatedWith(DeepCopy::class.java)
             .filterIsInstance<TypeElement>()
             .filter { it.kind.isClass }
@@ -47,5 +52,6 @@ class DeepCopyProcessor : AptModuleProcessor() {
                 DeepCopyLoopDetector(it).detect()
                 DeepCopyGenerator(it).generate()
             }
+        DeepCopyConfigIndex.release()
     }
 }
