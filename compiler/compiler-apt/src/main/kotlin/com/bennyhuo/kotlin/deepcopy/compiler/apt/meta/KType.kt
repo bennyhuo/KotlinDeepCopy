@@ -1,8 +1,12 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.apt.meta
 
 import com.bennyhuo.aptutils.logger.Logger
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.STAR
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeVariableName
+import com.squareup.kotlinpoet.WildcardTypeName
 import kotlinx.metadata.ClassName
 import kotlinx.metadata.Flag
 import kotlinx.metadata.Flags
@@ -20,7 +24,6 @@ open class KType(val flags: Flags, val typeParametersInContainer: List<KTypePara
         when(isReified){
             true -> {
                 val splits = name.split("/")
-                assert(splits.size > 1)
                 val packageName = splits.subList(0, splits.size - 1).joinToString(".")
                 val simpleNames = splits.last().split("\\.").toTypedArray()
                 val simpleName = simpleNames[0]
