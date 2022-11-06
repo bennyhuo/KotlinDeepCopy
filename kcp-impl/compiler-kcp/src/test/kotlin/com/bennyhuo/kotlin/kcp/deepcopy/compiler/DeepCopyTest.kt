@@ -7,6 +7,11 @@ import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DeepCopyComponentRegistrar
 import org.junit.Test
 
 class DeepCopyTest {
+
+    @Test
+    fun simple() {
+        testBase("simple.kt")
+    }
     @Test
     fun basic() {
         testBase("basic.kt")
@@ -34,13 +39,9 @@ class DeepCopyTest {
 
     private fun testBase(fileName: String) {
         val loader = FileBasedModuleInfoLoader("testData/$fileName")
-        val sourceModuleInfos = loader.loadSourceModuleInfos()
-
-        val modules = sourceModuleInfos.map {
+        loader.loadSourceModuleInfos().map {
             KotlinModule(it, componentRegistrars = listOf(DeepCopyComponentRegistrar()))
-        }
-        
-        modules.checkResult(
+        }.checkResult(
             loader.loadExpectModuleInfos(),
             checkGeneratedIr = true,
             executeEntries = true

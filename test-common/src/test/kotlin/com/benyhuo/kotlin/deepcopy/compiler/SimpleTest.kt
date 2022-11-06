@@ -1,5 +1,10 @@
 package com.benyhuo.kotlin.deepcopy.compiler
 
+import com.bennyhuo.kotlin.compiletesting.extensions.module.KotlinModule
+import com.bennyhuo.kotlin.compiletesting.extensions.module.checkResult
+import com.bennyhuo.kotlin.compiletesting.extensions.source.ExpectModuleInfo
+import com.bennyhuo.kotlin.compiletesting.extensions.source.FileBasedModuleInfoLoader
+import com.bennyhuo.kotlin.compiletesting.extensions.source.SourceModuleInfo
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.DeepCopyProcessor
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.DeepCopySymbolProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -173,25 +178,25 @@ class SimpleTest {
 
     @Test
     fun modulesTest() {
-        val commonSource = SourceFile.kotlin(
+        val libASource = SourceFile.kotlin(
             "Point.kt",
             """
             data class Point(var x: Int, var y: Int)
             """
         )
 
-        val commonCompilation = KotlinCompilation().apply {
-            sources = listOf(commonSource)
+        val libACompilation = KotlinCompilation().apply {
+            sources = listOf(libASource)
             symbolProcessorProviders = listOf(DeepCopySymbolProcessorProvider())
             inheritClassPath = true
             messageOutputStream = System.out
             kspWithCompilation = true
         }
-        val commonResult = commonCompilation.compile()
-        assertEquals(commonResult.exitCode, KotlinCompilation.ExitCode.OK)
+        val libAResult = libACompilation.compile()
+        assertEquals(libAResult.exitCode, KotlinCompilation.ExitCode.OK)
 
 
-        val libASource = SourceFile.kotlin(
+        val libBSource = SourceFile.kotlin(
             "Config.kt",
             """
             import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
@@ -200,19 +205,19 @@ class SimpleTest {
             """
         )
 
-        val libACompilation = KotlinCompilation().apply {
-            sources = listOf(libASource)
-            classpaths += commonCompilation.classesDir
+        val libBCompilation = KotlinCompilation().apply {
+            sources = listOf(libBSource)
+            classpaths += libACompilation.classesDir
             symbolProcessorProviders = listOf(DeepCopySymbolProcessorProvider())
             inheritClassPath = true
             messageOutputStream = System.out
             kspWithCompilation = true
         }
 
-        val libAResult = libACompilation.compile()
-        assertEquals(libAResult.exitCode, KotlinCompilation.ExitCode.OK)
+        val libBResult = libBCompilation.compile()
+        assertEquals(libBResult.exitCode, KotlinCompilation.ExitCode.OK)
 
-        val libAGeneratedFiles = libACompilation.kspSourcesDir.walk().filter { it.isFile }
+        val libBGeneratedFiles = libBCompilation.kspSourcesDir.walk().filter { it.isFile }
             .associate { it.name to it.readText() }
 
         assertEquals(
@@ -223,7 +228,7 @@ class SimpleTest {
             @JvmOverloads
             public fun Point.deepCopy(x: Int = this.x, y: Int = this.y): Point = Point(x, y)
             """.trimIndent().trimEnd(),
-            libAGeneratedFiles["Point\$\$DeepCopy.kt"]!!.trimEnd()
+            libBGeneratedFiles["Point\$\$DeepCopy.kt"]!!.trimEnd()
         )
 
         val mainSource = SourceFile.kotlin(
@@ -236,7 +241,7 @@ class SimpleTest {
         )
         val mainCompilation = KotlinCompilation().apply {
             sources = listOf(mainSource)
-            classpaths += listOf(libACompilation.classesDir, commonCompilation.classesDir)
+            classpaths += listOf(libBCompilation.classesDir, libACompilation.classesDir)
             symbolProcessorProviders = listOf(DeepCopySymbolProcessorProvider())
             inheritClassPath = true
             messageOutputStream = System.out
@@ -262,5 +267,20 @@ class SimpleTest {
         )
     }
 
+    @Test
+    fun modulesTest2() {
+        val loader = FileBasedModuleInfoLoader("testData/Modules.kt")
+        val sources: Collection<SourceModuleInfo> = loader.loadSourceModuleInfos()
+        val expects: Collection<ExpectModuleInfo> = loader.loadExpectModuleInfos()
+        val modules = sources.map {
+//            KotlinModule(it, annotationProcessors = listOf(DeepCopyProcessor()))
+            KotlinModule(it, symbolProcessorProviders = listOf(DeepCopySymbolProcessorProvider()))
+        }
 
+        modules.checkResult(
+            expects,
+            checkExitCode = true,
+            checkGeneratedFiles = true
+        )
+    }
 }

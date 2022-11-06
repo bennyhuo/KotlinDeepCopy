@@ -109,5 +109,4 @@ class SimpleTest {
     }
 
     private fun String.unify() = replace("\r\n", "\n").trimEnd()
-
 }
