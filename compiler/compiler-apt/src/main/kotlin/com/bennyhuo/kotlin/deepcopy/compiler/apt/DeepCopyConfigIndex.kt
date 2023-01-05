@@ -7,7 +7,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.MirroredTypesException
 
-class DeepCopyConfigIndex(configs: Collection<Element>?) {
+class DeepCopyConfigIndex(configs: Collection<Element>?, libraryConfigs: Collection<Element>?) {
 
     companion object {
         val instance: DeepCopyConfigIndex
@@ -16,7 +16,7 @@ class DeepCopyConfigIndex(configs: Collection<Element>?) {
         private var currentInstance: DeepCopyConfigIndex? = null
 
         operator fun contains(element: TypeElement): Boolean {
-            return element.qualifiedName.toString() in instance.deepCopyClassNamesFromConfig
+            return element.qualifiedName.toString() in instance.allDeepCopyClassNamesFromConfigs
         }
 
         fun release() {
@@ -28,19 +28,25 @@ class DeepCopyConfigIndex(configs: Collection<Element>?) {
         currentInstance = this
     }
 
-    val deepCopyClassesFromConfig = configs?.asSequence()?.map {
-        it.getAnnotation(DeepCopyConfig::class.java)
-    }?.flatMap {
-        try {
-            it.values.map { it.asTypeMirror() }
-        } catch (e: MirroredTypesException) {
-            e.typeMirrors
-        }
-    }?.map { it.asElement() }
-        ?.filterIsInstance<TypeElement>()
-        ?.toSet() ?: emptySet()
+    val deepCopyClassesFromConfig = parseConfigs(configs)
 
-    val deepCopyClassNamesFromConfig = deepCopyClassesFromConfig.mapTo(HashSet()) {
+    val deepCopyClassesFromLibraryConfigs = parseConfigs(libraryConfigs)
+
+    private val allDeepCopyClassNamesFromConfigs = (deepCopyClassesFromConfig + deepCopyClassesFromLibraryConfigs).mapTo(HashSet()) {
         it.qualifiedName.toString()
+    }
+
+    private fun parseConfigs(configs: Collection<Element>?): Set<TypeElement> {
+        return configs?.asSequence()?.map {
+            it.getAnnotation(DeepCopyConfig::class.java)
+        }?.flatMap {
+            try {
+                it.values.map { it.asTypeMirror() }
+            } catch (e: MirroredTypesException) {
+                e.typeMirrors
+            }
+        }?.map { it.asElement() }
+            ?.filterIsInstance<TypeElement>()
+            ?.toSet() ?: emptySet()
     }
 }

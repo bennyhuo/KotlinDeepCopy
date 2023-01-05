@@ -54,7 +54,7 @@ fun main() {
 }
 // EXPECT
 // MODULE: main
-// FILE: Main.kt.stdout
+// FILE: MainKt.main.stdout
 Company(name=JetBrains, country=Country(name=Czech), projects=[Project(name=IntelliJ, owner=User(name=JetBrains)), Project(name=Kotlin, owner=User(name=JetBrains))])
 Company(name=JetBrains, country=Country(name=Czech), projects=[Project(name=IntelliJ, owner=User(name=JetBrains)), Project(name=Kotlin, owner=User(name=JetBrains))])
 Company(name=JetBrains, country=Country(name=Czech), projects=[Project(name=IntelliJ, owner=User(name=JetBrains)), Project(name=Kotlin, owner=User(name=JetBrains))])
