@@ -12,3 +12,10 @@ dependencyResolutionManagement {
         maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
     }
 }
+
+includeBuild("../../") {
+    dependencySubstitution {
+        substitute(module("com.bennyhuo.kotlin:deepcopy-gradle-plugin-kcp")).using(project(":kcp-impl:plugin-gradle"))
+        substitute(module("com.bennyhuo.kotlin:deepcopy-compiler-kcp-embeddable")).using(project(":kcp-impl:compiler-kcp-embeddable"))
+    }
+}
