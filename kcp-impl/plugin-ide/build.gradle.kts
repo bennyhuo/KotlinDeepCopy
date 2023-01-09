@@ -18,7 +18,7 @@ intellij {
 
 tasks {
     withType<PublishPluginTask> {
-        project.property("intellij.token")?.let {
+        project.findProperty("intellij.token")?.let {
             token.set(it.toString())
         }
     }
