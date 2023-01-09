@@ -18,7 +18,8 @@ tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         freeCompilerArgs = listOf(
             "-Xopt-in=com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview",
-            "-Xopt-in=com.google.devtools.ksp.KspExperimental"
+            "-Xopt-in=com.google.devtools.ksp.KspExperimental",
+            "-Xopt-in=kotlin.contracts.ExperimentalContracts"
         )
     }
 }

@@ -3,25 +3,25 @@ package com.bennyhuo.kotlin.deepcopy.runtime
 /**
  * Created by benny.
  */
-fun <T> Collection<T>.copy(): Collection<T> = toList()
+fun <T> Collection<T>.deepCopy(): Collection<T> = toList()
 
-fun <T> List<T>.copy() = toList()
+fun <T> List<T>.deepCopy() = toList()
 
-fun <T> Set<T>.copy() = toSet()
+fun <T> Set<T>.deepCopy() = toSet()
 
-fun <K, V> Map<K, V>.copy() = toMap()
-
-@JvmName("mutableCopy")
-fun <T> MutableCollection<T>.copy() = toMutableList()
+fun <K, V> Map<K, V>.deepCopy() = toMap()
 
 @JvmName("mutableCopy")
-fun <T> MutableList<T>.copy() = toMutableList()
+fun <T> MutableCollection<T>.deepCopy() = toMutableList()
 
 @JvmName("mutableCopy")
-fun <T> MutableSet<T>.copy() = toMutableSet()
+fun <T> MutableList<T>.deepCopy() = toMutableList()
 
 @JvmName("mutableCopy")
-fun <K, V> MutableMap<K, V>.copy() = toMutableMap()
+fun <T> MutableSet<T>.deepCopy() = toMutableSet()
+
+@JvmName("mutableCopy")
+fun <K, V> MutableMap<K, V>.deepCopy() = toMutableMap()
 
 inline fun <T> Collection<T>.deepCopy(deepCopyOfElement: (T) -> T) = map(deepCopyOfElement)
 

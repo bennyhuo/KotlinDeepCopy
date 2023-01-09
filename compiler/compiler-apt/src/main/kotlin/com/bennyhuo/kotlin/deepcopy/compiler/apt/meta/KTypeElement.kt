@@ -4,11 +4,11 @@ import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.asKotlinTypeName
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.DeepCopyConfigIndex
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.isSupportedCollectionType
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.isSupportedMapType
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.kotlinCollectionTypeToJvmType
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopException
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.parse
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.utils.isSupportedCollectionType
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.utils.isSupportedMapType
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.utils.kotlinCollectionTypeToJvmType
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.utils.parse
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName

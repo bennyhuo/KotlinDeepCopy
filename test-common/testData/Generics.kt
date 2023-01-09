@@ -39,13 +39,14 @@ import kotlin.jvm.JvmOverloads
 public fun GenericParameter.deepCopy(map: HashMap<String, List<String>> = this.map):
     GenericParameter = GenericParameter(map) 
 //-------GenericParameterOutT$$DeepCopy.kt------
+import com.bennyhuo.kotlin.deepcopy.runtime.deepCopy
 import kotlin.Number
 import kotlin.collections.List
 import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
-public fun <out K : Number> GenericParameterOutT<K>.deepCopy(map: List<K> = this.map):
-    GenericParameterOutT<K> = GenericParameterOutT<K>(map) 
+public fun <K : Number> GenericParameterOutT<K>.deepCopy(map: List<K> = this.map):
+    GenericParameterOutT<K> = GenericParameterOutT<K>(map.deepCopy())
 //-------GenericParameterT$$DeepCopy.kt------
 import kotlin.Number
 import kotlin.collections.HashMap
@@ -53,8 +54,9 @@ import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun <K : Number, V> GenericParameterT<K, V>.deepCopy(map: HashMap<K, V> = this.map):
-    GenericParameterT<K, V> = GenericParameterT<K, V>(map) 
+    GenericParameterT<K, V> = GenericParameterT<K, V>(map)
 //-------StarProjection0$$DeepCopy.kt------
+import com.bennyhuo.kotlin.deepcopy.runtime.deepCopy
 import kotlin.String
 import kotlin.Triple
 import kotlin.collections.List
@@ -62,8 +64,9 @@ import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun StarProjection0.deepCopy(list: List<Triple<*, String, *>> = this.list): StarProjection0 =
-    StarProjection0(list) 
+    StarProjection0(list.deepCopy())
 //-------StarProjection1$$DeepCopy.kt------
+import com.bennyhuo.kotlin.deepcopy.runtime.deepCopy
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
@@ -71,21 +74,23 @@ import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun StarProjection1.deepCopy(list: List<Map<*, String>> = this.list): StarProjection1 =
-    StarProjection1(list) 
+    StarProjection1(list.deepCopy())
 //-------StarProjection2$$DeepCopy.kt------
+import com.bennyhuo.kotlin.deepcopy.runtime.deepCopy
 import kotlin.collections.Map
 import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun StarProjection2.deepCopy(map: Map<*, *> = this.map): StarProjection2 =
-    StarProjection2(map) 
+    StarProjection2(map.deepCopy({ it }, { it }))
 //-------StarProjection3$$DeepCopy.kt------
+import com.bennyhuo.kotlin.deepcopy.runtime.deepCopy
 import kotlin.collections.List
 import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun StarProjection3.deepCopy(list: List<*> = this.list): StarProjection3 =
-    StarProjection3(list) 
+    StarProjection3(list.deepCopy())
 //-------Variances$$DeepCopy.kt------
 import kotlin.Number
 import kotlin.String
@@ -94,7 +99,7 @@ import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun Variances.deepCopy(map: HashMap<String, out Number> = this.map): Variances =
-    Variances(map) 
+    Variances(map)
 //-------Variances1$$DeepCopy.kt------
 import kotlin.Number
 import kotlin.String
@@ -104,5 +109,5 @@ import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun Variances1.deepCopy(map: HashMap<String, out List<Number>> = this.map): Variances1 =
-    Variances1(map) 
+    Variances1(map)
 

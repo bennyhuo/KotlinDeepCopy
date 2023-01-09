@@ -1,6 +1,8 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.adapter.Adapter
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.loop.DeepCopyLoopDetector
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.meta.KComponent
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.Platform
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -57,54 +59,11 @@ class DeepCopyGenerator(
             val statementStringBuilder = StringBuilder("%T(")
 
             dataClass.primaryConstructor!!.parameters.forEach { parameter ->
-                val type = parameter.type.resolve()
-                if (type.declaration.deepCopyable) {
-                    fileSpecBuilder.addImport(type.declaration.escapedPackageName, "deepCopy")
-                    
-                    val nullableMark = if (type.isMarkedNullable) "?" else ""
-                    statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.deepCopy(), ")
-                } else if (type.declaration.isSupportedCollectionType) {
-                    val elementType = type.arguments.single().type!!.resolve().declaration
-                    val method = if (elementType.deepCopyable) {
-                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                        fileSpecBuilder.addImport(elementType.escapedPackageName, "deepCopy")
-                        "deepCopy { it.deepCopy() }"
-                    } else {
-                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
-                        "copy()"
-                    }
-                    val nullableMark = if (type.isMarkedNullable) "?" else ""
-                    statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.${method}, ")
-                } else if (type.declaration.isSupportedMapType) {
-                    val keyType = type.arguments[0].type!!.resolve().declaration
-                    val valueType = type.arguments[1].type!!.resolve().declaration
-                    val method = when {
-                        keyType.deepCopyable && valueType.deepCopyable -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
-                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
-                            "deepCopy({ it.deepCopy() }, { it.deepCopy() })"
-                        }
-                        keyType.deepCopyable && !valueType.deepCopyable -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
-                            "deepCopy({ it.deepCopy() }, { it })"
-                        }
-                        !keyType.deepCopyable && valueType.deepCopyable -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
-                            "deepCopy({ it }, { it.deepCopy() })"   
-                        }
-                        else -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
-                            "copy()"
-                        }
-                    }
-                    val nullableMark = if (type.isMarkedNullable) "?" else ""
-                    statementStringBuilder.append("${parameter.name!!.asString()}${nullableMark}.${method}, ")
-                } else {
-                    statementStringBuilder.append("${parameter.name!!.asString()}, ")
-                }
+                val adapter = Adapter(KComponent(
+                    parameter, parameter.type.toTypeName(typeParameterResolver)
+                ))
+                adapter.addImport(fileSpecBuilder)
+                adapter.addStatement(statementStringBuilder)
 
                 functionBuilder.addParameter(
                     ParameterSpec.builder(

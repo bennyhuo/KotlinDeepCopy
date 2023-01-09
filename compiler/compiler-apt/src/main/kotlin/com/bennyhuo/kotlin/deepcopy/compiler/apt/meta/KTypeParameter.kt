@@ -11,15 +11,18 @@ class KTypeParameter(
     val flags: Flags,
     val name: String,
     val id: Int,
-    val variance: KmVariance
+    val variance: KmVariance,
+    val kTypeCreator: (flags: Flags) -> KType
 ) : KmTypeParameterVisitor() {
 
-    var upperBounds: KType? = null
+    val upperBounds = ArrayList<KType>()
 
     val typeVariableNameWithoutVariance by lazy {
-        upperBounds?.let {
-            TypeVariableName(name, it.type)
-        }?: TypeVariableName(name)
+        if (upperBounds.isEmpty()) {
+            TypeVariableName(name)
+        } else {
+            TypeVariableName(name, upperBounds.map { it.type })
+        }
     }
 
     val typeVariableName by lazy {
@@ -29,12 +32,14 @@ class KTypeParameter(
             KmVariance.OUT -> KModifier.OUT
         }
 
-        upperBounds?.let {
-            TypeVariableName(name, it.type, variance = variance)
-        }?: TypeVariableName(name, variance)
+        if (upperBounds.isEmpty()) {
+            TypeVariableName(name, variance)
+        } else {
+            TypeVariableName(name, upperBounds.map { it.type }, variance)
+        }
     }
 
-    override fun visitUpperBound(flags: Flags): KmTypeVisitor? {
-        return KType(flags).also { upperBounds = it }
+    override fun visitUpperBound(flags: Flags): KmTypeVisitor {
+        return kTypeCreator(flags).also { upperBounds += it }
     }
 }

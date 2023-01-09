@@ -3,8 +3,9 @@ package com.bennyhuo.kotlin.deepcopy.compiler.apt
 import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.aptutils.types.packageName
 import com.bennyhuo.aptutils.types.simpleName
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.adapter.Adapter
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
-import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.isDeepCopyable
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.utils.escapeStdlibPackageName
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -18,7 +19,10 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
     }
 
     fun generate(){
-        val fileSpecBuilder = FileSpec.builder(escapeStdlibPackageName(kTypeElement.packageName()), kTypeElement.simpleName() + POSIX)
+        val fileSpecBuilder = FileSpec.builder(
+            escapeStdlibPackageName(kTypeElement.packageName()),
+            kTypeElement.simpleName() + POSIX
+        )
         val functionBuilder = FunSpec.builder("deepCopy")
             .receiver(kTypeElement.kotlinClassName)
             .addModifiers(KModifier.PUBLIC)
@@ -33,64 +37,14 @@ class DeepCopyGenerator(val kTypeElement: KTypeElement){
         val statementStringBuilder = StringBuilder("%T(")
 
         kTypeElement.components.forEach { component ->
-            val kTypeElement = component.typeElement
-            if (kTypeElement != null) {
-                if (kTypeElement.isDeepCopyable) {
-                    fileSpecBuilder.addImport(
-                        kTypeElement.escapedPackageName,
-                        "deepCopy"
-                    )
+            val adapter = Adapter(component)
+            adapter.addImport(fileSpecBuilder)
+            adapter.addStatement(statementStringBuilder)
 
-                    val nullableMark = if (component.type.isNullable) "?" else ""
-                    statementStringBuilder.append("${component.name}${nullableMark}.deepCopy(), ")
-                } else if (kTypeElement.isCollectionType) {
-                    val elementType = component.typeArgumentElements.singleOrNull()
-                    val method = if (elementType.isDeepCopyable()){
-                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                        fileSpecBuilder.addImport(elementType.escapedPackageName, "deepCopy")
-                        "deepCopy { it.deepCopy() }"
-                    } else {
-                        fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
-                        "copy()"
-                    }
-                    val nullableMark = if (component.type.isNullable) "?" else ""
-                    statementStringBuilder.append("${component.name}${nullableMark}.${method}, ")
-                } else if (kTypeElement.isMapType) {
-                    
-                    val keyType = component.typeArgumentElements[0]
-                    val valueType = component.typeArgumentElements[1]
-                    val method = when {
-                        keyType.isDeepCopyable() && valueType.isDeepCopyable() -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
-                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
-                            "deepCopy({ it.deepCopy() }, { it.deepCopy() })"
-                        }
-                        keyType.isDeepCopyable() && !valueType.isDeepCopyable() -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                            fileSpecBuilder.addImport(keyType.escapedPackageName, "deepCopy")
-                            "deepCopy({ it.deepCopy() }, { it })"
-                        }
-                        !keyType.isDeepCopyable() && valueType.isDeepCopyable() -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "deepCopy")
-                            fileSpecBuilder.addImport(valueType.escapedPackageName, "deepCopy")
-                            "deepCopy({ it }, { it.deepCopy() })"
-                        }
-                        else -> {
-                            fileSpecBuilder.addImport(RUNTIME_PACKAGE, "copy")
-                            "copy()"
-                        }
-                    }
-                    val nullableMark = if (component.type.isNullable) "?" else ""
-                    statementStringBuilder.append("${component.name}${nullableMark}.${method}, ")
-                } else {
-                    statementStringBuilder.append("${component.name}, ")
-                }
-            } else {
-                statementStringBuilder.append("${component.name}, ")
-            }
-            
-            functionBuilder.addParameter(ParameterSpec.builder(component.name, component.type).defaultValue("this.${component.name}").build())
+            functionBuilder.addParameter(
+                ParameterSpec.builder(component.name, component.type)
+                    .defaultValue("this.${component.name}").build()
+            )
         }
         statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
 

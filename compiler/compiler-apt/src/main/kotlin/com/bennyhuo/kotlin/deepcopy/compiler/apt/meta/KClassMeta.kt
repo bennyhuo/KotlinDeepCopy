@@ -1,6 +1,14 @@
 package com.bennyhuo.kotlin.deepcopy.compiler.apt.meta
 
-import kotlinx.metadata.*
+import kotlinx.metadata.ClassName
+import kotlinx.metadata.Flag
+import kotlinx.metadata.Flags
+import kotlinx.metadata.KmClassVisitor
+import kotlinx.metadata.KmConstructorVisitor
+import kotlinx.metadata.KmTypeParameterVisitor
+import kotlinx.metadata.KmTypeVisitor
+import kotlinx.metadata.KmValueParameterVisitor
+import kotlinx.metadata.KmVariance
 import kotlinx.metadata.jvm.KotlinClassMetadata
 
 class KClassMeta(kotlinClassMetadata: KotlinClassMetadata.Class) {
@@ -25,7 +33,11 @@ class KClassMeta(kotlinClassMetadata: KotlinClassMetadata.Class) {
                 id: Int,
                 variance: KmVariance
             ): KmTypeParameterVisitor {
-                return KTypeParameter(flags, name, id, variance).also { typeParameters += it }
+                return KTypeParameter(flags, name, id, variance) {
+                    KType(it, typeParameters)
+                }.also {
+                    typeParameters += it
+                }
             }
 
             override fun visitConstructor(flags: Flags): KmConstructorVisitor? {

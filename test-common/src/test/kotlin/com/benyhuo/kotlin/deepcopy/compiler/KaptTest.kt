@@ -21,6 +21,11 @@ class KaptTest {
     }
 
     @Test
+    fun testGenericsWithDeepCopyableBounds() {
+        doTest("testData/GenericsWithDeepCopyableBounds.kt")
+    }
+
+    @Test
     fun testTypeAliases() {
         doTest("testData/TypeAliases.kt")
     }

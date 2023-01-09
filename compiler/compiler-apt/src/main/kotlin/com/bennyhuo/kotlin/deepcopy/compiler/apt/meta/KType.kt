@@ -13,27 +13,33 @@ import kotlinx.metadata.Flags
 import kotlinx.metadata.KmTypeVisitor
 import kotlinx.metadata.KmVariance
 
-open class KType(val flags: Flags, val typeParametersInContainer: List<KTypeParameter> = emptyList(), val variance: KmVariance = KmVariance.INVARIANT, val typeFlexibilityId: String? = null, val parent: KType? = null) :
-    KmTypeVisitor() {
+open class KType(
+    val flags: Flags,
+    val typeParametersInContainer: List<KTypeParameter> = emptyList(),
+    val variance: KmVariance = KmVariance.INVARIANT,
+    val typeFlexibilityId: String? = null,
+    val parent: KType? = null
+) : KmTypeVisitor() {
 
     private var name: ClassName = ""
 
     private var isReified = true
+
+    private var isResolved = false
 
     val rawType: TypeName by lazy {
         when(isReified){
             true -> {
                 val splits = name.split("/")
                 val packageName = splits.subList(0, splits.size - 1).joinToString(".")
-                val simpleNames = splits.last().split("\\.").toTypedArray()
-                val simpleName = simpleNames[0]
-                val otherSimpleNames = simpleNames.sliceArray(1 until simpleNames.size)
-
-                com.squareup.kotlinpoet.ClassName(packageName, simpleName, *otherSimpleNames).let {
+                val simpleNames = splits.last().split("\\.")
+                com.squareup.kotlinpoet.ClassName(packageName, simpleNames).let {
                     if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
                 }
             }
-            false -> TypeVariableName(name)
+            false -> {
+                TypeVariableName(name, upperBounds.map { it.type })
+            }
         }
     }
 
@@ -48,23 +54,50 @@ open class KType(val flags: Flags, val typeParametersInContainer: List<KTypePara
             //abbreviatedTypeVisitor != null -> abbreviatedTypeVisitor!!.type
             rawType !is com.squareup.kotlinpoet.ClassName -> rawType
             typeParameters.isEmpty() -> rawType
-            else -> rawType.parameterizedBy(*(typeParameters.map { it.wildcardTypeName }.toTypedArray())).let {
+            else -> rawType.parameterizedBy(typeParameters.map {
+                // it may recursively reference itself.
+                it.wildcardTypeNameUnsafe
+            }).let {
                 if(Flag.Type.IS_NULLABLE(flags)){ it.copy(nullable = true) } else { it }
             }
+        }.also {
+            isResolved = true
         }
     }
 
-    val wildcardTypeName by lazy {
-        if (isReified) when(this.variance){
+    private val wildcardTypeNameUnsafe by lazy {
+        if (isReified) when (this.variance) {
             KmVariance.INVARIANT -> type
             KmVariance.IN -> WildcardTypeName.consumerOf(type)
             KmVariance.OUT -> WildcardTypeName.producerOf(type)
         } else {
-            if(name == "*") STAR
-            else when (this.variance) {
-                KmVariance.INVARIANT -> TypeVariableName(this.name)
-                KmVariance.IN -> TypeVariableName(this.name, KModifier.IN)
-                KmVariance.OUT -> TypeVariableName(this.name, KModifier.OUT)
+            if (name == "*") STAR
+            else {
+                val upperBounds = this.upperBounds.mapNotNull {
+                    if (it.isResolved) it.type else null
+                }
+                when (this.variance) {
+                    KmVariance.INVARIANT -> TypeVariableName(this.name, upperBounds)
+                    KmVariance.IN -> TypeVariableName(this.name, upperBounds, KModifier.IN)
+                    KmVariance.OUT -> TypeVariableName(this.name, upperBounds, KModifier.OUT)
+                }
+            }
+        }
+    }
+
+    private val wildcardTypeNameWithoutBounds by lazy {
+        if (isReified) when (this.variance) {
+            KmVariance.INVARIANT -> type
+            KmVariance.IN -> WildcardTypeName.consumerOf(type)
+            KmVariance.OUT -> WildcardTypeName.producerOf(type)
+        } else {
+            if (name == "*") STAR
+            else {
+                when (this.variance) {
+                    KmVariance.INVARIANT -> TypeVariableName(this.name)
+                    KmVariance.IN -> TypeVariableName(this.name, KModifier.IN)
+                    KmVariance.OUT -> TypeVariableName(this.name, KModifier.OUT)
+                }
             }
         }
     }
@@ -116,7 +149,9 @@ open class KType(val flags: Flags, val typeParametersInContainer: List<KTypePara
      */
     override fun visitTypeParameter(id: Int) {
         super.visitTypeParameter(id)
-        this.name = typeParametersInContainer[id].name
+        val typeParameter = typeParametersInContainer[id]
+        this.name = typeParameter.name
+        this.upperBounds += typeParameter.upperBounds
         this.isReified = false
     }
 
