@@ -16,9 +16,11 @@ import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.expressions.mapValueParameters
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
 import org.jetbrains.kotlin.ir.util.defaultType
+import org.jetbrains.kotlin.ir.util.isTypeParameter
 import org.jetbrains.kotlin.ir.util.primaryConstructor
 
 @OptIn(ObsoleteDescriptorBasedAPI::class)
@@ -55,7 +57,7 @@ class DeepCopyFunctionBuilder(
             ).apply {
                 mapValueParameters { descriptor ->
                     primaryConstructor.valueParameters[descriptor.index].let {
-                        it.type.getClass().tryDeepCopy(valueParameterMapper(it))
+                        it.type.tryDeepCopy(valueParameterMapper(it))
                     }
                 }
             }
@@ -63,26 +65,36 @@ class DeepCopyFunctionBuilder(
         return this
     }
 
-    private fun IrClass?.tryDeepCopy(
+    private fun IrType.tryDeepCopy(
         irExpression: IrExpression
     ): IrExpression {
-        if (this == null) return irExpression
-
-        val possibleCopyFunction = deepCopyFunctionForDataClass()
-            ?: deepCopyFunctionForDeepCopyable()
-            ?: copyFunctionForDataClass()
-
-        return if (possibleCopyFunction != null) {
-            irCall(possibleCopyFunction).apply {
-                dispatchReceiver = irExpression
+        if (this.isTypeParameter()) {
+            val deepCopyFunction = this.deepCopyFunctionForDeepCopyable(pluginContext)
+            if (deepCopyFunction != null) {
+                return irCall(deepCopyFunction).apply {
+                    dispatchReceiver = irExpression
+                }
             }
-        } else {
-            val deepCopyFunction = deepCopyFunctionForCollections(pluginContext)
-            if (deepCopyFunction == null) {
-                irExpression
+        }
+
+        val irClass = this.getClass() ?: return irExpression
+        with(irClass) {
+            val possibleCopyFunction = deepCopyFunctionForDataClass()
+                ?: deepCopyFunctionForDeepCopyable()
+                ?: copyFunctionForDataClass()
+
+            return if (possibleCopyFunction != null) {
+                irCall(possibleCopyFunction).apply {
+                    dispatchReceiver = irExpression
+                }
             } else {
-                irCall(deepCopyFunction).apply {
-                    extensionReceiver = irExpression
+                val deepCopyFunction = deepCopyFunctionForCollections(pluginContext)
+                if (deepCopyFunction == null) {
+                    irExpression
+                } else {
+                    irCall(deepCopyFunction).apply {
+                        extensionReceiver = irExpression
+                    }
                 }
             }
         }

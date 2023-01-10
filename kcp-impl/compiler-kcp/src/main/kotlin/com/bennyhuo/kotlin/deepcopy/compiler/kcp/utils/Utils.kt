@@ -20,11 +20,13 @@ import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.ir.util.superTypes
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -54,8 +56,16 @@ fun IrClass.annotatedAsDeepCopyableDataClass(): Boolean {
     return isData && this.hasAnnotation(FqName(DEEP_COPY_ANNOTATION_NAME))
 }
 
+private fun List<IrType>.containsDeepCopyableInterface(): Boolean {
+    return find { it.classFqName?.asString() == DEEP_COPY_INTERFACE_NAME } != null
+}
+
 fun IrClass.implementsDeepCopyableInterface(): Boolean {
-    return this.superTypes.find { it.classFqName?.asString() == DEEP_COPY_INTERFACE_NAME } != null
+    return this.superTypes.containsDeepCopyableInterface()
+}
+
+fun IrType.implementsDeepCopyableInterface(): Boolean {
+    return this.superTypes().containsDeepCopyableInterface()
 }
 
 fun IrClass.deepCopyFunctionForDataClass(): IrFunction? {
@@ -85,6 +95,15 @@ fun IrClass.copyFunctionForDataClass(): IrFunction? {
         it.name.identifier == "copy"
                 && (primaryConstructor?.valueParameters?.matchWith(it.valueParameters) ?: true)
     }
+}
+
+fun IrType.deepCopyFunctionForDeepCopyable(pluginContext: IrPluginContext): IrFunction? {
+    if (!implementsDeepCopyableInterface()) return null
+    val deepCopyable = pluginContext.referenceClass(FqName(DEEP_COPY_INTERFACE_NAME))
+
+    return deepCopyable?.functions?.singleOrNull {
+        it.owner.name.identifier == DEEP_COPY_FUNCTION_NAME && it.owner.valueParameters.isEmpty()
+    }?.owner
 }
 
 fun IrClass.deepCopyFunctionForDeepCopyable(): IrFunction? {

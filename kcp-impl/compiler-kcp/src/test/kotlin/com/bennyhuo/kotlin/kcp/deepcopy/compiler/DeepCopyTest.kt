@@ -23,6 +23,11 @@ class DeepCopyTest {
     }
 
     @Test
+    fun genericsWithDeepCopyableBounds() {
+        testBase("GenericsWithDeepCopyableBounds.kt")
+    }
+
+    @Test
     fun deepCopyForInterface() {
         testBase("deepCopyForInterface.kt")
     }

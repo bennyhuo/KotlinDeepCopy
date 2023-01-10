@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
 import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.SimpleType
+import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 
 /**
  * Created by benny at 2022/1/14 3:49 PM.
@@ -52,11 +53,16 @@ class DeepCopyDeclarationChecker : DeclarationChecker {
         if (KotlinBuiltIns.isString(type)) return
         if (type !is SimpleType) return
 
-        val fqName = type.getJetTypeFqName(false)
-        if (fqName in collectionTypes) {
-            val typeArgument = userType.typeArguments.single().typeReference?.userType() ?: return
-            checkType(type.arguments.single().type, context, typeArgument)
-            return
+        val fqName = if (type.isTypeParameter()) {
+            type.toString()
+        } else {
+            val fqName = type.getJetTypeFqName(false)
+            if (fqName in collectionTypes) {
+                val typeArgument = userType.typeArguments.single().typeReference?.userType() ?: return
+                checkType(type.arguments.single().type, context, typeArgument)
+                return
+            }
+            fqName
         }
 
         if (!type.isDeepCopyable()) {
