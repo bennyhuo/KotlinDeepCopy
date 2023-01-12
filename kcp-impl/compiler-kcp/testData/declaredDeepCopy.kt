@@ -21,5 +21,5 @@ fun main() {
 }
 
 // EXPECT
-// FILE: Main.kt.stdout
+// FILE: MainKt.main.stdout
 Container(dataClass=DataClass(name=x), id=0)

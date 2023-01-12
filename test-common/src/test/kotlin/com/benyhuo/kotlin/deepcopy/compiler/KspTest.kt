@@ -2,11 +2,13 @@ package com.benyhuo.kotlin.deepcopy.compiler
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.kspSourcesDir
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 
 /**
  * Created by benny at 2021/6/21 7:00.
  */
+@OptIn(ExperimentalCompilerApi::class)
 class KspTest {
     
     fun doTest(path: String) = doTest(path, compilationWithKsp(), KotlinCompilation::kspSourcesDir)

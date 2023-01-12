@@ -4,8 +4,10 @@ import com.bennyhuo.kotlin.compiletesting.extensions.module.KotlinModule
 import com.bennyhuo.kotlin.compiletesting.extensions.module.checkResult
 import com.bennyhuo.kotlin.compiletesting.extensions.source.FileBasedModuleInfoLoader
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DeepCopyComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 
+@OptIn(ExperimentalCompilerApi::class)
 class DeepCopyTest {
 
     @Test

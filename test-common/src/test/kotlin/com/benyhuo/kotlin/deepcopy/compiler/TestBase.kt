@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalCompilerApi::class, ExperimentalCompilerApi::class)
 package com.benyhuo.kotlin.deepcopy.compiler
 
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.DeepCopyProcessor
@@ -5,6 +6,7 @@ import com.bennyhuo.kotlin.deepcopy.compiler.ksp.DeepCopySymbolProcessorProvider
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import kotlin.test.assertEquals
 
