@@ -16,8 +16,9 @@ data class Talk(val name: String, val speaker: Speaker) {
     data class Speaker(val name: String, val age: Int, val company: Company)
 }
 
-// GENERATED
-//-------Company$$DeepCopy.kt------
+// EXPECT
+// FILE: Company$$DeepCopy.kt
+import deepCopy
 import kotlin.String
 import kotlin.jvm.JvmOverloads
 
@@ -25,22 +26,23 @@ import kotlin.jvm.JvmOverloads
 public fun Talk.Company.deepCopy(
   name: String = this.name,
   location: Talk.Location = this.location,
-  district: Talk.District = this.district
-): Talk.Company = Talk.Company(name, location.deepCopy(), district.deepCopy()) 
-//-------District$$DeepCopy.kt------
+  district: Talk.District = this.district,
+): Talk.Company = Talk.Company(name, location.deepCopy(), district.deepCopy())
+// FILE: District$$DeepCopy.kt
 import kotlin.String
 import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
-public fun Talk.District.deepCopy(name: String = this.name): Talk.District = Talk.District(name) 
-//-------Location$$DeepCopy.kt------
+public fun Talk.District.deepCopy(name: String = this.name): Talk.District = Talk.District(name)
+// FILE: Location$$DeepCopy.kt
 import kotlin.Double
 import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun Talk.Location.deepCopy(lat: Double = this.lat, lng: Double = this.lng): Talk.Location =
-    Talk.Location(lat, lng) 
-//-------Speaker$$DeepCopy.kt------
+    Talk.Location(lat, lng)
+// FILE: Speaker$$DeepCopy.kt
+import deepCopy
 import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmOverloads
@@ -49,12 +51,13 @@ import kotlin.jvm.JvmOverloads
 public fun Talk.Speaker.deepCopy(
   name: String = this.name,
   age: Int = this.age,
-  company: Talk.Company = this.company
-): Talk.Speaker = Talk.Speaker(name, age, company.deepCopy()) 
-//-------Talk$$DeepCopy.kt------
+  company: Talk.Company = this.company,
+): Talk.Speaker = Talk.Speaker(name, age, company.deepCopy())
+// FILE: Talk$$DeepCopy.kt
+import deepCopy
 import kotlin.String
 import kotlin.jvm.JvmOverloads
 
 @JvmOverloads
 public fun Talk.deepCopy(name: String = this.name, speaker: Talk.Speaker = this.speaker): Talk =
-    Talk(name, speaker.deepCopy()) 
+    Talk(name, speaker.deepCopy())

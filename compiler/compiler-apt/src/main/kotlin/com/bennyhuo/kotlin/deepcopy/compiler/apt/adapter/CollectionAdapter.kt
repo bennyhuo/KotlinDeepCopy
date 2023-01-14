@@ -29,7 +29,7 @@ class DeepCopyableCollectionAdapter(component: KComponent) : BaseCollectionAdapt
         super.addImport(builder)
 
         val elementType = component.typeArgumentElements.single()
-        if (elementType != null) {
+        if (elementType?.isDeepCopyable == true) {
             builder.addImport(elementType.escapedPackageName, "deepCopy")
         }
     }
@@ -50,12 +50,12 @@ class DeepCopyableMapAdapter(component: KComponent) : BaseCollectionAdapter(comp
         super.addImport(builder)
 
         val keyType = component.typeArgumentElements[0]
-        if (keyType != null) {
+        if (keyType?.isDeepCopyable == true) {
             builder.addImport(keyType.escapedPackageName, "deepCopy")
         }
 
         val valueType = component.typeArgumentElements[1]
-        if (valueType != null) {
+        if (valueType?.isDeepCopyable == true) {
             builder.addImport(valueType.escapedPackageName, "deepCopy")
         }
     }

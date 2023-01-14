@@ -9,8 +9,8 @@ data class GenericParameter(val map: X<String, List<String>>)
 @DeepCopy
 data class GenericParameterT<K: Number, V>(val map: X<K, V>)
 
-// GENERATED
-//-------GenericParameter$$DeepCopy.kt------
+// EXPECT
+// FILE: GenericParameter$$DeepCopy.kt
 import kotlin.String
 import kotlin.collections.List
 import kotlin.jvm.JvmOverloads
@@ -18,7 +18,7 @@ import kotlin.jvm.JvmOverloads
 @JvmOverloads
 public fun GenericParameter.deepCopy(map: X<String, List<String>> = this.map): GenericParameter =
     GenericParameter(map) 
-//-------GenericParameterT$$DeepCopy.kt------
+// FILE: GenericParameterT$$DeepCopy.kt
 import kotlin.Number
 import kotlin.jvm.JvmOverloads
 

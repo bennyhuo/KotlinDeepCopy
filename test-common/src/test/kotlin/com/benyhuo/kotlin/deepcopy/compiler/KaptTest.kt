@@ -1,57 +1,48 @@
 package com.benyhuo.kotlin.deepcopy.compiler
 
-import com.tschuchort.compiletesting.KotlinCompilation
+import com.bennyhuo.kotlin.compiletesting.extensions.module.KotlinModule
+import com.bennyhuo.kotlin.compiletesting.extensions.source.SourceModuleInfo
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.DeepCopyProcessor
+import java.io.File
 import org.junit.Test
 
 /**
  * Created by benny at 2021/6/21 7:00.
  */
-class KaptTest {
-    
-    fun doTest(path: String) = doTest(path, compilationWithKapt(), KotlinCompilation::kaptSourceDir)
-    
+class KaptTest : BaseTest() {
     @Test
-    fun testBasic() {
-        doTest("testData/Basic.kt")
-    }
+    fun basic() = doTest()
 
     @Test
-    fun testGenerics() {
-        doTest("testData/Generics.kt")
-    }
+    fun collections() = doTest()
 
     @Test
-    fun testGenericsWithDeepCopyableBounds() {
-        doTest("testData/GenericsWithDeepCopyableBounds.kt")
-    }
+    fun config() = doTest()
 
     @Test
-    fun testTypeAliases() {
-        doTest("testData/TypeAliases.kt")
-    }
+    fun generics() = doTest()
 
     @Test
-    fun testNullables() {
-        doTest("testData/Nullables.kt")
-    }
+    fun genericsWithDeepCopyableBounds() = doTest()
 
     @Test
-    fun testInnerClasses() {
-        doTest("testData/InnerClasses.kt")
-    }
+    fun innerClasses() = doTest()
 
     @Test
-    fun testConfig() {
-        doTest("testData/Config.kt")
-    }
+    fun modules() = doTest()
 
     @Test
-    fun testRecursive() {
-        doTest("testData/Recursive.kt")
-    }
+    fun nullables() = doTest()
 
     @Test
-    fun testCollections() {
-        doTest("testData/Collections.kt")
+    fun recursive() = doTest()
+
+    @Test
+    fun typeAliases() = doTest()
+
+    override val testCaseDir: File = File("testData/kapt")
+
+    override fun createKotlinModule(moduleInfo: SourceModuleInfo): KotlinModule {
+        return KotlinModule(moduleInfo, annotationProcessors = listOf(DeepCopyProcessor()))
     }
 }
