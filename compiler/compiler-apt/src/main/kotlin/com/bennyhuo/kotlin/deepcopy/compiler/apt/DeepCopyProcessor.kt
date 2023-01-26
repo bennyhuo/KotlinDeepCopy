@@ -4,6 +4,7 @@ import com.bennyhuo.aptutils.AptContext
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopDetector
+import com.bennyhuo.kotlin.deepcopy.compiler.apt.loop.DeepCopyLoopException
 import com.bennyhuo.kotlin.deepcopy.compiler.apt.meta.KTypeElement
 import com.bennyhuo.kotlin.processor.module.apt.AptModuleProcessor
 import com.bennyhuo.kotlin.processor.module.common.MODULE_MIXED
@@ -14,6 +15,7 @@ import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
+import javax.tools.Diagnostic
 
 @SupportedAnnotationTypes(
     "com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy",
@@ -42,16 +44,21 @@ class DeepCopyProcessor : AptModuleProcessor() {
             annotatedSymbolsFromLibrary[DeepCopyConfig::class.java.name],
         )
 
-        roundEnv.getElementsAnnotatedWith(DeepCopy::class.java)
-            .filterIsInstance<TypeElement>()
-            .filter { it.kind.isClass }
-            .plus(configIndex.deepCopyClassesFromConfig)
-            .map {
-                KTypeElement.from(it)
-            }.forEach {
-                DeepCopyLoopDetector(it).detect()
-                DeepCopyGenerator(it).generate()
-            }
-        DeepCopyConfigIndex.release()
+        try {
+            roundEnv.getElementsAnnotatedWith(DeepCopy::class.java)
+                .filterIsInstance<TypeElement>()
+                .filter { it.kind.isClass }
+                .plus(configIndex.deepCopyClassesFromConfig)
+                .map {
+                    KTypeElement.from(it)
+                }.forEach {
+                    DeepCopyLoopDetector(it).detect()
+                    DeepCopyGenerator(it).generate()
+                }
+        } catch (e: DeepCopyLoopException) {
+            AptContext.messager.printMessage(Diagnostic.Kind.ERROR, e.message, e.element)
+        } finally {
+            DeepCopyConfigIndex.release()
+        }
     }
 }

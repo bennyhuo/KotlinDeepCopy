@@ -29,24 +29,24 @@ inline fun <T> List<T>.deepCopy(deepCopyOfElement: (T) -> T) = map(deepCopyOfEle
 
 inline fun <T> Set<T>.deepCopy(deepCopyOfElement: (T) -> T) = map(deepCopyOfElement)
 
-inline fun <K, V> Map<K, V>.deepCopy(deepCopyOfKey: (K) -> (K), deepCopyOfValue: (V) -> V) = map {
+inline fun <K, V> Map<out K, V>.deepCopy(deepCopyOfKey: (K) -> (K), deepCopyOfValue: (V) -> V) = map {
     deepCopyOfKey(it.key) to deepCopyOfValue(it.value)
 }.toMap()
 
 @JvmName("mutableCopy")
-inline fun <T> MutableCollection<T>.deepCopy(deepCopyOfElement: (T) -> T): MutableCollection<T> =
+inline fun <T> MutableCollection<out T>.deepCopy(deepCopyOfElement: (T) -> T): MutableCollection<T> =
     mapTo(ArrayList(), deepCopyOfElement)
 
 @JvmName("mutableCopy")
-inline fun <T> MutableList<T>.deepCopy(deepCopyOfElement: (T) -> T): MutableList<T> =
+inline fun <T> MutableList<out T>.deepCopy(deepCopyOfElement: (T) -> T): MutableList<T> =
     mapTo(ArrayList(), deepCopyOfElement)
 
 @JvmName("mutableCopy")
-inline fun <T> MutableSet<T>.deepCopy(deepCopyOfElement: (T) -> T) =
+inline fun <T> MutableSet<out T>.deepCopy(deepCopyOfElement: (T) -> T) =
     mapTo(HashSet(), deepCopyOfElement)
 
 @JvmName("mutableCopy")
-inline fun <K, V> MutableMap<K, V>.deepCopy(
+inline fun <K, V> MutableMap<out K, V>.deepCopy(
     deepCopyOfKey: (K) -> (K),
     deepCopyOfValue: (V) -> V
 ): MutableMap<K, V> = map {

@@ -5,8 +5,8 @@ import com.bennyhuo.kotlin.deepcopy.DeepCopyable
 @DeepCopy
 data class GenericParameter<A: Number, B: DeepCopyable<B>>(val a: A, val b: B, val c: List<A>, val d: List<B>)
 
-// GENERATED
-//-------GenericParameter$$DeepCopy.kt------
+// EXPECT
+// FILE: GenericParameter$$DeepCopy.kt
 import com.bennyhuo.kotlin.deepcopy.DeepCopyable
 import com.bennyhuo.kotlin.deepcopy.runtime.deepCopy
 import kotlin.Number

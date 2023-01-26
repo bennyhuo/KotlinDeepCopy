@@ -19,4 +19,6 @@ data class Project(val name: String, var owner: Owner?)
 
 @DeepCopy
 data class Owner(val project: Project)
-// GENERATED
+// EXPECT
+// FILE: compiles.log
+COMPILATION_ERROR
