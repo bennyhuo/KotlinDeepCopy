@@ -29,7 +29,8 @@ class SimpleTest {
         val irDumpComponentRegistrar = IrDumpComponentRegistrar()
         val compilation = KotlinCompilation().apply {
             sources = listOf(kotlinSource)
-            componentRegistrars = listOf(DeepCopyComponentRegistrar(), irDumpComponentRegistrar)
+            componentRegistrars = listOf(DeepCopyComponentRegistrar())
+            compilerPluginRegistrars = listOf(irDumpComponentRegistrar)
             inheritClassPath = true
             messageOutputStream = System.out
         }

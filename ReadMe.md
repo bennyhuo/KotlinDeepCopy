@@ -102,6 +102,10 @@ And then try to call the `deepCopy` function directly!
 
 # Change Log
 
+## v1.8.20.0
+
+Build with Kotlin 1.8.20.
+
 ## v1.7.10.0 
 
 Build with Kotlin 1.7.10. 
@@ -133,7 +137,7 @@ Compiles on Kotlin v1.5.0. Update `kotlinx-metadata-jvm` to v0.3.0.
 
 ## v1.3.72 Apt
 
-Compiles on Kotlin v1.3.72.
+Build with Kotlin v1.3.72.
 
 * [Bug] Fixed: rewriting DeepCopy.kt.
 * [Bug] Fixed: maven dependency scope with runtime module.
@@ -155,7 +159,7 @@ Compiles on Kotlin v1.3.72.
 
 # License
 
-[MIT License](https://github.com/enbandari/KotlinDeepCopy/blob/master/LICENSE)
+[MIT License](LICENSE)
 
     Copyright (c) 2018 Bennyhuo
     

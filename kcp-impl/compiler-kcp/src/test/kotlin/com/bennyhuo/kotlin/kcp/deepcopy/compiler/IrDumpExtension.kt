@@ -2,8 +2,7 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -22,17 +21,14 @@ class IrDumpExtension : IrGenerationExtension {
 }
 
 @OptIn(ExperimentalCompilerApi::class)
-class IrDumpComponentRegistrar : ComponentRegistrar {
+class IrDumpComponentRegistrar : CompilerPluginRegistrar() {
 
     val irDumpExtension = IrDumpExtension()
 
-    override fun registerProjectComponents(
-        project: MockProject,
-        configuration: CompilerConfiguration
-    ) {
-        IrGenerationExtension.registerExtension(
-            project,
-            irDumpExtension
-        )
+    override val supportsK2: Boolean
+        get() = true
+
+    override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
+        IrGenerationExtension.registerExtension(irDumpExtension)
     }
 }

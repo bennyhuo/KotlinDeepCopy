@@ -1,7 +1,7 @@
 pluginManagement {
     repositories {
         maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
-        gradlePluginPortal()
+        maven { url 'https://mirrors.tencent.com/nexus/repository/gradle-plugins/' }
     }
 }
 
