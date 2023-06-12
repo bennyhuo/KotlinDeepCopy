@@ -3,12 +3,14 @@ package com.benyhuo.kotlin.deepcopy.compiler
 import com.bennyhuo.kotlin.compiletesting.extensions.module.KotlinModule
 import com.bennyhuo.kotlin.compiletesting.extensions.source.SourceModuleInfo
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.DeepCopySymbolProcessorProvider
-import java.io.File
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
+import java.io.File
 
 /**
  * Created by benny at 2021/6/21 7:00.
  */
+@OptIn(ExperimentalCompilerApi::class)
 class KspTest : BaseTest() {
     @Test
     fun basic() = doTest()

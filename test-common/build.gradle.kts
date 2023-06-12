@@ -9,10 +9,8 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":annotations"))
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.9")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.9")
-    testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:1.7.10.2")
-    
+    testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:1.8.0.0")
+
     testImplementation(project(":compiler:compiler-ksp"))
     testImplementation(project(":compiler:compiler-apt"))
     testImplementation(project(":runtime"))

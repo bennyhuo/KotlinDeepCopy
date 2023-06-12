@@ -12,12 +12,14 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.kspWithCompilation
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import kotlin.test.assertEquals
 
 /**
  * Created by benny.
  */
+@OptIn(ExperimentalCompilerApi::class)
 class SimpleTest {
     @Test
     fun basicKaptTest() {

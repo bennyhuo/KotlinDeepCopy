@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.ir.util.superTypes
+import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -80,10 +81,14 @@ fun IrClass.deepCopyFunctionForDataClass(): IrFunction? {
 fun IrClass.deepCopyFunctionForCollections(pluginContext: IrPluginContext): IrFunction? {
     val fqName = defaultType.classFqName?.asString()
     if (fqName in collectionTypes) {
-        return pluginContext.referenceFunctions(FqName("com.bennyhuo.kotlin.deepcopy.deepCopy"))
-            .singleOrNull {
-                it.owner.extensionReceiverParameter?.type?.classFqName?.asString() == fqName
-            }?.owner
+        return pluginContext.referenceFunctions(
+            CallableId(
+                FqName("com.bennyhuo.kotlin.deepcopy"),
+                Name.identifier("deepCopy")
+            )
+        ).singleOrNull {
+            it.owner.extensionReceiverParameter?.type?.classFqName?.asString() == fqName
+        }?.owner
     }
     return null
 }
@@ -99,7 +104,7 @@ fun IrClass.copyFunctionForDataClass(): IrFunction? {
 
 fun IrType.deepCopyFunctionForDeepCopyable(pluginContext: IrPluginContext): IrFunction? {
     if (!implementsDeepCopyableInterface()) return null
-    val deepCopyable = pluginContext.referenceClass(FqName(DEEP_COPY_INTERFACE_NAME))
+    val deepCopyable = pluginContext.referenceClass(ClassId.fromString(DEEP_COPY_INTERFACE_NAME))
 
     return deepCopyable?.functions?.singleOrNull {
         it.owner.name.identifier == DEEP_COPY_FUNCTION_NAME && it.owner.valueParameters.isEmpty()

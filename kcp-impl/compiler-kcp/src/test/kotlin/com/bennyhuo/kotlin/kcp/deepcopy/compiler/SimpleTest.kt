@@ -3,6 +3,7 @@ package com.bennyhuo.kotlin.kcp.deepcopy.compiler
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.DeepCopyComponentRegistrar
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -11,6 +12,7 @@ import kotlin.test.assertEquals
 /**
  * Created by benny.
  */
+@OptIn(ExperimentalCompilerApi::class)
 class SimpleTest {
 
     @Test
@@ -27,7 +29,8 @@ class SimpleTest {
         val irDumpComponentRegistrar = IrDumpComponentRegistrar()
         val compilation = KotlinCompilation().apply {
             sources = listOf(kotlinSource)
-            compilerPlugins = listOf(DeepCopyComponentRegistrar(), irDumpComponentRegistrar)
+            componentRegistrars = listOf(DeepCopyComponentRegistrar())
+            compilerPluginRegistrars = listOf(irDumpComponentRegistrar)
             inheritClassPath = true
             messageOutputStream = System.out
         }
@@ -69,7 +72,7 @@ class SimpleTest {
         )
         val compilation = KotlinCompilation().apply {
             sources = listOf(kotlinSource, mainSource)
-            compilerPlugins = listOf(DeepCopyComponentRegistrar())
+            componentRegistrars = listOf(DeepCopyComponentRegistrar())
             inheritClassPath = true
             messageOutputStream = System.out
         }

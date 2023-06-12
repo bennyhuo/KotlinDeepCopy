@@ -10,13 +10,11 @@ import com.bennyhuo.kotlin.deepcopy.compiler.kcp.irThis
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrStatement
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.util.properties
 
-@OptIn(ObsoleteDescriptorBasedAPI::class)
 class DeepCopyClassTransformer(
     private val pluginContext: IrPluginContext,
     private val pluginAvailability: PluginAvailability

@@ -22,3 +22,5 @@ data class Owner(val project: Project)
 // EXPECT
 // FILE: compiles.log
 COMPILATION_ERROR
+e: DefaultFile.kt: (9, -1): Detect infinite copy loop. It will cause stack overflow to call Project.deepCopy() in the runtime.
+

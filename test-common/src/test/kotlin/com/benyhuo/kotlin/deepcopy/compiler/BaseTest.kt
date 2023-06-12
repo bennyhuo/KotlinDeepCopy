@@ -4,12 +4,14 @@ import com.bennyhuo.kotlin.compiletesting.extensions.module.KotlinModule
 import com.bennyhuo.kotlin.compiletesting.extensions.module.checkResult
 import com.bennyhuo.kotlin.compiletesting.extensions.source.FileBasedModuleInfoLoader
 import com.bennyhuo.kotlin.compiletesting.extensions.source.SourceModuleInfo
-import java.io.File
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
+import java.io.File
 
 /**
  * Created by benny.
  */
+@OptIn(ExperimentalCompilerApi::class)
 abstract class BaseTest {
 
     private val testCaseDirCommon = File("testData")

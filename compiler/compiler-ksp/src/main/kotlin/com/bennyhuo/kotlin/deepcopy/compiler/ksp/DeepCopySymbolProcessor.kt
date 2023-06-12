@@ -2,6 +2,7 @@ package com.bennyhuo.kotlin.deepcopy.compiler.ksp
 
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopy
 import com.bennyhuo.kotlin.deepcopy.annotations.DeepCopyConfig
+import com.bennyhuo.kotlin.deepcopy.compiler.ksp.loop.DeepCopyLoopException
 import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.LoggerMixin
 import com.bennyhuo.kotlin.processor.module.common.MODULE_MIXED
 import com.bennyhuo.kotlin.processor.module.ksp.KspModuleProcessor
@@ -45,7 +46,11 @@ class DeepCopySymbolProcessor(
 
             DeepCopyConfigIndex.release()
         } catch (e: Exception) {
-            logger.exception(e)
+            if (e is DeepCopyLoopException) {
+                logger.error(e.message!!, e.declaration)
+            } else {
+                logger.exception(e)
+            }
         }
 
         return emptyList()

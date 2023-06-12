@@ -7,10 +7,12 @@ import com.google.auto.service.AutoService
 import com.intellij.mock.MockProject
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
 import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
 
+@OptIn(ExperimentalCompilerApi::class)
 @AutoService(ComponentRegistrar::class)
 class DeepCopyComponentRegistrar : ComponentRegistrar {
 

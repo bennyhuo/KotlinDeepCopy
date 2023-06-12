@@ -5,7 +5,6 @@ import com.bennyhuo.kotlin.deepcopy.compiler.kcp.deepCopyFunctionForCollections
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.deepCopyFunctionForDataClass
 import com.bennyhuo.kotlin.deepcopy.compiler.kcp.deepCopyFunctionForDeepCopyable
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.ir.ObsoleteDescriptorBasedAPI
 import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
 import org.jetbrains.kotlin.ir.builders.Scope
 import org.jetbrains.kotlin.ir.builders.irCall
@@ -15,7 +14,6 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
-import org.jetbrains.kotlin.ir.expressions.mapValueParameters
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
@@ -23,7 +21,6 @@ import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.isTypeParameter
 import org.jetbrains.kotlin.ir.util.primaryConstructor
 
-@OptIn(ObsoleteDescriptorBasedAPI::class)
 class DeepCopyFunctionBuilder(
     private val irClass: IrClass,
     private val irFunction: IrFunction,
@@ -55,10 +52,8 @@ class DeepCopyFunctionBuilder(
                 irClass.defaultType,
                 constructedClass = irClass
             ).apply {
-                mapValueParameters { descriptor ->
-                    primaryConstructor.valueParameters[descriptor.index].let {
-                        it.type.tryDeepCopy(valueParameterMapper(it))
-                    }
+                symbol.owner.valueParameters.forEachIndexed { index, param ->
+                    putValueArgument(index, param.type.tryDeepCopy(valueParameterMapper(param)))
                 }
             }
         )
