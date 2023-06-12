@@ -31,7 +31,7 @@ class DeepCopyTest {
 This library has been deloyed to maven center. 
 
 ```gradle
-implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.7.10.0")
+implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.8.20.0")
 ```
 
 ## Apt & Ksp
@@ -71,15 +71,15 @@ The artifacts have been deployed to maven central repository. Set up your projec
 
 ```gradle
 plugins {
-    id("com.google.devtools.ksp") version "1.7.10-1.0.6" // ksp
+    id("com.google.devtools.ksp") version "1.8.20-1.0.11" // ksp
     id "org.jetbrains.kotlin.kapt" // kapt
 }
 ...
 
 dependencies {
-    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.7.10.0")) // ksp
-    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.7.10.0") // kapt
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0")
+    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.8.20.0")) // ksp
+    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.8.20.0") // kapt
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.8.20.0")
 }
 ```
 
@@ -89,12 +89,12 @@ This is a nearly perfect version I think. It works like `copy` does. You can ins
 
 ```gradle
 plugins {
-    kotlin("jvm") version "1.7.10"
-    id("com.bennyhuo.kotlin.plugin.deepcopy") version "1.7.10.0"
+    kotlin("jvm") version "1.8.20"
+    id("com.bennyhuo.kotlin.plugin.deepcopy") version "1.8.20.0"
 }
 
 dependencies {
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.7.10.0")
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.8.20.0")
 }
 ```
 
