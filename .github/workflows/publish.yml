@@ -15,11 +15,11 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2
 
-      - name: Set up JDK 8
+      - name: Set up JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '8'
+          java-version: '11'
 
       - name: Build & Publish to Maven Central
         run: chmod +x .github/scripts/publish.sh && .github/scripts/publish.sh
