@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.bennyhuo.kotlin.deepcopy</id>
     <name>DeepCopy for Kotlin Data Class</name>
-    <version>1.7.10.0</version>
+    <version>1.8.10.0</version>
     <vendor email="bennyhuo@kotliner.cn" url="https://www.bennyhuo.com">Bennyhuo</vendor>
 
     <description><![CDATA[
