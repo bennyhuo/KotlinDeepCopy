@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.bennyhuo.kotlin/deepcopy-reflect/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.bennyhuo.kotlin/deepcopy-reflect)
+
+
 # KotlinDeepCopy
 
 Provide an easy way to generate `DeepCopy` function for `data class`. DeepCopy only takes effect on the component members i.e. the members declared in the primary constructor.
@@ -31,7 +34,7 @@ class DeepCopyTest {
 This library has been deloyed to maven center. 
 
 ```gradle
-implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.8.20.0")
+implementation("com.bennyhuo.kotlin:deepcopy-reflect:<latest-version>")
 ```
 
 ## Apt & Ksp
@@ -77,9 +80,9 @@ plugins {
 ...
 
 dependencies {
-    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:1.8.20.0")) // ksp
-    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:1.8.20.0") // kapt
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.8.20.0")
+    ksp("com.bennyhuo.kotlin:deepcopy-compiler-ksp:<latest-version>")) // ksp
+    kapt("com.bennyhuo.kotlin:deepcopy-compiler-kapt:<latest-version>") // kapt
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:<latest-version>")
 }
 ```
 
@@ -90,11 +93,11 @@ This is a nearly perfect version I think. It works like `copy` does. You can ins
 ```gradle
 plugins {
     kotlin("jvm") version "1.8.20"
-    id("com.bennyhuo.kotlin.plugin.deepcopy") version "1.8.20.0"
+    id("com.bennyhuo.kotlin.plugin.deepcopy") version "<latest-version>"
 }
 
 dependencies {
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.8.20.0")
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:<latest-version>")
 }
 ```
 
@@ -102,7 +105,7 @@ And then try to call the `deepCopy` function directly!
 
 # Change Log
 
-## v1.8.20.0
+## v1.8.20-1.0.0
 
 Build with Kotlin 1.8.20.
 
