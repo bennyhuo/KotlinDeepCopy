@@ -3,13 +3,6 @@ buildscript {
         kotlin_version = "1.8.20"
         ksp_version = "1.8.20-1.0.11"
     }
-    repositories {
-        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public/" }
-    }
-
-    dependencies {
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
-    }
 }
 
 plugins {
@@ -34,7 +27,7 @@ subprojects { project ->
     }
 
     repositories {
-        maven { url "https://mirrors.tencent.com/nexus/repository/maven-public" }
+        mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
