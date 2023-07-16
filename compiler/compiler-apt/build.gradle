@@ -12,7 +12,7 @@ dependencies {
 
     api project(":annotations")
 
-    api("com.bennyhuo.kotlin:apt-module-support:1.7.10.2-SNAPSHOT")
+    api("com.bennyhuo.kotlin:apt-module-support:1.8.20-1.0.0")
 
     testApi group: 'junit', name: 'junit', version: '4.12'
 }

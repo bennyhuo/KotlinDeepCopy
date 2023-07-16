@@ -105,6 +105,10 @@ And then try to call the `deepCopy` function directly!
 
 # Change Log
 
+## v1.8.20-1.0.1
+
+Fix dependencies error [#19](https://github.com/bennyhuo/KotlinDeepCopy/issues/19).
+
 ## v1.8.20-1.0.0
 
 Build with Kotlin 1.8.20.

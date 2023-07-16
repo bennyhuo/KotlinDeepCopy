@@ -9,7 +9,7 @@ dependencies {
     implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
     implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
 
-    implementation("com.bennyhuo.kotlin:ksp-module-support:1.7.10.2-SNAPSHOT")
+    implementation("com.bennyhuo.kotlin:ksp-module-support:1.8.20-1.0.0")
     
     implementation(project(":annotations"))
 }

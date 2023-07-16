@@ -13,7 +13,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.bennyhuo.kotlin:annotations-module-support:1.7.10.1")
+                api("com.bennyhuo.kotlin:annotations-module-support:1.8.20-1.0.0")
             }
         }
     }
