@@ -74,7 +74,7 @@ The artifacts have been deployed to maven central repository. Set up your projec
 
 ```gradle
 plugins {
-    id("com.google.devtools.ksp") version "1.8.20-1.0.11" // ksp
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14" // ksp
     id "org.jetbrains.kotlin.kapt" // kapt
 }
 ...
@@ -92,7 +92,7 @@ This is a nearly perfect version I think. It works like `copy` does. You can ins
 
 ```gradle
 plugins {
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.9.20"
     id("com.bennyhuo.kotlin.plugin.deepcopy") version "<latest-version>"
 }
 
@@ -105,64 +105,7 @@ And then try to call the `deepCopy` function directly!
 
 # Change Log
 
-## v1.8.20-1.0.1
-
-Fix dependencies error [#19](https://github.com/bennyhuo/KotlinDeepCopy/issues/19).
-
-## v1.8.20-1.0.0
-
-Build with Kotlin 1.8.20.
-
-## v1.7.10.0 
-
-Build with Kotlin 1.7.10. 
-
-### Runtime
-
-* Rename `DeepCopiable` to `DeepCopyable` which seems more widely used.
-
-### Reflect
-
-* Make `deepCopy` function available to `DeepCopyable` only.  
-* [NEW] Add support for Kotlin JS.
-
-### APT & KSP
-
-* Support multi-module project in a unified way.
-
-### KCP
-
-* Generate a copy-like function `deepCopy` for data classes annotated with `@DeepCopy`.
-* Generate implementation of `deepCopy` for data classes implemented `DeepCopyable`.
-* Add super type `DeepCopyable` to those data classes annotated with `@DeepCopy`.
-* Carefully handle manually written `deepCopy` function.
-* Add support for Collections.
-
-## v1.5.0 Reflect & Apt
-
-Compiles on Kotlin v1.5.0. Update `kotlinx-metadata-jvm` to v0.3.0.
-
-## v1.3.72 Apt
-
-Build with Kotlin v1.3.72.
-
-* [Bug] Fixed: rewriting DeepCopy.kt.
-* [Bug] Fixed: maven dependency scope with runtime module.
-
-## v1.3.0 Apt
-
-* [Feature] Collections/Maps are supported. 
-* [Feature] Prebuilt types are supported by annotation `DeepCopyConfig`. See [Prebuilt](apt-impl/sample/src/main/kotlin/com/bennyhuo/kotlin/deepcopy/sample/prebuilt/PrebuiltClass.kt)
-* [Bug] Fixed: Data classes with their dependencies should be place into the same package.
-* [Bug] Fixed: Improperly import a type variable when component type is not reified.
-
-## v1.2.0 Apt
-
-* [Feature] Add support for nullable types. It will allow copy loop sematically and an exception will be thrown to respond when compiling. See [Recursive.kt](apt-impl/sample/src/main/kotlin/com/bennyhuo/kotlin/deepcopy/sample/recursive/Recursive.kt).
-
-## v1.1.0 Apt 
-
-* [Feature] Add default values to generated `deepCopy` functions.
+See [releases](https://github.com/bennyhuo/KotlinDeepCopy/releases).
 
 # License
 
