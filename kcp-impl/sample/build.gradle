@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version "1.8.20"
-    id "com.bennyhuo.kotlin.plugin.deepcopy" version "1.8.20.0"
+    id 'org.jetbrains.kotlin.jvm' version "1.9.20"
+    id "com.bennyhuo.kotlin.plugin.deepcopy" version "1.9.20.0"
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
-    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.8.20.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+    implementation("com.bennyhuo.kotlin:deepcopy-runtime:1.9.20.0")
 }
 
 compileKotlin {

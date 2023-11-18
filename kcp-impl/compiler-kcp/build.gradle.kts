@@ -17,15 +17,15 @@ dependencies {
 
   testImplementation(project(":annotations"))
   testImplementation(project(":runtime"))
-  
+
   testImplementation(kotlin("test-junit"))
   testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
 
-  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:1.8.20-1.0.0")
+  testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:$compileTestingExtensionsVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions.freeCompilerArgs += listOf("-Xjvm-default=enable", "-opt-in=kotlin.RequiresOptIn")
+compileKotlin.kotlinOptions.freeCompilerArgs += listOf("-opt-in=kotlin.RequiresOptIn")
 
 buildConfig {
   packageName("$group.kcp")
