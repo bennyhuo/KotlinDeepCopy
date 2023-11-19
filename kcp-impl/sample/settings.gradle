@@ -4,6 +4,17 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    resolutionStrategy {
+        eachPlugin {
+            switch (requested.id.id) {
+                case "com.bennyhuo.kotlin.plugin.deepcopy": {
+                    useModule("com.bennyhuo.kotlin:deepcopy-gradle-plugin-kcp:1.9.20-1.0.0")
+                    break
+                }
+            }
+        }
+    }
 }
 
 dependencyResolutionManagement {
@@ -17,5 +28,7 @@ includeBuild("../../") {
     dependencySubstitution {
         substitute(module("com.bennyhuo.kotlin:deepcopy-gradle-plugin-kcp")).using(project(":kcp-impl:plugin-gradle"))
         substitute(module("com.bennyhuo.kotlin:deepcopy-compiler-kcp-embeddable")).using(project(":kcp-impl:compiler-kcp-embeddable"))
+        substitute(module("com.bennyhuo.kotlin:deepcopy-compiler-kcp-embeddable")).using(project(":kcp-impl:compiler-kcp-embeddable"))
+        substitute(module("com.bennyhuo.kotlin:deepcopy-runtime")).using(project(":runtime"))
     }
 }

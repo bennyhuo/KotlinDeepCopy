@@ -2,7 +2,7 @@ import org.jetbrains.intellij.tasks.PublishPluginTask
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.intellij") version("1.9.0")
+    id("org.jetbrains.intellij") version("1.16.0")
 }
 
 dependencies {
@@ -10,8 +10,8 @@ dependencies {
 }
 
 intellij {
-    version.set("2022.2.1")
-    plugins.set(listOf("Kotlin", "com.intellij.gradle"))
+    version.set("2023.2.5")
+    plugins.set(listOf("org.jetbrains.kotlin:232-1.9.20-release-507-IJ10072.27", "com.intellij.gradle:232.10227.11"))
     pluginName.set("DeepCopy")
     updateSinceUntilBuild.set(false)
 }

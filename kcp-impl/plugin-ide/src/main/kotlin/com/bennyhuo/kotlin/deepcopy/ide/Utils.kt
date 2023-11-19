@@ -12,3 +12,5 @@ fun <T : KtElement> T.shortenReferences() = ShortenReferences.DEFAULT.process(th
 fun KtClass.isDataClassLike() = hasPrimaryConstructor() && primaryConstructorParameters.let {
     it.isNotEmpty() && it.all { it.hasValOrVar() }
 }
+
+inline fun <reified T> Any?.safeAs(): T? = this as? T

@@ -21,7 +21,6 @@ kotlin {
             kotlin.srcDir("build/generated/ksp/js/jsMain/kotlin")
 
             dependencies {
-                implementation(kotlin("stdlib-js"))
                 implementation(project(":annotations"))
             }
         }
