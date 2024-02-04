@@ -7,11 +7,14 @@ import com.bennyhuo.kotlin.deepcopy.compiler.ksp.utils.Platform
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.LambdaTypeName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeVariableName
+import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
@@ -42,12 +45,12 @@ class DeepCopyGenerator(
             }
             val fileSpecBuilder = FileSpec.builder(
                 escapeStdlibPackageName(dataClass.packageName.asString()),
-                "${dataClass.simpleName.asString()}$\$DeepCopy"
+                "${dataClass.simpleName.asString()}$\$DeepCopy",
             )
             val functionBuilder = FunSpec.builder("deepCopy")
                 .receiver(dataClassName)
                 .returns(dataClassName)
-                .also { builder -> 
+                .also { builder ->
                     if (platform.isKotlinJvm) builder.addAnnotation(JvmOverloads::class)
                 }
                 .addTypeVariables(dataClass.typeParameters.map {
@@ -56,12 +59,34 @@ class DeepCopyGenerator(
                     dataClass.containingFile?.let { builder.addOriginatingKSFile(it) }
                 }
 
+            val dslCopyCodeStringBuilder = StringBuilder()
+
+            val dslFunctionBuilder = FunSpec.builder("deepCopy")
+                .receiver(dataClassName)
+                .returns(dataClassName)
+                .addTypeVariables(dataClass.typeParameters.map {
+                    it.toTypeVariableName(typeParameterResolver).let { TypeVariableName(it.name, it.bounds) }
+                }).also { builder ->
+                    dataClass.containingFile?.let { builder.addOriginatingKSFile(it) }
+                }
+                .addParameter(
+                    ParameterSpec.builder(
+                        "dslMethod",
+                        LambdaTypeName.get(
+                            receiver = dataClassName,
+                            returnType = Unit::class.asTypeName(),
+                        ),
+                    ).build(),
+                )
             val statementStringBuilder = StringBuilder("%T(")
 
             dataClass.primaryConstructor!!.parameters.forEach { parameter ->
-                val adapter = Adapter(KComponent(
-                    parameter, parameter.type.toTypeName(typeParameterResolver)
-                ))
+                val adapter = Adapter(
+                    KComponent(
+                        parameter,
+                        parameter.type.toTypeName(typeParameterResolver),
+                    ),
+                )
                 adapter.addImport(fileSpecBuilder)
                 adapter.addStatement(statementStringBuilder)
 
@@ -71,6 +96,8 @@ class DeepCopyGenerator(
                         parameter.type.toTypeName(typeParameterResolver)
                     ).defaultValue("this.${parameter.name!!.asString()}").build()
                 )
+
+                dslCopyCodeStringBuilder.append("${parameter.name!!.asString()},")
             }
 
             statementStringBuilder.setCharAt(statementStringBuilder.lastIndex - 1, ')')
@@ -78,12 +105,23 @@ class DeepCopyGenerator(
                 "return $statementStringBuilder",
                 dataClassName,
             )
-            
-            fileSpecBuilder.addFunction(functionBuilder.build()).build()
+
+            // link dslFunction
+            dslFunctionBuilder
+                .addCode(
+                    CodeBlock.builder()
+                        .addStatement("this.dslMethod()")
+                        .addStatement("return this.deepCopy(${dslCopyCodeStringBuilder.dropLast(1)})")
+                        .build(),
+                )
+
+            fileSpecBuilder
+                .addFunction(functionBuilder.build())
+                .addFunction(dslFunctionBuilder.build())
+                .build()
                 .writeTo(env.codeGenerator, false)
 
             DeepCopyLoopDetector(env, dataClass).detect()
         }
     }
-
 }
