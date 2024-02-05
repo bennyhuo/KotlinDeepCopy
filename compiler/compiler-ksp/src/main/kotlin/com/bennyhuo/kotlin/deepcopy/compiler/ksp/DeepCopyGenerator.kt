@@ -110,9 +110,11 @@ class DeepCopyGenerator(
             dslFunctionBuilder
                 .addCode(
                     CodeBlock.builder()
-                        .addStatement("val copy = this.copy()")
+                        .indent()
+                        .addStatement("val copy = this.deepCopy()")
                         .addStatement("copy.dslMethod()")
-                        .addStatement("return copy.deepCopy()")
+                        .addStatement("return copy")
+                        .unindent()
                         .build(),
                 )
 
